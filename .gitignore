@@ -1,0 +1,72 @@
+# === GLOBAL ===
+.DS_Store
+*.log
+*.swp
+*.tmp
+*.bak
+*.old
+*.orig
+*.env
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
+Thumbs.db
+ehthumbs.db
+.env.*
+.env.local
+
+# === PYTHON / DJANGO ===
+backend/__pycache__/
+backend/*.py[cod]
+backend/env/
+backend/venv/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.coverage
+backend/db.sqlite3
+backend/static/
+backend/media/
+backend/*.sqlite3
+
+# === NODE / ANGULAR ===
+web/node_modules/
+web/dist/
+web/.angular/
+web/.env
+web/.env.local
+
+# === ANDROID / KOTLIN ===
+mobile/.gradle/
+mobile/.idea/
+mobile/.cxx/
+mobile/build/
+mobile/captures/
+mobile/local.properties
+mobile/.DS_Store
+mobile/.externalNativeBuild/
+mobile/.signing/
+mobile/app/build/
+mobile/**/*.iml
+
+# === OS & TOOLS ===
+*.log
+*.lock
+*.tmp
+*.bak
+*.old
+*.swp
+*.swo
+*.swn
+
+# === OPTIONAL LOCKFILES ===
+# Descomente se não quiser versionar lockfiles:
+# web/package-lock.json
+# web/yarn.lock
+# mobile/gradle.lockfile
