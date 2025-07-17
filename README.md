@@ -151,7 +151,7 @@ DJANGO_SUPERUSER_PASSWORD=changeme123
 
 ## Contato
 
-Caio Riquelmy — [LinkedIn](https://www.linkedin.com/in/caioriquelmy/) — crosnegocios@hotmail.com
+Caio Riquelmy — [LinkedIn](https://www.linkedin.com/in/caio-riquelmy-a295ba19b/) — crosnegocios@hotmail.com
 
 ---
 
