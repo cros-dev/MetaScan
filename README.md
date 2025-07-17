@@ -99,6 +99,19 @@ npm start
 
 ---
 
+## Integração com ERP Sankhya
+
+Esta aplicação possui integração direta com o ERP Sankhya para validação de códigos de produtos e consulta de estoque em tempo real nos diferentes locais de armazenagem.
+
+Isso permite:
+
+- Conferir rapidamente a disponibilidade dos produtos nos cavaletes.
+- Atualizar quantidades e locais de armazenagem com precisão.
+- Evitar erros manuais na conferência do inventário.
+- Otimizar o processo de registro utilizando QR Codes e códigos de barras.
+
+---
+
 ## Variáveis de ambiente - `.env.example`
 
 Copie o arquivo `.env.example` para `.env` e ajuste os valores conforme seu ambiente:
@@ -138,7 +151,7 @@ DJANGO_SUPERUSER_PASSWORD=changeme123
 
 ## Contato
 
-Caio Riquelmy — [LinkedIn](https://www.linkedin.com/in/caio-riquelmy-a295ba19b/) — crosnegocios@hotmail.com
+Caio Riquelmy — [LinkedIn](https://www.linkedin.com/in/caioriquelmy/) — crosnegocios@hotmail.com
 
 ---
 
