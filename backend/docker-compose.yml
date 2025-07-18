@@ -1,0 +1,90 @@
+services:
+  backend_django:
+    container_name: metascan_backend
+    build: .
+    image: api-metascan
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=metascan.settings
+    depends_on:
+      metascan_database:
+        condition: service_healthy
+      metascan_minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - metascan-network
+
+  metascan_minio:
+    container_name: metascan_minio
+    image: minio/minio:RELEASE.2025-01-18T00-31-37Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - metascan-network
+
+  minio_setup:
+    container_name: metascan_minio_setup
+    image: minio/mc
+    network_mode: service:metascan_minio
+    depends_on:
+      metascan_minio:
+        condition: service_healthy
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    entrypoint: |
+      /bin/sh -c "
+      mc alias set local http://localhost:9000 $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY} &&
+      mc mb --ignore-existing local/$${MINIO_BUCKET} &&
+      mc anonymous set public local/$${MINIO_BUCKET} &&
+      echo 'Bucket $${MINIO_BUCKET} criado com sucesso!'
+      "
+
+  metascan_database:
+    container_name: metascan_database
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - metascan-network
+
+volumes:
+  db_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  metascan-network:
+    driver: bridge
