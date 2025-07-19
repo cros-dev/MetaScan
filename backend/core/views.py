@@ -27,7 +27,8 @@ User = get_user_model()
 
 class LoginView(APIView):
     """
-    Endpoint de login integrado com Sankhya, retorna JWT e dados do usuário.
+    Endpoint de login integrado com Sankhya.
+    Recebe credenciais, autentica no sistema externo e retorna JWT e dados do usuário.
     """
     authentication_classes = []
     permission_classes = []
@@ -60,6 +61,7 @@ class LoginView(APIView):
 class MeView(APIView):
     """
     Endpoint para retornar dados do usuário autenticado.
+    Requer autenticação e retorna informações básicas do usuário logado.
     """
     permission_classes = [IsAuthenticated]
 
@@ -71,6 +73,8 @@ class MeView(APIView):
 class CavaleteViewSet(viewsets.ModelViewSet):
     """
     ViewSet para gerenciamento de Cavaletes.
+    Permite CRUD, exportação, atribuição de usuário e histórico de ações.
+    Mudança de status só via actions customizadas.
     """
     # noinspection PyUnresolvedReferences
     queryset = Cavalete.objects.all()
@@ -84,6 +88,10 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 
     # noinspection PyMethodMayBeStatic
     def _create_cavalete_history(self, instance, user, history_action, previous_data=None):
+        """
+        Cria um registro de histórico para o cavalete.
+        Guarda o usuário, ação realizada e dados anteriores (se houver).
+        """
         # noinspection PyUnresolvedReferences
         CavaleteHistory.objects.create(
             cavalete=instance,
@@ -93,6 +101,10 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         )
 
     def get_queryset(self):
+        """
+        Retorna o queryset de cavaletes visíveis para o usuário atual.
+        Staff vê todos, usuário comum vê apenas os seus.
+        """
         user = self.request.user
         if user.is_staff:
             # noinspection PyUnresolvedReferences
@@ -101,6 +113,10 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         return Cavalete.objects.filter(user=user)
 
     def create(self, request, *args, **kwargs):
+        """
+        Cria um novo cavalete, gerando código e nome automáticos.
+        Também cria os slots associados ao novo cavalete.
+        """
         # noinspection PyUnresolvedReferences
         if Cavalete.objects.count() >= 30:
             return Response({'detail': 'Limite de 30 cavaletes atingido.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -127,6 +143,11 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
     def export(self, request):
+        """
+        Exporta os dados dos cavaletes e seus slots em formato Excel (.xlsx).
+        Permite filtrar por IDs ou nomes de cavaletes.
+        Apenas para administradores.
+        """
         ids = request.query_params.getlist('cavalete_id')
         names = request.query_params.getlist('cavalete_name')
         # noinspection PyUnresolvedReferences
@@ -177,6 +198,11 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def assign_user(self, request):
+        """
+        Atribui ou libera um usuário responsável por um cavalete específico.
+        Altera o status do cavalete para 'assigned' ou 'available'.
+        Apenas para administradores.
+        """
         cavalete = self.get_object()
         user_id = request.data.get('user_id')
         previous_data = {
@@ -203,6 +229,11 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'], permission_classes=[IsAdminUser], serializer_class=CavaleteAssignSerializer)
     def assign(self, request):
+        """
+        Atribui em massa um usuário a vários cavaletes.
+        Altera o status dos cavaletes para 'assigned' ou 'available'.
+        Apenas para administradores.
+        """
         ids = request.data.get('cavalete_ids', [])
         user_id = request.data.get('user_id')
         user = None
@@ -237,10 +268,17 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         })
 
     def perform_create(self, serializer):
+        """
+        Salva o cavalete e registra o histórico de criação.
+        """
         instance = serializer.save()
         self._create_cavalete_history(instance, self.request.user, 'created')
 
     def perform_update(self, serializer):
+        """
+        Atualiza o cavalete e registra o histórico de edição.
+        Alteração de status deve ser feita apenas via actions customizadas.
+        """
         instance = self.get_object()
         previous_data = {
             'name': instance.name,
@@ -250,6 +288,9 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         self._create_cavalete_history(updated_instance, self.request.user, 'edited', previous_data)
 
     def perform_destroy(self, instance):
+        """
+        Remove o cavalete e registra o histórico de deleção.
+        """
         previous_data = {
             'name': instance.name,
             'user': instance.user.id if instance.user else None
@@ -260,6 +301,7 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 class SlotViewSet(viewsets.ModelViewSet):
     """
     ViewSet para gerenciamento de Slots.
+    Permite CRUD, histórico, transições de status via actions e edição de produto apenas em conferência.
     """
     # noinspection PyUnresolvedReferences
     queryset = Slot.objects.all()
@@ -275,6 +317,11 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     # noinspection PyMethodMayBeStatic
     def _create_slot_history(self, slot, user, slot_action):
+        """
+        Cria um registro de histórico para o slot.
+        Guarda o usuário, ação realizada e dados do produto.
+        """
+        # noinspection PyUnresolvedReferences
         SlotHistory.objects.create(
             slot=slot,
             user=user,
@@ -285,6 +332,10 @@ class SlotViewSet(viewsets.ModelViewSet):
         )
 
     def _update_slot_status(self, slot, expected_status, new_status, user, slot_action, success_message, error_message):
+        """
+        Atualiza o status do slot, validando o status atual antes da transição.
+        Registra histórico e retorna resposta adequada.
+        """
         if slot.status != expected_status:
             return Response({'detail': error_message}, status=status.HTTP_400_BAD_REQUEST)
         slot.status = new_status
@@ -293,12 +344,19 @@ class SlotViewSet(viewsets.ModelViewSet):
         return Response({'detail': success_message})
 
     def perform_create(self, serializer):
+        """
+        Salva o slot e registra o histórico de criação.
+        """
         slot = serializer.save()
         user = self.request.user
         slot_action = self.request.data.get('action', 'confirmation')
         self._create_slot_history(slot, user, slot_action)
 
     def perform_update(self, serializer):
+        """
+        Atualiza o slot e registra o histórico de edição.
+        Alteração de status deve ser feita apenas via actions customizadas.
+        """
         slot = serializer.save()
         user = self.request.user
         slot_action = self.request.data.get('action', None) or 'confirmation'
@@ -306,6 +364,12 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def start_confirmation(self, request):
+        """
+        Inicia o processo de conferência do slot.
+        Só pode ser chamado se o slot estiver 'available'.
+        Altera status para 'in_confirmation'.
+        Apenas para administradores.
+        """
         slot = self.get_object()
         return self._update_slot_status(
             slot, 'available', 'in_confirmation', request.user,
@@ -316,6 +380,11 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsStaffOrSlotUser])
     def finish_confirmation(self, request):
+        """
+        Finaliza a conferência do slot pelo conferente.
+        Só pode ser chamado se o slot estiver 'in_confirmation'.
+        Altera status para 'awaiting_approval'.
+        """
         slot = self.get_object()
         return self._update_slot_status(
             slot, 'in_confirmation', 'awaiting_approval', request.user,
@@ -326,6 +395,12 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def approve_confirmation(self, request):
+        """
+        Aprova a conferência do slot (gestor).
+        Só pode ser chamado se o slot estiver 'awaiting_approval'.
+        Altera status para 'completed'.
+        Apenas para administradores.
+        """
         slot = self.get_object()
         return self._update_slot_status(
             slot, 'awaiting_approval', 'completed', request.user,
@@ -336,6 +411,12 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def return_confirmation(self, request):
+        """
+        Devolve o slot para nova conferência pelo conferente.
+        Só pode ser chamado se o slot estiver 'awaiting_approval'.
+        Altera status para 'in_confirmation'.
+        Apenas para administradores.
+        """
         slot = self.get_object()
         return self._update_slot_status(
             slot, 'awaiting_approval', 'in_confirmation', request.user,
@@ -346,6 +427,12 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def reopen_confirmation(self, request):
+        """
+        Reabre a conferência de um slot já concluído.
+        Só pode ser chamado se o slot estiver 'completed'.
+        Altera status para 'in_confirmation'.
+        Apenas para administradores.
+        """
         slot = self.get_object()
         return self._update_slot_status(
             slot, 'completed', 'in_confirmation', request.user,
@@ -356,7 +443,8 @@ class SlotViewSet(viewsets.ModelViewSet):
 
 class SlotHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet para gerenciamento de histórico de Slots.
+    ViewSet para histórico de Slots.
+    Permite consulta filtrada e ordenada do histórico de alterações dos slots.
     """
     queryset = SlotHistory.objects.all().order_by('-timestamp')
     serializer_class = SlotHistorySerializer
@@ -373,8 +461,10 @@ class SlotHistoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class CavaleteHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet para gerenciamento de histórico de Cavaletes.
+    ViewSet para histórico de Cavaletes.
+    Permite consulta filtrada e ordenada do histórico de alterações dos cavaletes.
     """
+    # noinspection PyUnresolvedReferences
     queryset = CavaleteHistory.objects.all().order_by('-timestamp')
     serializer_class = CavaleteHistorySerializer
     permission_classes = [IsStaffOrCavaleteUser]
@@ -391,6 +481,7 @@ class CavaleteHistoryViewSet(viewsets.ReadOnlyModelViewSet):
 class ProdutoConsultaView(APIView):
     """
     Endpoint para consultar produtos na Sankhya.
+    Requer autenticação e retorna dados do produto consultado pelo código.
     """
     permission_classes = [IsAuthenticated]
 

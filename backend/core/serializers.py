@@ -7,6 +7,7 @@ User = get_user_model()
 class UserMeSerializer(serializers.ModelSerializer):
     """
     Serializer para o endpoint /me/ (usuário autenticado).
+    Retorna informações básicas do usuário logado.
     """
     email = serializers.EmailField(read_only=True)
     is_staff = serializers.BooleanField(read_only=True)
@@ -18,6 +19,7 @@ class UserMeSerializer(serializers.ModelSerializer):
 class UserSummarySerializer(serializers.ModelSerializer):
     """
     Serializer para listagem básica de usuários.
+    Retorna apenas id e email.
     """
     class Meta:
         model = User
@@ -25,7 +27,9 @@ class UserSummarySerializer(serializers.ModelSerializer):
 
 class CavaleteSerializer(serializers.ModelSerializer):
     """
-    Serializer para o modelo Cavalete, incluindo slots e usuário.
+    Serializer para o modelo Cavalete.
+    Inclui slots relacionados e dados do usuário responsável.
+    Bloqueia alteração de status via update padrão.
     """
     slots = serializers.SerializerMethodField()
     user = UserSummarySerializer(read_only=True)
@@ -38,9 +42,24 @@ class CavaleteSerializer(serializers.ModelSerializer):
         slots = obj.slots.all()
         return SlotSerializer(slots, many=True).data
 
+    def update(self, instance, validated_data):
+        if 'status' in validated_data:
+            raise serializers.ValidationError({"detail": "O status só pode ser alterado por ações específicas."})
+        return super().update(instance, validated_data)
+
+class CavaleteAssignSerializer(serializers.Serializer):
+    """
+    Serializer para atribuição em massa de cavaletes a um usuário.
+    Recebe lista de IDs de cavaletes e opcionalmente o ID do usuário.
+    """
+    cavalete_ids = serializers.ListField(child=serializers.IntegerField(), required=True)
+    user_id = serializers.IntegerField(required=False)
+
 class SlotSerializer(serializers.ModelSerializer):
     """
-    Serializer para o modelo Slot, incluindo validações e integração com Sankhya.
+    Serializer para o modelo Slot.
+    Inclui validações de produto, integração com Sankhya e restrição de update de status/produto.
+    Só permite atualização de produto se status for 'in_confirmation'.
     """
     action = serializers.CharField(write_only=True, required=False)
 
@@ -63,7 +82,6 @@ class SlotSerializer(serializers.ModelSerializer):
         from core.services.sankhya_product import consult_sankhya_product
         request = self.context.get('request')
         user = getattr(request, 'user', None)
-        # _product_description é usado como cache temporário para o valor retornado da Sankhya
         if value and user and user.is_authenticated:
             result = consult_sankhya_product(value, user.id)
             if not result:
@@ -73,14 +91,20 @@ class SlotSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         description = getattr(self, '_product_description', None)
-        validated_data.pop('action', None)  # Remove o campo action, não usado aqui
+        validated_data.pop('action', None)
         if description:
             validated_data['product_description'] = description
         slot = super().create(validated_data)
         return slot
 
     def update(self, instance, validated_data):
-        validated_data.pop('action', None)  # Remove o campo action, não usado aqui
+        if 'status' in validated_data:
+            raise serializers.ValidationError({"detail": "O status só pode ser alterado por ações específicas."})
+        campos_produto = {'product_code', 'product_description', 'quantity'}
+        if any(campo in validated_data for campo in campos_produto):
+            if instance.status != 'in_confirmation':
+                raise serializers.ValidationError({"detail": f"Só é permitido atualizar produto quando o slot está em conferência (in_confirmation). Status atual: '{instance.status}'."})
+        validated_data.pop('action', None)
         description = getattr(self, '_product_description', None)
         if description:
             validated_data['product_description'] = description
@@ -90,6 +114,7 @@ class SlotSerializer(serializers.ModelSerializer):
 class SlotHistorySerializer(serializers.ModelSerializer):
     """
     Serializer para histórico de conferência de slots.
+    Retorna dados do usuário, cavalete e detalhes da ação.
     """
     user = serializers.EmailField(source='user.email', read_only=True)
     cavalete_id = serializers.SerializerMethodField()
@@ -109,15 +134,10 @@ class SlotHistorySerializer(serializers.ModelSerializer):
 class CavaleteHistorySerializer(serializers.ModelSerializer):
     """
     Serializer para histórico de ações em Cavalete.
+    Retorna dados do usuário, cavalete e detalhes da ação.
     """
     user = serializers.EmailField(source='user.email', read_only=True)
     class Meta:
         model = CavaleteHistory
         fields = ['id', 'cavalete', 'user', 'timestamp', 'action', 'previous_data']
 
-class CavaleteAssignSerializer(serializers.Serializer):
-    """
-    Serializer para atribuição em massa de cavaletes a um usuário.
-    """
-    cavalete_ids = serializers.ListField(child=serializers.IntegerField(), required=True)
-    user_id = serializers.IntegerField(required=False)
