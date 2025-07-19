@@ -9,6 +9,10 @@ User = get_user_model()
 
 @pytest.mark.django_db
 def test_create_cavalete_authenticated_user():
+    """
+    Garante que um usuário autenticado e staff consegue criar um cavalete
+    e que os campos obrigatórios são retornados corretamente na resposta.
+    """
     user = User.objects.create_user(email="user2@example.com", password="senha123", is_staff=True)
     client = APIClient()
     client.force_authenticate(user=user)
@@ -24,12 +28,16 @@ def test_create_cavalete_authenticated_user():
 @pytest.mark.django_db
 @patch("core.services.sankhya_product.consult_sankhya_product")
 def test_update_slot_product_success(mock_consult):
+    """
+    Garante que é possível atualizar o produto de um slot com código válido,
+    e que a descrição do produto é preenchida corretamente.
+    """
     mock_consult.return_value = {"code": "202118", "description": "ALICATE MULTIUSO"}
     user = User.objects.create_user(email="user3@example.com", password="senha123", is_staff=True)
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste", code="CAV99")
     # noinspection PyUnresolvedReferences
-    slot = Slot.objects.create(cavalete=cavalete, side="A", number=1)
+    slot = Slot.objects.create(cavalete=cavalete, side="A", number=1, status="in_confirmation")
     client = APIClient()
     client.force_authenticate(user=user)
     url = reverse("slot-detail", args=[slot.id])
@@ -45,6 +53,10 @@ def test_update_slot_product_success(mock_consult):
 @pytest.mark.django_db
 @patch("core.services.sankhya_product.consult_sankhya_product")
 def test_update_slot_product_invalid_code(mock_consult):
+    """
+    Garante que ao tentar atualizar o produto de um slot com código inválido,
+    a API retorna erro 400 e mensagem de produto não encontrado.
+    """
     mock_consult.return_value = None
     user = User.objects.create_user(email="user4@example.com", password="senha123", is_staff=True)
     # noinspection PyUnresolvedReferences
@@ -62,4 +74,92 @@ def test_update_slot_product_invalid_code(mock_consult):
     if isinstance(err, list):
         assert "detail" in err[0]
     else:
-        assert "detail" in err 
+        assert "detail" in err
+
+@pytest.mark.django_db
+def test_update_slot_status_blocked():
+    """
+    Garante que não é possível alterar o campo 'status' do slot via update padrão (PATCH),
+    apenas via actions customizadas. Deve retornar erro 400.
+    """
+    user = User.objects.create_user(email="user5@example.com", password="senha123", is_staff=True)
+    # noinspection PyUnresolvedReferences
+    cavalete = Cavalete.objects.create(name="Cavalete Teste3", code="CAV97")
+    # noinspection PyUnresolvedReferences
+    slot = Slot.objects.create(cavalete=cavalete, side="A", number=3, status="available")
+    client = APIClient()
+    client.force_authenticate(user=user)
+    url = reverse("slot-detail", args=[slot.id])
+    data = {"status": "completed"}
+    response = client.patch(url, data)
+    print("Slot update status blocked response:", response.data)
+    assert response.status_code == 400
+    assert "status" in str(response.data).lower() or "só pode ser alterado" in str(response.data).lower()
+
+@pytest.mark.django_db
+def test_update_cavalete_status_blocked():
+    """
+    Garante que não é possível alterar o campo 'status' do cavalete via update padrão (PATCH),
+    apenas via actions customizadas. Deve retornar erro 400.
+    """
+    user = User.objects.create_user(email="user6@example.com", password="senha123", is_staff=True)
+    # noinspection PyUnresolvedReferences
+    cavalete = Cavalete.objects.create(name="Cavalete Teste4", code="CAV96", status="available")
+    client = APIClient()
+    client.force_authenticate(user=user)
+    url = reverse("cavalete-detail", args=[cavalete.id])
+    data = {"status": "assigned"}
+    response = client.patch(url, data)
+    print("Cavalete update status blocked response:", response.data)
+    assert response.status_code == 400
+    assert "status" in str(response.data).lower() or "só pode ser alterado" in str(response.data).lower()
+
+@pytest.mark.django_db
+@patch("core.services.sankhya_product.consult_sankhya_product")
+def test_update_slot_product_blocked_if_not_in_confirmation(mock_consult):
+    """
+    Garante que NÃO é possível atualizar os campos de produto do slot
+    quando o status não for 'in_confirmation'.
+    Deve retornar erro 400 e mensagem clara.
+    """
+    mock_consult.return_value = {"code": "202119", "description": "QUALQUER PRODUTO"}
+    user = User.objects.create_user(email="user7@example.com", password="senha123", is_staff=True)
+    # noinspection PyUnresolvedReferences
+    cavalete = Cavalete.objects.create(name="Cavalete Teste5", code="CAV95")
+    for i, status in enumerate(['available', 'awaiting_approval', 'completed']):
+        # noinspection PyUnresolvedReferences
+        slot = Slot.objects.create(cavalete=cavalete, side="A", number=4 + i, status=status)
+        client = APIClient()
+        client.force_authenticate(user=user)
+        url = reverse("slot-detail", args=[slot.id])
+        data = {"product_code": "202119", "quantity": 10}
+        response = client.patch(url, data)
+        print(f"Slot update product blocked (status={status}) response:", response.data)
+        assert response.status_code == 400
+        assert "só é permitido atualizar produto" in str(response.data).lower()
+
+@pytest.mark.django_db
+@patch("core.services.sankhya_product.consult_sankhya_product")
+def test_update_slot_product_allowed_in_confirmation(mock_consult):
+    """
+    Garante que é possível atualizar os campos de produto do slot
+    quando o status é 'in_confirmation'.
+    Deve retornar sucesso e atualizar os dados corretamente.
+    """
+    mock_consult.return_value = {"code": "202120", "description": "CHAVE DE FENDA"}
+    user = User.objects.create_user(email="user8@example.com", password="senha123", is_staff=True)
+    # noinspection PyUnresolvedReferences
+    cavalete = Cavalete.objects.create(name="Cavalete Teste6", code="CAV94")
+    # noinspection PyUnresolvedReferences
+    slot = Slot.objects.create(cavalete=cavalete, side="B", number=5, status="in_confirmation")
+    client = APIClient()
+    client.force_authenticate(user=user)
+    url = reverse("slot-detail", args=[slot.id])
+    data = {"product_code": "202120", "quantity": 3, "action": "edited"}
+    response = client.patch(url, data)
+    print("Slot update product allowed (in_confirmation) response:", response.data)
+    assert response.status_code == 200
+    slot.refresh_from_db()
+    assert slot.product_code == "202120"
+    assert slot.product_description == "CHAVE DE FENDA"
+    assert slot.quantity == 3 
