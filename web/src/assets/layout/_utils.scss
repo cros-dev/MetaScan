@@ -1,0 +1,6 @@
+// Mixins e funções utilitárias
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 

@@ -1,0 +1,52 @@
+.layout-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--surface-border);
+  padding: 0 2rem;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.layout-topbar-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.layout-topbar-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-left: 1rem;
+  text-decoration: none;
+}
+
+.layout-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.layout-topbar-action {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.layout-topbar-action i {
+  font-size: 1.4rem;
+}
+
+.layout-topbar-action:hover {
+  background: var(--surface-hover);
+} 
