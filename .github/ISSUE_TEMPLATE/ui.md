@@ -1,5 +1,5 @@
 ---
-name: UI
+name: UIX
 about: Template para tarefas de interface, ajustes visuais, responsividade, animações ou melhorias de experiência do usuário
 title: "[UI] "
 labels: ["ui"]
