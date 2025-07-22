@@ -5,6 +5,7 @@ from core.views import (
     LoginView, MeView,
     CavaleteViewSet, SlotViewSet, SlotHistoryViewSet, CavaleteHistoryViewSet, ProdutoConsultaView
 )
+from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
 router.register(r'cavaletes', CavaleteViewSet, basename='cavalete')
@@ -17,5 +18,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('me/', MeView.as_view(), name='me'),
     path('produto/<str:codigo>/', ProdutoConsultaView.as_view(), name='produto-consulta'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', include(router.urls)),
 ]
