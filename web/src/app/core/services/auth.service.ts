@@ -1,42 +1,47 @@
-import {Injectable} from '@angular/core';
-import {environment} from '../../../environments/environment';
-import {Router} from '@angular/router';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { Observable, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
-  async login(email: string, password: string): Promise<any> {
-    const res = await fetch(`${environment.apiUrl}login/`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({email, password})
-    });
-    return await res.json();
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}login/`, { email, password });
   }
 
-  saveTokens(access: string, refresh: string) {
-    localStorage.setItem('token', access);
-    localStorage.setItem('refresh', refresh);
+  saveTokens(access: string, refresh: string): void {
+    if (access && refresh) {
+      localStorage.setItem('token', access);
+      localStorage.setItem('refresh', refresh);
+    }
   }
 
-  async refreshToken(): Promise<any> {
-    const refresh = localStorage.getItem('refresh');
-    if (!refresh) return Promise.reject('No refresh token');
-    return fetch(`${environment.apiUrl}token/refresh/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh })
-    }).then(res => res.json());
+  get accessToken(): string | null {
+    return localStorage.getItem('token');
   }
 
-  logout() {
+  get refreshToken(): string | null {
+    return localStorage.getItem('refresh');
+  }
+
+  refreshAccessToken(): Observable<any> {
+    const refresh = this.refreshToken;
+    if (!refresh) return of(null);
+    return this.http.post<any>(`${environment.apiUrl}token/refresh/`, { refresh });
+  }
+
+  logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('refresh');
-    this.router.navigate(['/login']).then(() => {});
+    this.router.navigate(['/login']).then(() => {
+      console.log('Usuário redirecionado para /login');
+    });
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    return !!this.accessToken;
   }
 }
