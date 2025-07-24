@@ -1,57 +1,66 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError, from } from 'rxjs';
+import { Injectable, Injector } from '@angular/core';
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { EMPTY, Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import {AuthService} from '../services/auth.service';
 
 @Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const accessToken = localStorage.getItem('token');
+export class AuthInterceptor {
+  constructor(private injector: Injector) {}
+
+  private get authService(): AuthService {
+    return this.injector.get(AuthService);
+  }
+
+  private handleSessionExpired(): Observable<never> {
+    this.authService.logout();
+    window.alert('Sua sessão expirou. Por favor, faça login novamente.');
+    return EMPTY;
+  }
+
+  intercept(req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> {
+    const accessToken = this.authService.accessToken;
+    const isRefreshRequest = req.url.includes('token/refresh');
+
     let authReq = req;
-    if (accessToken) {
+    if (accessToken && !isRefreshRequest) {
       authReq = req.clone({
         setHeaders: { Authorization: `Bearer ${accessToken}` }
       });
     }
-    return next.handle(authReq).pipe(
+
+    return next(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          const refreshToken = localStorage.getItem('refresh');
-          if (refreshToken) {
-            return from(
-              fetch(`${environment.apiUrl}token/refresh/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refresh: refreshToken })
-              }).then(res => res.json())
-            ).pipe(
-              switchMap((data: any) => {
-                if (data.access) {
-                  localStorage.setItem('token', data.access);
-                  const retryReq = req.clone({
-                    setHeaders: { Authorization: `Bearer ${data.access}` }
-                  });
-                  return next.handle(retryReq);
-                } else {
-                  localStorage.removeItem('token');
-                  localStorage.removeItem('refresh');
-                  window.location.href = '/login';
-                  return throwError(() => error);
-                }
-              })
-            );
-          } else {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-          }
+        if (isRefreshRequest) {
+          return this.handleSessionExpired();
         }
+
+        if (error.status === 401) {
+          const refreshToken = this.authService.refreshToken;
+          if (!refreshToken) {
+            return this.handleSessionExpired();
+          }
+
+          return this.authService.refreshAccessToken().pipe(
+            switchMap((data: any) => {
+              if (data && data.access) {
+                this.authService.saveTokens(data.access, refreshToken);
+                const retryReq = req.clone({
+                  setHeaders: { Authorization: `Bearer ${data.access}` }
+                });
+                return next(retryReq);
+              }
+              return this.handleSessionExpired();
+            }),
+            catchError((refreshError: HttpErrorResponse) => {
+              if (refreshError.status === 401) {
+                return this.handleSessionExpired();
+              }
+              return throwError(() => refreshError);
+            })
+          );
+        }
+
         return throwError(() => error);
       })
     );
