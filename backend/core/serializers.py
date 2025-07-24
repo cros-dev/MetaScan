@@ -33,14 +33,23 @@ class CavaleteSerializer(serializers.ModelSerializer):
     """
     slots = serializers.SerializerMethodField()
     user = UserSummarySerializer(read_only=True)
+    occupancy = serializers.SerializerMethodField()
     class Meta:
         model = Cavalete
-        fields = ['id', 'code', 'name', 'user', 'status', 'slots']
+        fields = ['id', 'code', 'name', 'user', 'status', 'slots', 'occupancy']
 
     # noinspection PyMethodMayBeStatic
     def get_slots(self, obj):
         slots = obj.slots.all()
         return SlotSerializer(slots, many=True).data
+
+    # noinspection PyMethodMayBeStatic
+    def get_occupancy(self, obj):
+        slots = obj.slots.all()
+        total = slots.count()
+        occupied = slots.exclude(status='available').count()
+        percent = int(round((occupied / total) * 100)) if total > 0 else 0
+        return f"{occupied}/{total} {percent}%"
 
     def update(self, instance, validated_data):
         if 'status' in validated_data:

@@ -81,8 +81,8 @@ class CavaleteViewSet(viewsets.ModelViewSet):
     serializer_class = CavaleteSerializer
     permission_classes = [IsStaffOrCavaleteUser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['name', 'status']
-    search_fields = ['name']
+    filterset_fields = ['code', 'status']
+    search_fields = ['code']
     ordering_fields = ['name', 'id']
     ordering = ['id']
 
