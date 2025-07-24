@@ -24,6 +24,9 @@ def test_create_cavalete_authenticated_user():
     assert "id" in response.data
     assert "code" in response.data
     assert response.data["name"].startswith("Cavalete ")
+    assert "occupancy" in response.data
+    # O valor inicial deve ser 0/12 0%
+    assert response.data["occupancy"] == "0/12 0%"
 
 @pytest.mark.django_db
 @patch("core.services.sankhya_product.consult_sankhya_product")
@@ -163,3 +166,29 @@ def test_update_slot_product_allowed_in_confirmation(mock_consult):
     assert slot.product_code == "202120"
     assert slot.product_description == "CHAVE DE FENDA"
     assert slot.quantity == 3 
+
+@pytest.mark.django_db
+def test_cavalete_filter_by_code():
+    """
+    Garante que é possível filtrar Cavalete por code e que filtro por name não funciona mais.
+    """
+    user = User.objects.create_user(email="user9@example.com", password="senha123", is_staff=True)
+    client = APIClient()
+    client.force_authenticate(user=user)
+    # noinspection PyUnresolvedReferences
+    Cavalete.objects.create(name="Cavalete Alpha", code="CAV01")
+    # noinspection PyUnresolvedReferences
+    Cavalete.objects.create(name="Cavalete Beta", code="CAV02")
+    url = reverse("cavalete-list")
+    response = client.get(url + "?code=CAV01")
+    assert response.status_code == 200
+    results = response.data["results"] if "results" in response.data else response.data
+    assert any(c["code"] == "CAV01" for c in results)
+    response = client.get(url + "?search=02")
+    assert response.status_code == 200
+    results = response.data["results"] if "results" in response.data else response.data
+    assert any(c["code"] == "CAV02" for c in results)
+    response = client.get(url + "?name=Cavalete Alpha")
+    assert response.status_code == 200
+    results = response.data["results"] if "results" in response.data else response.data
+    assert not any(c["name"] == "Cavalete Alpha" for c in results)
