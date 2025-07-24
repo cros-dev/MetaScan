@@ -4,6 +4,7 @@ import requests
 import json
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,6 +14,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView as BaseTokenRefreshView
 
 from core.models import Cavalete, Slot, SlotHistory, CavaleteHistory
 from core.permissions import IsStaffOrCavaleteUser, IsStaffOrSlotUser, IsStaffOrHistoricoUser
@@ -69,6 +71,12 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserMeSerializer(request.user)
         return Response(serializer.data)
+
+class TokenRefreshView(BaseTokenRefreshView):
+    def handle_exception(self, exc):
+        if isinstance(exc, ObjectDoesNotExist):
+            return Response({'detail': 'User not found or refresh token invalid.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return super().handle_exception(exc)
 
 class CavaleteViewSet(viewsets.ModelViewSet):
     """

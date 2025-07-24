@@ -3,9 +3,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from core.views import (
     LoginView, MeView,
-    CavaleteViewSet, SlotViewSet, SlotHistoryViewSet, CavaleteHistoryViewSet, ProdutoConsultaView
+    CavaleteViewSet, SlotViewSet, SlotHistoryViewSet, CavaleteHistoryViewSet, ProdutoConsultaView, TokenRefreshView
 )
-from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
 router.register(r'cavaletes', CavaleteViewSet, basename='cavalete')
