@@ -47,4 +47,23 @@ def test_login_missing_fields():
     url = reverse("login")
     response = client.post(url, {"email": ""})
     assert response.status_code == 400
-    assert "detail" in response.data 
+    assert "detail" in response.data
+
+@pytest.mark.django_db
+def test_token_refresh_user_deleted():
+    """
+    Testa se o refresh token retorna 401 quando o usuário não existe mais no banco.
+    """
+    user = User.objects.create_user(email="refreshuser@example.com", password="senha123")
+    client = APIClient()
+    login_url = reverse("login")
+    with patch("core.views.sankhya_login") as mock_sankhya_login:
+        mock_sankhya_login.return_value = "token_sankhya"
+        login_resp = client.post(login_url, {"email": "refreshuser@example.com", "password": "senha123"})
+    refresh_token = login_resp.data["refresh"]
+    user.delete()
+    refresh_url = reverse("token_refresh")
+    resp = client.post(refresh_url, {"refresh": refresh_token})
+    assert resp.status_code == 401
+    assert "detail" in resp.data
+    assert "not found" in resp.data["detail"].lower() or "invalid" in resp.data["detail"].lower()
