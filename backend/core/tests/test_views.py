@@ -40,7 +40,7 @@ def test_update_slot_product_success(mock_consult):
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste", code="CAV99")
     # noinspection PyUnresolvedReferences
-    slot = Slot.objects.create(cavalete=cavalete, side="A", number=1, status="in_confirmation")
+    slot = Slot.objects.create(cavalete=cavalete, side="A", number=1, status="auditing")
     client = APIClient()
     client.force_authenticate(user=user)
     url = reverse("slot-detail", args=[slot.id])
@@ -119,10 +119,10 @@ def test_update_cavalete_status_blocked():
 
 @pytest.mark.django_db
 @patch("core.services.sankhya_product.consult_sankhya_product")
-def test_update_slot_product_blocked_if_not_in_confirmation(mock_consult):
+def test_update_slot_product_blocked_if_not_auditing(mock_consult):
     """
     Garante que NÃO é possível atualizar os campos de produto do slot
-    quando o status não for 'in_confirmation'.
+    quando o status não for 'auditing'.
     Deve retornar erro 400 e mensagem clara.
     """
     mock_consult.return_value = {"code": "202119", "description": "QUALQUER PRODUTO"}
@@ -143,10 +143,10 @@ def test_update_slot_product_blocked_if_not_in_confirmation(mock_consult):
 
 @pytest.mark.django_db
 @patch("core.services.sankhya_product.consult_sankhya_product")
-def test_update_slot_product_allowed_in_confirmation(mock_consult):
+def test_update_slot_product_allowed_auditing(mock_consult):
     """
     Garante que é possível atualizar os campos de produto do slot
-    quando o status é 'in_confirmation'.
+    quando o status é 'auditing'.
     Deve retornar sucesso e atualizar os dados corretamente.
     """
     mock_consult.return_value = {"code": "202120", "description": "CHAVE DE FENDA"}
@@ -154,13 +154,13 @@ def test_update_slot_product_allowed_in_confirmation(mock_consult):
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste6", code="CAV94")
     # noinspection PyUnresolvedReferences
-    slot = Slot.objects.create(cavalete=cavalete, side="B", number=5, status="in_confirmation")
+    slot = Slot.objects.create(cavalete=cavalete, side="B", number=5, status="auditing")
     client = APIClient()
     client.force_authenticate(user=user)
     url = reverse("slot-detail", args=[slot.id])
     data = {"product_code": "202120", "quantity": 3, "action": "edited"}
     response = client.patch(url, data)
-    print("Slot update product allowed (in_confirmation) response:", response.data)
+    print("Slot update product allowed (auditing) response:", response.data)
     assert response.status_code == 200
     slot.refresh_from_db()
     assert slot.product_code == "202120"

@@ -68,7 +68,7 @@ class SlotSerializer(serializers.ModelSerializer):
     """
     Serializer para o modelo Slot.
     Inclui validações de produto, integração com Sankhya e restrição de update de status/produto.
-    Só permite atualização de produto se status for 'in_confirmation'.
+    Só permite atualização de produto se status for 'auditing'.
     """
     action = serializers.CharField(write_only=True, required=False)
 
@@ -111,8 +111,8 @@ class SlotSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"detail": "O status só pode ser alterado por ações específicas."})
         campos_produto = {'product_code', 'product_description', 'quantity'}
         if any(campo in validated_data for campo in campos_produto):
-            if instance.status != 'in_confirmation':
-                raise serializers.ValidationError({"detail": f"Só é permitido atualizar produto quando o slot está em conferência (in_confirmation). Status atual: '{instance.status}'."})
+            if instance.status != 'auditing':
+                raise serializers.ValidationError({"detail": f"Só é permitido atualizar produto quando o slot está em conferência (auditing). Status atual: '{instance.status}'."})
         validated_data.pop('action', None)
         description = getattr(self, '_product_description', None)
         if description:
