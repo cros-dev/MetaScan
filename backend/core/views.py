@@ -375,12 +375,12 @@ class SlotViewSet(viewsets.ModelViewSet):
         """
         Inicia o processo de conferência do slot.
         Só pode ser chamado se o slot estiver 'available'.
-        Altera status para 'in_confirmation'.
+        Altera status para 'auditing'.
         Apenas para administradores.
         """
         slot = self.get_object()
         return self._update_slot_status(
-            slot, 'available', 'in_confirmation', request.user,
+            slot, 'available', 'auditing', request.user,
             'start_confirmation',
             'Conferência iniciada com sucesso.',
             'Slot não está disponível para iniciar conferência.'
@@ -390,12 +390,12 @@ class SlotViewSet(viewsets.ModelViewSet):
     def finish_confirmation(self, request):
         """
         Finaliza a conferência do slot pelo conferente.
-        Só pode ser chamado se o slot estiver 'in_confirmation'.
+        Só pode ser chamado se o slot estiver 'auditing'.
         Altera status para 'awaiting_approval'.
         """
         slot = self.get_object()
         return self._update_slot_status(
-            slot, 'in_confirmation', 'awaiting_approval', request.user,
+            slot, 'auditing', 'awaiting_approval', request.user,
             'finish_confirmation',
             'Conferência finalizada. Aguardando aprovação do gestor.',
             'Slot não está em conferência.'
@@ -422,12 +422,12 @@ class SlotViewSet(viewsets.ModelViewSet):
         """
         Devolve o slot para nova conferência pelo conferente.
         Só pode ser chamado se o slot estiver 'awaiting_approval'.
-        Altera status para 'in_confirmation'.
+        Altera status para 'auditing'.
         Apenas para administradores.
         """
         slot = self.get_object()
         return self._update_slot_status(
-            slot, 'awaiting_approval', 'in_confirmation', request.user,
+            slot, 'awaiting_approval', 'auditing', request.user,
             'return_confirmation',
             'Conferência devolvida ao conferente.',
             'Slot não está aguardando conclusão.'
@@ -438,12 +438,12 @@ class SlotViewSet(viewsets.ModelViewSet):
         """
         Reabre a conferência de um slot já concluído.
         Só pode ser chamado se o slot estiver 'completed'.
-        Altera status para 'in_confirmation'.
+        Altera status para 'auditing'.
         Apenas para administradores.
         """
         slot = self.get_object()
         return self._update_slot_status(
-            slot, 'completed', 'in_confirmation', request.user,
+            slot, 'completed', 'auditing', request.user,
             'reopen_confirmation',
             'Conferência reaberta. Slot disponível para edição pelo conferente.',
             'Só é possível reabrir slots concluídos.'
