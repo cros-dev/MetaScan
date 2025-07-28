@@ -230,7 +230,7 @@ def test_permissions_roles():
 @pytest.mark.django_db
 def test_finish_confirmation_permission():
     """
-    Testa que apenas auditor pode finalizar conferência (finish_confirmation).
+    Testa que apenas auditor e admin podem finalizar conferência (finish_confirmation).
     """
     from django.urls import reverse
     from rest_framework.test import APIClient
@@ -239,16 +239,32 @@ def test_finish_confirmation_permission():
     auditor = User.objects.create_user(email="auditor2@exemplo.com", password="senha123", role="auditor")
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Auditor2", code="CAV11", user=auditor)
-    # noinspection PyUnresolvedReferences
-    slot = Slot.objects.create(cavalete=cavalete, side="A", number=2, status="auditing")
-    url = reverse("slot-finish-confirmation", args=[slot.id])
+    
     client = APIClient()
+    
+    # Teste 1: Auditor pode finalizar conferência
+    # noinspection PyUnresolvedReferences
+    slot_auditor = Slot.objects.create(cavalete=cavalete, side="A", number=1, status="auditing")
+    url_auditor = reverse("slot-finish-confirmation", args=[slot_auditor.id])
     client.force_authenticate(user=auditor)
-    assert client.post(url).status_code in (200, 201)
+    response_auditor = client.post(url_auditor)
+    assert response_auditor.status_code in (200, 201), f"Auditor deveria poder finalizar. Status: {response_auditor.status_code}, Data: {response_auditor.data}"
+    
+    # Teste 2: Manager NÃO pode finalizar conferência (403 Forbidden)
+    # noinspection PyUnresolvedReferences
+    slot_manager = Slot.objects.create(cavalete=cavalete, side="A", number=2, status="auditing")
+    url_manager = reverse("slot-finish-confirmation", args=[slot_manager.id])
     client.force_authenticate(user=manager)
-    assert client.post(url).status_code == 403
+    response_manager = client.post(url_manager)
+    assert response_manager.status_code == 403, f"Manager não deveria poder finalizar. Status: {response_manager.status_code}, Data: {response_manager.data}"
+    
+    # Teste 3: Admin pode finalizar conferência
+    # noinspection PyUnresolvedReferences
+    slot_admin = Slot.objects.create(cavalete=cavalete, side="A", number=3, status="auditing")
+    url_admin = reverse("slot-finish-confirmation", args=[slot_admin.id])
     client.force_authenticate(user=admin)
-    assert client.post(url).status_code == 403
+    response_admin = client.post(url_admin)
+    assert response_admin.status_code in (200, 201), f"Admin deveria poder finalizar. Status: {response_admin.status_code}, Data: {response_admin.data}"
 
 @pytest.mark.django_db
 def test_occupancy_only_completed():
@@ -273,3 +289,57 @@ def test_occupancy_only_completed():
     assert response.status_code == 200
     occ = response.data["occupancy"]
     assert occ == "3/6 50%", f"Esperado 3/6 50%, veio {occ}"
+
+@pytest.mark.django_db
+def test_slots_ordered_by_number():
+    """
+    Garante que os slots são sempre retornados ordenados por número em ordem crescente,
+    independente da ordem de criação ou atualização.
+    """
+    user = User.objects.create_user(email="user_order@example.com", password="senha123", role="manager")
+    # noinspection PyUnresolvedReferences
+    cavalete = Cavalete.objects.create(name="Cavalete Ordem", code="CAV99")
+    
+    # Criar slots em ordem aleatória
+    # noinspection PyUnresolvedReferences
+    Slot.objects.create(cavalete=cavalete, side="A", number=3, status="available")
+    # noinspection PyUnresolvedReferences
+    Slot.objects.create(cavalete=cavalete, side="A", number=1, status="available")
+    # noinspection PyUnresolvedReferences
+    Slot.objects.create(cavalete=cavalete, side="A", number=5, status="available")
+    # noinspection PyUnresolvedReferences
+    Slot.objects.create(cavalete=cavalete, side="A", number=2, status="available")
+    # noinspection PyUnresolvedReferences
+    Slot.objects.create(cavalete=cavalete, side="A", number=4, status="available")
+    # noinspection PyUnresolvedReferences
+    Slot.objects.create(cavalete=cavalete, side="A", number=6, status="available")
+    
+    client = APIClient()
+    client.force_authenticate(user=user)
+    
+    # Testar ordenação no endpoint de cavaletes
+    url = reverse("cavalete-detail", args=[cavalete.id])
+    response = client.get(url)
+    assert response.status_code == 200, response.data
+    
+    slots = response.data['slots']
+    assert len(slots) == 6
+    
+    # Verificar se estão ordenados por número
+    slot_numbers = [slot['number'] for slot in slots]
+    expected_order = [1, 2, 3, 4, 5, 6]
+    assert slot_numbers == expected_order, f"Slots não estão ordenados. Esperado: {expected_order}, Obtido: {slot_numbers}"
+    
+    # Testar ordenação no endpoint de slots
+    url_slots = reverse("slot-list")
+    response_slots = client.get(url_slots, {'cavalete': cavalete.id})
+    assert response_slots.status_code == 200, response_slots.data
+    
+    # Verificar se a resposta é paginada
+    if 'results' in response_slots.data:
+        slots_list = response_slots.data['results']
+    else:
+        slots_list = response_slots.data
+    
+    slot_numbers_list = [slot['number'] for slot in slots_list if slot['cavalete'] == cavalete.id]
+    assert slot_numbers_list == expected_order, f"Slots no endpoint /slots/ não estão ordenados. Esperado: {expected_order}, Obtido: {slot_numbers_list}"
