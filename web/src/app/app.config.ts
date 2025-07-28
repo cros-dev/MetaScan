@@ -4,6 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { ConfirmationService } from 'primeng/api';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
 import { routes } from './app.routes';
@@ -25,6 +26,7 @@ export const appConfig: ApplicationConfig = {
         (req, next) => inject(AuthInterceptor).intercept(req, next)
       ])
     ),
+    ConfirmationService,
     AuthInterceptor
   ]
 };

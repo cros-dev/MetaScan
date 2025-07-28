@@ -4,7 +4,7 @@ import { Dashboard } from './features/dashboard/dashboard';
 import { Cavaletes } from './features/cavaletes/cavaletes';
 import { Notfound } from './pages/not-found/not-found';
 import { authGuard } from './core/guards/auth-guard';
-import { Login } from './features/login/login';
+import {LoginPage} from './pages/login/login.page';
 
 export const routes: Routes = [
     {
@@ -15,7 +15,7 @@ export const routes: Routes = [
             { path: 'cavaletes', component: Cavaletes, canActivate: [authGuard] },
         ]
     },
-    { path: 'login', component: Login },
+    { path: 'login', component: LoginPage },
     { path: 'notfound', component: Notfound },
     { path: '**', redirectTo: '/notfound' }
 ];
