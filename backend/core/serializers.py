@@ -40,7 +40,7 @@ class CavaleteSerializer(serializers.ModelSerializer):
 
     # noinspection PyMethodMayBeStatic
     def get_slots(self, obj):
-        slots = obj.slots.all()
+        slots = obj.slots.all().order_by('number')
         return SlotSerializer(slots, many=True).data
 
     # noinspection PyMethodMayBeStatic

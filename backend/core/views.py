@@ -322,15 +322,15 @@ class SlotViewSet(viewsets.ModelViewSet):
         'side': ['exact'],
         'number': ['exact'],
     }
-    ordering = ['id']
+    ordering = ['number']
 
     def get_queryset(self):
         user = self.request.user
         if getattr(user, 'role', None) == 'auditor':
             # noinspection PyUnresolvedReferences
-            return Slot.objects.filter(cavalete__user=user).order_by('id')
+            return Slot.objects.filter(cavalete__user=user).order_by('number')
         # noinspection PyUnresolvedReferences
-        return Slot.objects.all().order_by('id')
+        return Slot.objects.all().order_by('number')
 
     # noinspection PyMethodMayBeStatic
     def _create_slot_history(self, slot, user, slot_action):
