@@ -10,20 +10,20 @@ class UserMeSerializer(serializers.ModelSerializer):
     Retorna informações básicas do usuário logado.
     """
     email = serializers.EmailField(read_only=True)
-    is_staff = serializers.BooleanField(read_only=True)
-    is_superuser = serializers.BooleanField(read_only=True)
+    role = serializers.CharField(read_only=True)
     class Meta:
         model = User
-        fields = ['id', 'email', 'is_staff', 'is_superuser']
+        fields = ['id', 'email', 'role']
 
 class UserSummarySerializer(serializers.ModelSerializer):
     """
     Serializer para listagem básica de usuários.
-    Retorna apenas id e email.
+    Retorna apenas id, email e role.
     """
+    role = serializers.CharField(read_only=True)
     class Meta:
         model = User
-        fields = ['id', 'email']
+        fields = ['id', 'email', 'role']
 
 class CavaleteSerializer(serializers.ModelSerializer):
     """
@@ -47,7 +47,7 @@ class CavaleteSerializer(serializers.ModelSerializer):
     def get_occupancy(self, obj):
         slots = obj.slots.all()
         total = slots.count()
-        occupied = slots.exclude(status='available').count()
+        occupied = slots.filter(status='completed').count()
         percent = int(round((occupied / total) * 100)) if total > 0 else 0
         return f"{occupied}/{total} {percent}%"
 

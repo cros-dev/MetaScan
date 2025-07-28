@@ -17,10 +17,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView as BaseTokenRefreshView
 
 from core.models import Cavalete, Slot, SlotHistory, CavaleteHistory
-from core.permissions import IsStaffOrCavaleteUser, IsStaffOrSlotUser, IsStaffOrHistoricoUser
+from core.permissions import IsAdmin, IsManager, IsAuditor
 from core.serializers import (
     UserMeSerializer, CavaleteSerializer, SlotSerializer,
-    SlotHistorySerializer, CavaleteHistorySerializer, CavaleteAssignSerializer
+    SlotHistorySerializer, CavaleteHistorySerializer, CavaleteAssignSerializer, UserSummarySerializer
 )
 from core.services.sankhya_auth import sankhya_login
 from core.services.sankhya_product import consult_sankhya_product, SankhyaAuthError
@@ -56,8 +56,7 @@ class LoginView(APIView):
             'access': str(refresh.access_token),
             'user_id': user.id,
             'email': user.email,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
+            'role': user.role,
         })
 
 class MeView(APIView):
@@ -87,7 +86,8 @@ class CavaleteViewSet(viewsets.ModelViewSet):
     # noinspection PyUnresolvedReferences
     queryset = Cavalete.objects.all()
     serializer_class = CavaleteSerializer
-    permission_classes = [IsStaffOrCavaleteUser]
+    # Manager e admin podem tudo, auditor só vê os seus
+    permission_classes = [IsManager|IsAdmin|IsAuditor]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['code', 'status']
     search_fields = ['code']
@@ -114,11 +114,11 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         Staff vê todos, usuário comum vê apenas os seus.
         """
         user = self.request.user
-        if user.is_staff:
+        if getattr(user, 'role', None) == 'auditor':
             # noinspection PyUnresolvedReferences
-            return Cavalete.objects.all()
+            return Cavalete.objects.filter(user=user).order_by('id')
         # noinspection PyUnresolvedReferences
-        return Cavalete.objects.filter(user=user)
+        return Cavalete.objects.all().order_by('id')
 
     def create(self, request, *args, **kwargs):
         """
@@ -205,7 +205,7 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         return response
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
-    def assign_user(self, request):
+    def assign_user(self, request, **kwargs):
         """
         Atribui ou libera um usuário responsável por um cavalete específico.
         Altera o status do cavalete para 'assigned' ou 'available'.
@@ -236,7 +236,7 @@ class CavaleteViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Cavalete liberado com sucesso.'})
 
     @action(detail=False, methods=['post'], permission_classes=[IsAdminUser], serializer_class=CavaleteAssignSerializer)
-    def assign(self, request):
+    def assign(self, request, **kwargs):
         """
         Atribui em massa um usuário a vários cavaletes.
         Altera o status dos cavaletes para 'assigned' ou 'available'.
@@ -314,7 +314,8 @@ class SlotViewSet(viewsets.ModelViewSet):
     # noinspection PyUnresolvedReferences
     queryset = Slot.objects.all()
     serializer_class = SlotSerializer
-    permission_classes = [IsStaffOrSlotUser]
+    # Manager, auditor e admin podem acessar, mas auditor só vê/edita seus slots
+    permission_classes = [IsManager|IsAdmin|IsAuditor]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {
         'cavalete': ['exact'],
@@ -322,6 +323,14 @@ class SlotViewSet(viewsets.ModelViewSet):
         'number': ['exact'],
     }
     ordering = ['id']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(user, 'role', None) == 'auditor':
+            # noinspection PyUnresolvedReferences
+            return Slot.objects.filter(cavalete__user=user).order_by('id')
+        # noinspection PyUnresolvedReferences
+        return Slot.objects.all().order_by('id')
 
     # noinspection PyMethodMayBeStatic
     def _create_slot_history(self, slot, user, slot_action):
@@ -371,7 +380,7 @@ class SlotViewSet(viewsets.ModelViewSet):
         self._create_slot_history(slot, user, slot_action)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
-    def start_confirmation(self, request):
+    def start_confirmation(self, request, **kwargs):
         """
         Inicia o processo de conferência do slot.
         Só pode ser chamado se o slot estiver 'available'.
@@ -386,10 +395,10 @@ class SlotViewSet(viewsets.ModelViewSet):
             'Slot não está disponível para iniciar conferência.'
         )
 
-    @action(detail=True, methods=['post'], permission_classes=[IsStaffOrSlotUser])
-    def finish_confirmation(self, request):
+    @action(detail=True, methods=['post'], permission_classes=[IsAuditor|IsAdmin])
+    def finish_confirmation(self, request, **kwargs):
         """
-        Finaliza a conferência do slot pelo conferente.
+        Finaliza a conferência do slot pelo conferente ou admin (exceção).
         Só pode ser chamado se o slot estiver 'auditing'.
         Altera status para 'awaiting_approval'.
         """
@@ -402,7 +411,7 @@ class SlotViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
-    def approve_confirmation(self, request):
+    def approve_confirmation(self, request, **kwargs):
         """
         Aprova a conferência do slot (gestor).
         Só pode ser chamado se o slot estiver 'awaiting_approval'.
@@ -418,7 +427,7 @@ class SlotViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
-    def return_confirmation(self, request):
+    def return_confirmation(self, request, **kwargs):
         """
         Devolve o slot para nova conferência pelo conferente.
         Só pode ser chamado se o slot estiver 'awaiting_approval'.
@@ -434,7 +443,7 @@ class SlotViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
-    def reopen_confirmation(self, request):
+    def reopen_confirmation(self, request, **kwargs):
         """
         Reabre a conferência de um slot já concluído.
         Só pode ser chamado se o slot estiver 'completed'.
@@ -456,7 +465,7 @@ class SlotHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = SlotHistory.objects.all().order_by('-timestamp')
     serializer_class = SlotHistorySerializer
-    permission_classes = [IsStaffOrHistoricoUser]
+    permission_classes = [IsManager|IsAdmin]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {
         'user': ['exact'],
@@ -475,7 +484,7 @@ class CavaleteHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     # noinspection PyUnresolvedReferences
     queryset = CavaleteHistory.objects.all().order_by('-timestamp')
     serializer_class = CavaleteHistorySerializer
-    permission_classes = [IsStaffOrCavaleteUser]
+    permission_classes = [IsManager|IsAdmin]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {
         'user': ['exact'],
@@ -486,7 +495,7 @@ class CavaleteHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['action']
     ordering_fields = ['timestamp', 'user', 'cavalete', 'action']
 
-class ProdutoConsultaView(APIView):
+class ProductConsultView(APIView):
     """
     Endpoint para consultar produtos na Sankhya.
     Requer autenticação e retorna dados do produto consultado pelo código.
@@ -494,16 +503,24 @@ class ProdutoConsultaView(APIView):
     permission_classes = [IsAuthenticated]
 
     # noinspection PyMethodMayBeStatic
-    def get(self, request, codigo):
+    def get(self, request, code):
         user_id = request.user.id
         try:
-            produto = consult_sankhya_product(codigo, user_id)
+            product = consult_sankhya_product(code, user_id)
         except SankhyaAuthError as e:
             return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except requests.RequestException:
             return Response({"detail": "Erro de conexão com a Sankhya."}, status=status.HTTP_502_BAD_GATEWAY)
         except json.JSONDecodeError:
             return Response({"detail": "Erro ao processar resposta da Sankhya (JSON inválido)."}, status=status.HTTP_502_BAD_GATEWAY)
-        if produto:
-            return Response(produto)
+        if product:
+            return Response(product)
         return Response({"detail": "Produto não encontrado na Sankhya."}, status=status.HTTP_404_NOT_FOUND)
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Endpoint de listagem de usuários (apenas admin).
+    """
+    queryset = User.objects.all().order_by('id')
+    serializer_class = UserSummarySerializer
+    permission_classes = [IsAdmin]
