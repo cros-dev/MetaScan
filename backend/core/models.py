@@ -30,6 +30,12 @@ ACTION_CHOICES = [
     ('other', 'Other'),
 ]
 
+ROLE_CHOICES = [
+    ('admin', 'Administrador'),
+    ('manager', 'Gestor'),
+    ('auditor', 'Conferente'),
+]
+
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -60,6 +66,7 @@ class CustomUser(AbstractUser):
     username = None
     email = models.EmailField('email address', unique=True)
     sankhya_password = EncryptedCharField(max_length=128, null=True, blank=True) # type: ignore
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='auditor')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -68,6 +75,21 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            super().save(*args, **kwargs)
+            return
+        if self.role == 'admin':
+            self.is_staff = True
+            self.is_superuser = True
+        elif self.role == 'manager':
+            self.is_staff = True
+            self.is_superuser = False
+        else:
+            self.is_staff = False
+            self.is_superuser = False
+        super().save(*args, **kwargs)
 
 class Cavalete(models.Model):
     name = models.CharField(max_length=50, unique=True)
