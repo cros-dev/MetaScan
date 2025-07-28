@@ -2,7 +2,8 @@ import { Injectable, Injector } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { EMPTY, Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import {AuthService} from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Injectable()
 export class AuthInterceptor {
@@ -12,9 +13,16 @@ export class AuthInterceptor {
     return this.injector.get(AuthService);
   }
 
+  private get confirmDialogService(): ConfirmDialogService {
+    return this.injector.get(ConfirmDialogService);
+  }
+
   private handleSessionExpired(): Observable<never> {
-    this.authService.logout();
-    window.alert('Sua sessão expirou. Por favor, faça login novamente.');
+    this.confirmDialogService.confirmSessionExpired().then((confirmed) => {
+      if (confirmed) {
+        this.authService.logout();
+      }
+    });
     return EMPTY;
   }
 
