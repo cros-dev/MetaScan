@@ -19,7 +19,7 @@ SLOT_SIDE_CHOICES = [
 SLOT_STATUS_CHOICES = [
     ('available', 'Available'),
     ('auditing', 'Auditing'),
-    ('pending', 'Pending'),
+    ('awaiting_approval', 'Awaiting Approval'),
     ('completed', 'Completed'),
 ]
 
