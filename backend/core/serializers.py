@@ -47,7 +47,7 @@ class CavaleteSerializer(serializers.ModelSerializer):
     def get_occupancy(self, obj):
         slots = obj.slots.all()
         total = slots.count()
-        occupied = slots.filter(status='completed').count()
+        occupied = slots.filter(status='completed').exclude(product_code__isnull=True).exclude(product_code='').count()
         percent = int(round((occupied / total) * 100)) if total > 0 else 0
         return f"{occupied}/{total} {percent}%"
 

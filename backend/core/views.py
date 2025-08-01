@@ -458,6 +458,141 @@ class SlotViewSet(viewsets.ModelViewSet):
             'Só é possível reabrir slots concluídos.'
         )
 
+    @action(detail=False, methods=['post'], permission_classes=[IsAdmin])
+    def start_all(self, request):
+        """
+        Inicia conferência em todos os slots disponíveis (status 'available') de um cavalete específico.
+        Apenas para administradores.
+        """
+        cavalete_id = request.data.get('cavalete_id')
+        
+        if not cavalete_id:
+            return Response({'detail': 'cavalete_id é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Filtra slots do cavalete específico e disponíveis
+        available_slots = self.get_queryset().filter(
+            cavalete_id=cavalete_id,
+            status='available'
+        )
+        
+        if not available_slots.exists():
+            return Response({'detail': 'Nenhum slot disponível para iniciar conferência neste cavalete.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        updated_count = 0
+        for slot in available_slots:
+            slot.status = 'auditing'
+            slot.save()
+            self._create_slot_history(slot, request.user, 'start_confirmation')
+            updated_count += 1
+        
+        return Response({
+            'detail': f'Conferência iniciada em {updated_count} slots do cavalete com sucesso.',
+            'updated_count': updated_count,
+            'cavalete_id': cavalete_id
+        })
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuditor|IsAdmin])
+    def finish_all(self, request):
+        """
+        Encerra conferência em todos os slots em auditing de um cavalete específico.
+        Altera status para 'awaiting_approval'.
+        Apenas para conferentes e administradores.
+        """
+        cavalete_id = request.data.get('cavalete_id')
+        
+        if not cavalete_id:
+            return Response({'detail': 'cavalete_id é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Filtra slots do cavalete específico em auditing
+        auditing_slots = self.get_queryset().filter(
+            cavalete_id=cavalete_id,
+            status='auditing'
+        )
+        
+        if not auditing_slots.exists():
+            return Response({'detail': 'Nenhum slot em conferência neste cavalete.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        updated_count = 0
+        for slot in auditing_slots:
+            slot.status = 'awaiting_approval'
+            slot.save()
+            self._create_slot_history(slot, request.user, 'finish_confirmation')
+            updated_count += 1
+        
+        return Response({
+            'detail': f'Conferência encerrada em {updated_count} slots do cavalete. Aguardando aprovação do gestor.',
+            'updated_count': updated_count,
+            'cavalete_id': cavalete_id
+        })
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAdmin])
+    def reopen_all(self, request):
+        """
+        Reabre conferência em todos os slots concluídos (status 'completed') de um cavalete específico.
+        Altera status para 'auditing'.
+        Apenas para administradores.
+        """
+        cavalete_id = request.data.get('cavalete_id')
+        
+        if not cavalete_id:
+            return Response({'detail': 'cavalete_id é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Filtra slots do cavalete específico concluídos
+        completed_slots = self.get_queryset().filter(
+            cavalete_id=cavalete_id,
+            status='completed'
+        )
+        
+        if not completed_slots.exists():
+            return Response({'detail': 'Nenhum slot concluído neste cavalete.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        updated_count = 0
+        for slot in completed_slots:
+            slot.status = 'auditing'
+            slot.save()
+            self._create_slot_history(slot, request.user, 'reopen_confirmation')
+            updated_count += 1
+        
+        return Response({
+            'detail': f'Conferência reaberta em {updated_count} slots do cavalete. Slots disponíveis para edição pelo conferente.',
+            'updated_count': updated_count,
+            'cavalete_id': cavalete_id
+        })
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAdmin])
+    def approve_all(self, request):
+        """
+        Aprova conferência em todos os slots aguardando aprovação (status 'awaiting_approval') de um cavalete específico.
+        Altera status para 'completed'.
+        Apenas para administradores.
+        """
+        cavalete_id = request.data.get('cavalete_id')
+        
+        if not cavalete_id:
+            return Response({'detail': 'cavalete_id é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Filtra slots do cavalete específico aguardando aprovação
+        awaiting_slots = self.get_queryset().filter(
+            cavalete_id=cavalete_id,
+            status='awaiting_approval'
+        )
+        
+        if not awaiting_slots.exists():
+            return Response({'detail': 'Nenhum slot aguardando aprovação neste cavalete.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        updated_count = 0
+        for slot in awaiting_slots:
+            slot.status = 'completed'
+            slot.save()
+            self._create_slot_history(slot, request.user, 'approve_confirmation')
+            updated_count += 1
+        
+        return Response({
+            'detail': f'Conferência aprovada em {updated_count} slots do cavalete com sucesso.',
+            'updated_count': updated_count,
+            'cavalete_id': cavalete_id
+        })
+
 class SlotHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet para histórico de Slots.
