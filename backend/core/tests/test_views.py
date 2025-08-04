@@ -317,7 +317,6 @@ def test_slots_ordered_by_number():
     client = APIClient()
     client.force_authenticate(user=user)
     
-    # Testar ordenação no endpoint de cavaletes
     url = reverse("cavalete-detail", args=[cavalete.id])
     response = client.get(url)
     assert response.status_code == 200, response.data
@@ -325,17 +324,14 @@ def test_slots_ordered_by_number():
     slots = response.data['slots']
     assert len(slots) == 6
     
-    # Verificar se estão ordenados por número
     slot_numbers = [slot['number'] for slot in slots]
     expected_order = [1, 2, 3, 4, 5, 6]
     assert slot_numbers == expected_order, f"Slots não estão ordenados. Esperado: {expected_order}, Obtido: {slot_numbers}"
     
-    # Testar ordenação no endpoint de slots
     url_slots = reverse("slot-list")
     response_slots = client.get(url_slots, {'cavalete': cavalete.id})
     assert response_slots.status_code == 200, response_slots.data
     
-    # Verificar se a resposta é paginada
     if 'results' in response_slots.data:
         slots_list = response_slots.data['results']
     else:
@@ -344,7 +340,6 @@ def test_slots_ordered_by_number():
     slot_numbers_list = [slot['number'] for slot in slots_list if slot['cavalete'] == cavalete.id]
     assert slot_numbers_list == expected_order, f"Slots no endpoint /slots/ não estão ordenados. Esperado: {expected_order}, Obtido: {slot_numbers_list}"
 
-# Testes para Actions Bulk
 @pytest.mark.django_db
 def test_start_all_confirmation():
     """
@@ -357,7 +352,6 @@ def test_start_all_confirmation():
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste Bulk", code="CAV30")
     
-    # Criar slots com diferentes status
     # noinspection PyUnresolvedReferences
     Slot.objects.create(cavalete=cavalete, side="A", number=1, status="available")
     # noinspection PyUnresolvedReferences
@@ -376,7 +370,6 @@ def test_start_all_confirmation():
     assert response.data["updated_count"] == 2
     assert response.data["cavalete_id"] == cavalete.id
     
-    # Verificar se os slots foram atualizados
     cavalete.refresh_from_db()
     slots = cavalete.slots.all()
     available_slots = slots.filter(status="available")
@@ -397,7 +390,6 @@ def test_start_all_confirmation_no_available_slots():
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste Bulk 2", code="CAV31")
     
-    # Criar slots sem status available
     # noinspection PyUnresolvedReferences
     Slot.objects.create(cavalete=cavalete, side="A", number=1, status="auditing")
     # noinspection PyUnresolvedReferences
@@ -438,7 +430,6 @@ def test_finish_all_confirmation():
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste Finish", code="CAV32", user=auditor)
     
-    # Criar slots com diferentes status
     # noinspection PyUnresolvedReferences
     Slot.objects.create(cavalete=cavalete, side="A", number=1, status="auditing")
     # noinspection PyUnresolvedReferences
@@ -457,7 +448,6 @@ def test_finish_all_confirmation():
     assert response.data["updated_count"] == 2
     assert response.data["cavalete_id"] == cavalete.id
     
-    # Verificar se os slots foram atualizados
     cavalete.refresh_from_db()
     slots = cavalete.slots.all()
     auditing_slots = slots.filter(status="auditing")
@@ -478,7 +468,6 @@ def test_approve_all_confirmation():
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste Approve", code="CAV33")
     
-    # Criar slots com diferentes status
     # noinspection PyUnresolvedReferences
     Slot.objects.create(cavalete=cavalete, side="A", number=1, status="awaiting_approval")
     # noinspection PyUnresolvedReferences
@@ -497,7 +486,6 @@ def test_approve_all_confirmation():
     assert response.data["updated_count"] == 2
     assert response.data["cavalete_id"] == cavalete.id
     
-    # Verificar se os slots foram atualizados
     cavalete.refresh_from_db()
     slots = cavalete.slots.all()
     awaiting_slots = slots.filter(status="awaiting_approval")
@@ -518,7 +506,6 @@ def test_reopen_all_confirmation():
     # noinspection PyUnresolvedReferences
     cavalete = Cavalete.objects.create(name="Cavalete Teste Reopen", code="CAV34")
     
-    # Criar slots com diferentes status
     # noinspection PyUnresolvedReferences
     Slot.objects.create(cavalete=cavalete, side="A", number=1, status="completed")
     # noinspection PyUnresolvedReferences
@@ -568,7 +555,6 @@ def test_bulk_actions_permissions():
     # noinspection PyUnresolvedReferences
     Slot.objects.create(cavalete=cavalete, side="A", number=4, status="completed")
     
-    # Testar start_all - apenas admin pode
     url = reverse("slot-start-all")
     data = {"cavalete_id": cavalete.id}
     
@@ -580,14 +566,12 @@ def test_bulk_actions_permissions():
     response = client.post(url, data, format="json")
     assert response.status_code == 403, "Auditor não deve poder usar start_all"
     
-    # Testar finish_all - auditor e admin podem
     url = reverse("slot-finish-all")
     
     client.force_authenticate(user=manager)
     response = client.post(url, data, format="json")
     assert response.status_code == 403, "Manager não deve poder usar finish_all"
     
-    # Testar approve_all - apenas admin pode
     url = reverse("slot-approve-all")
     
     client.force_authenticate(user=manager)
@@ -598,7 +582,6 @@ def test_bulk_actions_permissions():
     response = client.post(url, data, format="json")
     assert response.status_code == 403, "Auditor não deve poder usar approve_all"
     
-    # Testar reopen_all - apenas admin pode
     url = reverse("slot-reopen-all")
     
     client.force_authenticate(user=manager)
