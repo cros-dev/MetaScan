@@ -18,12 +18,12 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginFormComponent {
   @Input() loading = false;
-  @Output() login = new EventEmitter<{ username: string; password: string }>();
+  @Output() login = new EventEmitter<{ email: string; password: string }>();
 
   username = '';
   password = '';
 
   submit() {
-    this.login.emit({ username: this.username, password: this.password });
+    this.login.emit({ email: this.username, password: this.password });
   }
 }

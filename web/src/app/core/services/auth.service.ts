@@ -12,10 +12,16 @@ export class AuthService {
     return this.http.post<any>(`${environment.apiUrl}login/`, { email, password });
   }
 
-  saveTokens(access: string, refresh: string): void {
+  saveTokens(access: string, refresh: string, userInfo?: { role?: string; user_id?: number; email?: string }): void {
     if (access && refresh) {
       localStorage.setItem('token', access);
       localStorage.setItem('refresh', refresh);
+
+      if (userInfo) {
+        if (userInfo.role) localStorage.setItem('userRole', userInfo.role);
+        if (userInfo.user_id !== undefined) localStorage.setItem('userId', String(userInfo.user_id));
+        if (userInfo.email) localStorage.setItem('userEmail', userInfo.email);
+      }
     }
   }
 
@@ -36,12 +42,55 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('refresh');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
     this.router.navigate(['/login']).then(() => {
       console.log('Usuário redirecionado para /login');
     });
   }
 
-  isAuthenticated(): boolean {
-    return !!this.accessToken;
+  getUserRole(): string {
+    const localRole = localStorage.getItem('userRole');
+    if (localRole) {
+      return localRole;
+    }
+
+    const payload = this.decodeTokenPayload();
+    if (payload?.role) {
+      console.log('Token payload:', payload);
+      return payload.role;
+    }
+
+    return '';
+  }
+
+  getUserId(): number | null {
+    const localId = localStorage.getItem('userId');
+    if (localId) {
+      return Number(localId);
+    }
+
+    const payload = this.decodeTokenPayload();
+    if (payload?.user_id !== undefined) {
+      console.log('Token payload:', payload);
+      return payload.user_id;
+    }
+
+    return null;
+  }
+
+  private decodeTokenPayload(): any | null {
+    const token = this.accessToken;
+    if (!token) return null;
+
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      return JSON.parse(payloadJson);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 }

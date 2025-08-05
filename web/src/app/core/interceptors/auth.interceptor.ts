@@ -29,6 +29,7 @@ export class AuthInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> {
     const accessToken = this.authService.accessToken;
     const isRefreshRequest = req.url.includes('token/refresh');
+    const isLoginRequest = req.url.includes('login/') || req.url.includes('register/') || req.url.includes('password-reset/');
 
     let authReq = req;
     if (accessToken && !isRefreshRequest) {
@@ -39,6 +40,10 @@ export class AuthInterceptor {
 
     return next(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
+        if (isLoginRequest) {
+          return throwError(() => error);
+        }
+
         if (isRefreshRequest) {
           return this.handleSessionExpired();
         }

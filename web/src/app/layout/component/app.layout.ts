@@ -4,8 +4,7 @@ import { LayoutService } from '../service/layout.service';
 import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import {NgClass} from '@angular/common';
-import { ToastModule } from 'primeng/toast';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { LoadingSpinnerComponent } from '../../shared/components/loading/loading-spinner.component';
 import { LoadingService } from '../../shared/services/loading.service';
 import { AsyncPipe } from '@angular/common';
@@ -14,13 +13,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, AppTopbar, AppSidebar, NgClass, ToastModule, LoadingSpinnerComponent, AsyncPipe, ConfirmDialogModule],
-  providers: [MessageService, ConfirmationService],
+  imports: [RouterOutlet, AppTopbar, AppSidebar, NgClass, LoadingSpinnerComponent, AsyncPipe, ConfirmDialogModule],
+  providers: [ConfirmationService],
   template: `
     <div class="layout-wrapper" [ngClass]="containerClass">
       <app-topbar></app-topbar>
-      <p-toast position="bottom-right" />
-      <p-confirmDialog position="topright"></p-confirmDialog>
+      <p-confirmDialog></p-confirmDialog>
       <app-loading-spinner [show]="(loading$ | async) ?? false" />
       <app-sidebar></app-sidebar>
       <div class="layout-main-container">

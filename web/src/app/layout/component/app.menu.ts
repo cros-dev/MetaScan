@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -30,7 +31,11 @@ import { MenuItem } from 'primeng/api';
 export class AppMenu implements OnInit {
   model: MenuItem[] = [];
 
+  constructor(private authService: AuthService) {}
+
   ngOnInit() {
+    const userRole = this.authService.getUserRole();
+
     this.model = [
       {
         label: 'Home',
@@ -41,7 +46,8 @@ export class AppMenu implements OnInit {
       {
         label: 'Gestão',
         items: [
-          { label: 'Cavaletes', icon: 'pi-sitemap', routerLink: ['/cavaletes'] },
+          { label: 'Cavaletes', icon: 'pi pi-fw pi-sitemap', routerLink: ['/cavaletes'] },
+          ...(userRole === 'admin' ? [{ label: 'Usuários', icon: 'pi pi-fw pi-users', routerLink: ['/users'] }] : [])
         ]
       }
     ];

@@ -23,7 +23,7 @@ export type ConfirmDialogPosition = 'topright' | 'center' | 'top' | 'bottom' | '
   imports: [CommonModule, ConfirmDialogModule],
   providers: [ConfirmationService],
   template: `
-    <p-confirmDialog 
+    <p-confirmDialog
       [position]="position"
       [acceptButtonStyleClass]="config.acceptButtonStyleClass || 'p-button-danger'"
       [rejectButtonStyleClass]="config.rejectButtonStyleClass || 'p-button-secondary'"
@@ -46,4 +46,4 @@ export class ConfirmDialogComponent {
   @Output() onReject = new EventEmitter<void>();
 
   constructor() {}
-} 
+}
