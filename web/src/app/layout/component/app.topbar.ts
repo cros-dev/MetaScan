@@ -85,14 +85,7 @@ export class AppTopbar {
     setTimeout(() => {
       this.auth.logout();
       this.loadingService.hide();
-      this.router.navigate(['/login'], {
-        state: {
-          toast: {
-            severity: 'success',
-            summary: 'Logout realizado com sucesso',
-          }
-        }
-      });
+      this.router.navigate(['/login']);
     }, 500);
   }
 }

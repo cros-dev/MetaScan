@@ -7,7 +7,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   imports: [ProgressSpinnerModule],
   template: `
     @if (show) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-surface-900 bg-opacity-40 dark:bg-surface-900 dark:bg-opacity-60">
         <p-progress-spinner ariaLabel="Carregando" [style]="{width: '60px', height: '60px'}" strokeWidth="4" animationDuration=".8s"></p-progress-spinner>
       </div>
     }
