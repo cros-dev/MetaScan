@@ -2,9 +2,11 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from core.views import (
-    LoginView, MeView,
-    CavaleteViewSet, SlotViewSet, SlotHistoryViewSet, CavaleteHistoryViewSet, ProductConsultView, TokenRefreshView, UserViewSet
+    LoginView, MeView, TokenRefreshView, UserViewSet
 )
+from cavaletes.views import CavaleteViewSet
+from inventory.views import SlotViewSet, SlotHistoryViewSet, CavaleteHistoryViewSet
+from sankhya.views import ProductConsultView
 
 router = DefaultRouter()
 router.register(r'cavaletes', CavaleteViewSet, basename='cavalete')

@@ -31,8 +31,12 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'storages',
     'encrypted_model_fields',
-    'core',
     'corsheaders',
+    'core',
+    'cavaletes',
+    'inventory',
+    'sankhya',
+    'reports'
 ]
 
 # === Middleware ===
