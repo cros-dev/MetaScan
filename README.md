@@ -12,7 +12,7 @@ Projeto monorepo que reúne as aplicações backend, mobile e web do MetaScan.
 
 ```
 MetaScan/
-  ├── backend/   # Backend Django
+  ├── backend/   # Backend Django (estrutura modular)
   ├── mobile/    # App Android Kotlin
   ├── web/       # Frontend Angular
   ├── .gitignore
@@ -21,11 +21,84 @@ MetaScan/
 
 ---
 
+## Backend Django - Arquitetura Modular
+
+O backend foi reorganizado em apps Django específicos para melhor organização e manutenibilidade. **Todas as funcionalidades existentes foram preservadas** e organizadas por domínio.
+
+### 🏗️ Estrutura de Apps:
+
+#### **`core/`** - Configurações Globais
+- **Responsabilidade**: Usuários, autenticação e permissões
+- **Modelos**: `CustomUser` (com roles e senha Sankhya criptografada)
+- **Views**: `LoginView`, `MeView`, `TokenRefreshView`, `UserViewSet`
+- **Funcionalidades**: Autenticação JWT, autorização e gestão de usuários
+
+#### **`cavaletes/`** - Gestão de Cavaletes
+- **Responsabilidade**: Cavaletes e slots
+- **Modelos**: `Cavalete`, `Slot`
+- **Views**: `CavaleteViewSet` (com todas as actions funcionais)
+- **Funcionalidades**: CRUD de cavaletes, exportação Excel, atribuição de usuários
+
+#### **`inventory/`** - Auditoria e Histórico
+- **Responsabilidade**: Auditoria e controle de estoque
+- **Modelos**: `SlotHistory`, `CavaleteHistory`
+- **Views**: `SlotViewSet`, `SlotHistoryViewSet`, `CavaleteHistoryViewSet`
+- **Funcionalidades**: Gestão de slots, conferência de estoque, actions bulk
+
+#### **`sankhya/`** - Integração ERP
+- **Responsabilidade**: Integração com ERP Sankhya
+- **Views**: `ProductConsultView`
+- **Serviços**: Autenticação, consulta de produtos e estoque
+- **Funcionalidades**: Validação de produtos, consulta de estoque em tempo real
+
+#### **`reports/`** - Relatórios (Futuro)
+- **Responsabilidade**: Relatórios e análises
+- **Funcionalidades**: Dashboards, métricas, exportação
+
+### 📁 Estrutura de Cada App:
+```
+app_name/
+├── __init__.py
+├── admin.py          # Configuração do Django Admin
+├── apps.py           # Configuração do app
+├── models.py         # Modelos de dados
+├── views.py          # Views da API
+├── urls.py           # URLs do app
+├── serializers.py    # Serializers DRF
+├── services/         # Lógica de negócio
+├── tests/            # Testes unitários
+└── migrations/       # Migrações do banco
+```
+
+### ✅ Funcionalidades Preservadas:
+- **Autenticação JWT** com integração Sankhya
+- **Gestão completa de cavaletes** (CRUD, exportação, atribuição)
+- **Gestão de slots** com workflow de conferência
+- **Histórico completo** de todas as ações
+- **Integração Sankhya** para validação de produtos
+- **Sistema de permissões** por roles (admin, gestor, conferente)
+- **Exportação Excel** de dados
+- **Actions customizadas** para mudanças de status
+
+### 🔗 URLs Principais:
+- `/cavaletes/` - Gestão de cavaletes
+- `/slots/` - Gestão de slots
+- `/slot-history/` - Histórico de slots
+- `/cavalete-history/` - Histórico de cavaletes
+- `/users/` - Gestão de usuários
+- `/product/<code>/` - Consulta Sankhya
+- `/login/` - Autenticação
+- `/me/` - Dados do usuário logado
+
+**📖 Para documentação detalhada dos apps, consulte `backend/README_APPS.md`**
+
+---
+
 ## Como rodar cada aplicação
 
 ### Backend (Django)
 
-### Rodando localmente sem Docker
+#### Rodando localmente sem Docker
 
 1. Navegue até a pasta `backend/`
 2. Crie e ative o ambiente virtual (recomendado):
@@ -36,19 +109,19 @@ source venv/bin/activate  # Linux/Mac
 .\venv\Scripts\activate   # Windows PowerShell
 ```
 
-1. Instale as dependências:
+3. Instale as dependências:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-1. Rode as migrations:
+4. Rode as migrations:
 
 ```bash
 python manage.py migrate
 ```
 
-1. Execute o servidor:
+5. Execute o servidor:
 
 ```bash
 python manage.py runserver
@@ -56,7 +129,7 @@ python manage.py runserver
 
 ---
 
-### Rodando com Docker
+#### Rodando com Docker
 
 O projeto possui configuração para rodar backend, banco de dados Postgres e MinIO via Docker Compose.
 
@@ -67,8 +140,8 @@ O projeto possui configuração para rodar backend, banco de dados Postgres e Mi
 docker-compose up --build
 ```
 
-1. O backend estará acessível em `http://localhost:8000`
-2. O MinIO console fica disponível em `http://localhost:9001`
+3. O backend estará acessível em `http://localhost:8000`
+4. O MinIO console fica disponível em `http://localhost:9001`
 
 ---
 
@@ -89,13 +162,13 @@ docker-compose up --build
 npm install
 ```
 
-1. Rode o servidor de desenvolvimento:
+3. Rode o servidor de desenvolvimento:
 
 ```bash
 npm start
 ```
 
-1. Acesse no navegador: `http://localhost:4200`
+4. Acesse no navegador: `http://localhost:4200`
 
 ---
 
@@ -155,4 +228,4 @@ Caio Riquelmy — [LinkedIn](https://www.linkedin.com/in/caio-riquelmy-a295ba19b
 
 ---
 
-*README criado em 17/07/2025 para o projeto MetaScan.*
+*README atualizado em 29/08/2025 para o projeto MetaScan com nova arquitetura modular.*

@@ -2,7 +2,7 @@ import logging
 import os
 import requests
 from django.contrib.auth import get_user_model
-from core.services.sankhya_auth import get_valid_token, SankhyaAuthError
+from sankhya.services.sankhya_auth import get_valid_token, SankhyaAuthError
 
 """
 Serviço responsável por consultar produtos na API Sankhya.
@@ -78,4 +78,4 @@ def consult_sankhya_product(product_code, user_id):
         raise SankhyaAuthError('Não foi possível autenticar na Sankhya.')
     else:
         logging.error(f'Erro na requisição Sankhya para produto {product_code}. Status: {response.status_code}, Response: {response.text}')
-    return None 
+    return None

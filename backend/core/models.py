@@ -2,39 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from encrypted_model_fields.fields import EncryptedCharField
-from django.core.validators import MinValueValidator
-
-from metascan import settings
-
-CAVALETE_STATUS_CHOICES = [
-    ('available', 'Available'),
-    ('assigned', 'Assigned'),
-    ('inactive', 'Inactive'),
-]
-
-SLOT_SIDE_CHOICES = [
-    ('A', 'Side A'),
-    ('B', 'Side B'),
-]
-SLOT_STATUS_CHOICES = [
-    ('available', 'Available'),
-    ('auditing', 'Auditing'),
-    ('awaiting_approval', 'Awaiting Approval'),
-    ('completed', 'Completed'),
-]
-
-ACTION_CHOICES = [
-    ('created', 'Created'),
-    ('edited', 'Edited'),
-    ('removed', 'Removed'),
-    ('other', 'Other'),
-]
-
-ROLE_CHOICES = [
-    ('admin', 'Administrador'),
-    ('manager', 'Gestor'),
-    ('auditor', 'Conferente'),
-]
+from .constants import ROLE_CHOICES
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
@@ -92,60 +60,6 @@ class CustomUser(AbstractUser):
             self.is_superuser = False
         super().save(*args, **kwargs)
 
-class Cavalete(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    code = models.CharField(max_length=10, unique=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='cavaletes'
-    )
-    status = models.CharField(max_length=20, choices=CAVALETE_STATUS_CHOICES, default='available')
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            last = Cavalete.objects.order_by('-id').first() # type: ignore
-            next_num = 1
-            if last and last.code and last.code.startswith('CAV'):
-                try:
-                    next_num = int(last.code[3:]) + 1
-                except ValueError:
-                    pass
-            self.code = f'CAV{next_num:02d}'
-            self.name = f'Cavalete {next_num:02d}'
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-class Slot(models.Model):
-    cavalete = models.ForeignKey(Cavalete, on_delete=models.CASCADE, related_name='slots')
-    side = models.CharField(max_length=1, choices=SLOT_SIDE_CHOICES)
-    number = models.IntegerField()
-    product_code = models.CharField(max_length=50, null=True, blank=True)
-    product_description = models.CharField(max_length=100, null=True, blank=True)
-    quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    status = models.CharField(max_length=30, choices=SLOT_STATUS_CHOICES, default='available')
-
     class Meta:
-        unique_together = ('cavalete', 'side', 'number')
-
-    def __str__(self):
-        return f"{self.cavalete.name} - Side {self.side}{self.number}"
-
-class SlotHistory(models.Model):
-    slot = models.ForeignKey(Slot, on_delete=models.CASCADE, related_name='histories')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    product_code = models.CharField(max_length=50, null=True, blank=True)
-    product_description = models.CharField(max_length=100, null=True, blank=True)
-    quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    action = models.CharField(max_length=20, default='auditing')
-
-class CavaleteHistory(models.Model):
-    cavalete = models.ForeignKey(Cavalete, on_delete=models.SET_NULL, null=True, related_name='cavalete_histories')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
-    previous_data = models.JSONField(null=True, blank=True)
+        verbose_name = 'Usuário'
+        verbose_name_plural = 'Usuários'
