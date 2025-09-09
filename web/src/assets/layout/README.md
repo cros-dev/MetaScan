@@ -51,7 +51,10 @@ src/assets/layout/
   - `--surface-card`: fundo de cards/topbar
   - `--surface-overlay`: fundo da sidebar
   - `--text-color`: cor do texto principal
-  - `--primary-color`: cor primária do tema
+  - `--primary-color`: cor primária do tema (#3b82f6)
+  - `--sidebar-width`: largura da sidebar (22rem)
+  - `--topbar-height`: altura da topbar (6rem)
+  - `--content-padding`: padding do conteúdo (1.5rem)
 
 ---
 
