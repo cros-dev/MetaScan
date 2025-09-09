@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LoginFormComponent } from '../../features/login/login-form.component';
-import { LoadingService } from '../../shared/services/loading.service';
-import { AuthService } from '../../core/services/auth.service';
-import { AppTopbar } from '../../layout/component/app.topbar';
+import { LoginFormComponent } from '../login-form.component';
+import { LoadingService } from '../../../shared/services/loading.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { AsyncPipe } from '@angular/common';
-import { LoadingSpinnerComponent } from '../../shared/components/loading/loading-spinner.component';
-import { NotificationContainerComponent } from '../../shared/components/notification/notification-container.component';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading/loading-spinner.component';
+import { NotificationContainerComponent } from '../../../shared/components/notification/notification-container.component';
+import {Topbar} from '../../../layout/components/topbar/topbar';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, LoginFormComponent, AppTopbar, AsyncPipe, LoadingSpinnerComponent, NotificationContainerComponent],
+  imports: [CommonModule, LoginFormComponent, AsyncPipe, LoadingSpinnerComponent, NotificationContainerComponent, Topbar],
   template: `
     <app-topbar [minimal]="true" />
     <app-loading-spinner [show]="(loadingService.loading$ | async) ?? false" />

@@ -5,49 +5,18 @@ import {CommonModule} from '@angular/common';
 import {StyleClassModule} from 'primeng/styleclass';
 import {MenuModule} from 'primeng/menu';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
-import {LayoutService} from '../service/layout.service';
-import {AuthService} from '../../core/services/auth.service';
-import {LoadingService} from '../../shared/services/loading.service';
-import {ConfirmDialogService} from '../../shared/services/confirm-dialog.service';
+import {LayoutService} from '../../services/layout.service';
+import {AuthService} from '../../../core/services/auth.service';
+import {LoadingService} from '../../../shared/services/loading.service';
+import {ConfirmDialogService} from '../../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
   imports: [RouterModule, CommonModule, StyleClassModule, MenuModule, ConfirmDialogModule],
-  template: `
-    <div class="layout-topbar">
-      <div class="layout-topbar-logo-container">
-        @if (!minimal) {
-          <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
-            <i class="pi pi-bars"></i>
-          </button>
-        }
-        <a class="layout-topbar-logo" routerLink="/">
-          <span>LOGO</span>
-        </a>
-      </div>
-      <div class="layout-topbar-actions">
-        <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-          <i class="pi" [ngClass]="themeIcon"></i>
-        </button>
-        @if (!minimal) {
-          <ng-container>
-            @for (item of items; track item) {
-              <button class="layout-topbar-action" [routerLink]="item.routerLink">
-                <i class="pi" [ngClass]="item.icon"></i>
-              </button>
-            }
-            <button type="button" class="layout-topbar-action" (click)="profileMenu.toggle($event)">
-              <i class="pi pi-user"></i>
-            </button>
-            <p-menu #profileMenu [popup]="true" [model]="profileItems"></p-menu>
-          </ng-container>
-        }
-      </div>
-    </div>
-  `
+  templateUrl: './topbar.html'
 })
-export class AppTopbar {
+export class Topbar {
   @Input() minimal = false;
   items: MenuItem[] = [];
 

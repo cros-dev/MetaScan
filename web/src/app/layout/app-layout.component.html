@@ -1,0 +1,12 @@
+<div class="layout-wrapper" [ngClass]="containerClass">
+  <app-topbar></app-topbar>
+  <p-confirmDialog></p-confirmDialog>
+  <app-loading-spinner [show]="(loading$ | async) ?? false" />
+  <app-sidebar></app-sidebar>
+  <div class="layout-main-container">
+    <div class="layout-main">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <app-notification-container></app-notification-container>
+</div>

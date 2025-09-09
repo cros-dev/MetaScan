@@ -24,8 +24,8 @@ a {
 }
 
 .layout-main-container {
-    margin-left: 22rem;
-    padding-top: 6rem;
+    margin-left: var(--sidebar-width);
+    padding-top: var(--topbar-height);
     transition: margin-left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
 }
 
@@ -34,5 +34,5 @@ a {
 }
 
 .layout-main {
-    padding: 0 1.5rem 2rem 1.5rem;
+    padding: 0 var(--content-padding) var(--content-padding-bottom) var(--content-padding);
 } 
