@@ -9,11 +9,12 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading/loading
 import { LoadingService } from '../../shared/services/loading.service';
 import { AsyncPipe } from '@angular/common';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { NotificationContainerComponent } from '../../shared/components/notification/notification-container.component';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, AppTopbar, AppSidebar, NgClass, LoadingSpinnerComponent, AsyncPipe, ConfirmDialogModule],
+  imports: [RouterOutlet, AppTopbar, AppSidebar, NgClass, LoadingSpinnerComponent, AsyncPipe, ConfirmDialogModule, NotificationContainerComponent],
   providers: [ConfirmationService],
   template: `
     <div class="layout-wrapper" [ngClass]="containerClass">
@@ -26,6 +27,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
           <router-outlet></router-outlet>
         </div>
       </div>
+      <app-notification-container></app-notification-container>
     </div>
   `
 })
