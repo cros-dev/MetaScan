@@ -2,14 +2,60 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Observable, of } from 'rxjs';
+import { Observable, of, firstValueFrom } from 'rxjs';
+import { LoadingService } from '../../shared/services/loading.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private loadingService: LoadingService,
+    private notificationService: NotificationService
+  ) {}
 
   login(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}login/`, { email, password });
+  }
+
+  async loginWithFeedback(email: string, password: string): Promise<void> {
+    this.loadingService.show();
+
+    try {
+      const response = await firstValueFrom(this.login(email, password));
+
+      this.saveTokens(response.access, response.refresh, {
+        role: response.role,
+        user_id: response.user_id,
+        email: response.email
+      });
+
+      this.notificationService.showSuccess('Login realizado com sucesso!');
+
+      setTimeout(() => {
+        this.router.navigate(['/']);
+      }, 1000);
+
+    } catch (error: any) {
+      this.handleLoginError(error);
+    } finally {
+      this.loadingService.hide();
+    }
+  }
+
+  private handleLoginError(error: any): void {
+    console.error('Login error:', error);
+
+    if (error.status === 401) {
+      this.notificationService.showError('Email ou senha incorretos');
+    } else if (error.status === 0) {
+      this.notificationService.showError('Erro de conexão. Verifique sua internet');
+    } else if (error.status >= 500) {
+      this.notificationService.showError('Erro interno do servidor. Tente novamente');
+    } else {
+      this.notificationService.showError('Erro inesperado. Tente novamente');
+    }
   }
 
   saveTokens(access: string, refresh: string, userInfo?: { role?: string; user_id?: number; email?: string }): void {
@@ -64,22 +110,6 @@ export class AuthService {
 
     return '';
   }
-
-  getUserId(): number | null {
-    const localId = localStorage.getItem('userId');
-    if (localId) {
-      return Number(localId);
-    }
-
-    const payload = this.decodeTokenPayload();
-    if (payload?.user_id !== undefined) {
-      console.log('Token payload:', payload);
-      return payload.user_id;
-    }
-
-    return null;
-  }
-
   private decodeTokenPayload(): any | null {
     const token = this.accessToken;
     if (!token) return null;

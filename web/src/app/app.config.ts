@@ -6,6 +6,7 @@ import Aura from '@primeuix/themes/aura';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ConfirmationService } from 'primeng/api';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { NotificationService } from './shared/services/notification.service';
 
 import { routes } from './app.routes';
 
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       ])
     ),
     ConfirmationService,
-    AuthInterceptor
+    AuthInterceptor,
+    NotificationService
   ]
 };
