@@ -133,6 +133,24 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = 'attachment; filename=cavaletes.xlsx'
         return response
 
+    @action(detail=False, methods=['get'], permission_classes=[IsManager|IsAdmin|IsAuditor])
+    def product_stats(self, request):
+        """
+        Retorna estatísticas de produtos associados aos slots.
+        """
+        slots_with_products = Slot.objects.exclude(
+            Q(product_code__isnull=True) | Q(product_code='')
+        ).count()
+        
+        unique_products = Slot.objects.exclude(
+            Q(product_code__isnull=True) | Q(product_code='')
+        ).values('product_code').distinct().count()
+        
+        return Response({
+            'slots_with_products': slots_with_products,
+            'unique_products': unique_products
+        })
+
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def assign_user(self, request, **kwargs):
         """

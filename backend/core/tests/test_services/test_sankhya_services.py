@@ -55,13 +55,31 @@ def test_consult_sankhya_product_success(mock_post, mock_user, mock_get_token):
             "produtos": {
                 "produto": {
                     "CODPROD": {"$": "123"},
-                    "Cadastro_DESCRPROD": {"$": "Produto Teste"}
+                    "DESCRPROD": {"$": "Produto Teste"},
+                    "Cadastro_MARCA": {"$": "MAKITA"},
+                    "Cadastro_REFFORN": {"$": "REF-123"},
+                    "Cadastro_LOCALIZACAO": {"$": "CAV-01-A1"},
+                    "Cadastro_AD_DTAINVENTARIO": {"$": "17/05/2025 00:00:00"},
+                    "PRECOBASE": {"$": "100.00"},
+                    "Estoque_1": {"$": "5.0000"},
+                    "CODVOL": {"$": "PC"}
                 }
             }
         }
     }
     result = sankhya_product.consult_sankhya_product("123", fake_user.id)
-    assert result == {"code": "123", "description": "Produto Teste"}
+    expected = {
+        "code": "123",
+        "description": "Produto Teste",
+        "marca": "MAKITA",
+        "referencia_fornecedor": "REF-123",
+        "localizacao": "CAV-01-A1",
+        "data_inventario": "17/05/2025 00:00:00",
+        "preco_base": "100.00",
+        "estoque": "5.0000",
+        "unidade": "PC"
+    }
+    assert result == expected
 
 @patch("core.services.sankhya_product.get_valid_token")
 @patch("core.services.sankhya_product.User")
@@ -78,12 +96,7 @@ def test_consult_sankhya_product_not_found(mock_post, mock_user, mock_get_token)
     mock_post.return_value.status_code = 200
     mock_post.return_value.json.return_value = {
         "responseBody": {
-            "produtos": {
-                "produto": {
-                    "CODPROD": {"$": "999"},
-                    "Cadastro_DESCRPROD": {"$": "Outro Produto"}
-                }
-            }
+            "produtos": {}
         }
     }
     result = sankhya_product.consult_sankhya_product("123", fake_user.id)
