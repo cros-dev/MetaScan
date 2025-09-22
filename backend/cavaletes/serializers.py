@@ -59,6 +59,7 @@ class SlotSerializer(serializers.ModelSerializer):
     Só permite atualização de produto se status for 'auditing'.
     """
     action = serializers.CharField(write_only=True, required=False)
+    location_code = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,7 +67,23 @@ class SlotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Slot
-        fields = ['id', 'cavalete', 'side', 'number', 'product_code', 'product_description', 'quantity', 'status', 'action']
+        fields = ['id', 'cavalete', 'side', 'number', 'product_code', 'product_description', 'quantity', 'status', 'action', 'location_code']
+
+    def get_location_code(self, obj):
+        """
+        Gera o código de localização do slot no formato CAV-01-A1.
+        """
+        cavalete_code = obj.cavalete.code
+        side = obj.side
+        number = obj.number
+        
+        if '-' not in cavalete_code:
+            import re
+            formatted_code = re.sub(r'([A-Z]+)(\d+)', r'\1-\2', cavalete_code)
+        else:
+            formatted_code = cavalete_code
+            
+        return f"{formatted_code}-{side}{number}"
 
     def validate_action(self, value):
         if value and value not in dict(ACTION_CHOICES):
