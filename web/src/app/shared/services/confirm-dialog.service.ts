@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
-import { ConfirmDialogConfig, ConfirmDialogPosition } from '../components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogConfig, ConfirmDialogPosition } from '../components/confirm-dialog/confirm-dialog';
 
 export interface ConfirmDialogCallbackConfig extends ConfirmDialogConfig {
   accept?: () => void;
@@ -52,23 +52,38 @@ export class ConfirmDialogService {
   }
 
   confirmLogout(): Promise<boolean> {
-    return this.confirm({
-      message: 'Tem certeza que deseja sair?',
-      header: 'Confirmar Logout',
-      icon: 'pi pi-sign-out',
-      acceptLabel: 'Sim, sair',
-      rejectLabel: 'Cancelar'
-    }, 'topright');
+    return new Promise((resolve) => {
+      this.confirmationService.confirm({
+        message: 'Tem certeza que deseja sair?',
+        header: 'Confirmar Logout',
+        icon: 'pi pi-sign-out',
+        acceptLabel: 'Sim, sair',
+        rejectLabel: '',
+        acceptButtonStyleClass: 'p-button-danger',
+        rejectVisible: false,
+        position: 'center',
+        accept: () => resolve(true),
+        reject: () => resolve(false)
+      });
+    });
   }
 
-  confirmSessionExpired(): Promise<boolean> {
-    return this.confirm({
-      message: 'Sua sessão expirou. Deseja fazer login novamente?',
-      header: 'Sessão Expirada',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sim, fazer login',
-      rejectLabel: 'Cancelar',
-      acceptButtonStyleClass: 'p-button-primary'
-    }, 'center');
+  notifySessionExpired(): Promise<void> {
+    return new Promise((resolve) => {
+      this.confirmationService.confirm({
+        message: 'Sua sessão expirou. Você será redirecionado para o login.',
+        header: 'Sessão Expirada',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'OK',
+        rejectLabel: '',
+        acceptButtonStyleClass: 'p-button-primary',
+        rejectVisible: false,
+        closable: false,
+        position: 'center',
+        accept: () => {
+          resolve();
+        }
+      });
+    });
   }
 }
