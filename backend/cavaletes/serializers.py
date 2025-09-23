@@ -26,7 +26,7 @@ class CavaleteSerializer(serializers.ModelSerializer):
     occupancy = serializers.SerializerMethodField()
     class Meta:
         model = Cavalete
-        fields = ['id', 'code', 'name', 'user', 'status', 'slots', 'occupancy']
+        fields = ['id', 'code', 'name', 'type', 'user', 'status', 'slots', 'occupancy']
 
     def get_slots(self, obj):
         slots = obj.slots.all().order_by('number')
@@ -35,7 +35,7 @@ class CavaleteSerializer(serializers.ModelSerializer):
     def get_occupancy(self, obj):
         slots = obj.slots.all()
         total = slots.count()
-        occupied = slots.filter(status='completed').exclude(product_code__isnull=True).exclude(product_code='').count()
+        occupied = slots.exclude(product_code__isnull=True).exclude(product_code='').count()
         percent = int(round((occupied / total) * 100)) if total > 0 else 0
         return f"{occupied}/{total} {percent}%"
 

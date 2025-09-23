@@ -1,11 +1,12 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.conf import settings
-from core.constants import CAVALETE_STATUS_CHOICES, SLOT_SIDE_CHOICES, SLOT_STATUS_CHOICES
+from core.constants import CAVALETE_STATUS_CHOICES, CAVALETE_TYPE_CHOICES, SLOT_SIDE_CHOICES, SLOT_STATUS_CHOICES
 
 class Cavalete(models.Model):
     name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True)
+    type = models.CharField(max_length=20, choices=CAVALETE_TYPE_CHOICES, default='corredor')
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True, blank=True,
@@ -26,6 +27,11 @@ class Cavalete(models.Model):
             self.code = f'CAV{next_num:02d}'
             self.name = f'Cavalete {next_num:02d}'
         super().save(*args, **kwargs)
+
+    def get_slot_count(self):
+        if self.type == 'torre':
+            return 12
+        return 6
 
     def __str__(self):
         return self.name

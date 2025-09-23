@@ -54,10 +54,6 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         return Cavalete.objects.all().order_by('id')
 
     def create(self, request, *args, **kwargs):
-        """
-        Cria um novo cavalete, gerando código e nome automáticos.
-        Também cria os slots associados ao novo cavalete.
-        """
         if Cavalete.objects.count() >= 30:
             return Response({'detail': 'Limite de 30 cavaletes atingido.'}, status=status.HTTP_400_BAD_REQUEST)
         last = Cavalete.objects.order_by('-id').first()
@@ -70,11 +66,14 @@ class CavaleteViewSet(viewsets.ModelViewSet):
         next_num = last_num + 1
         code = f'CAV{next_num:02d}'
         name = f'Cavalete {next_num:02d}'
-        serializer = self.get_serializer(data={**request.data, 'code': code, 'name': name})
+        cavalete_type = request.data.get('type', 'corredor')
+        serializer = self.get_serializer(data={**request.data, 'code': code, 'name': name, 'type': cavalete_type})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         cavalete = serializer.instance
-        slots = [Slot(cavalete=cavalete, side=side, number=number) for side in ['A', 'B'] for number in range(1, 7)]
+        
+        slot_count = cavalete.get_slot_count()
+        slots = [Slot(cavalete=cavalete, side=side, number=number) for side in ['A', 'B'] for number in range(1, slot_count + 1)]
         Slot.objects.bulk_create(slots)
         headers = self.get_success_headers(serializer.data)
         return Response(self.get_serializer(cavalete).data, status=status.HTTP_201_CREATED, headers=headers)

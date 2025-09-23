@@ -53,8 +53,9 @@ MIDDLEWARE = [
 
 # === CORS (Cross-Origin Resource Sharing) ===
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # servidor Angular
-    "http://127.0.0.1:4200",  # servidor Angular
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+    "http://10.12.12.158:4200",
 ]
 
 # === URLs e WSGI ===
