@@ -22,13 +22,8 @@ export type ConfirmDialogPosition = 'topright' | 'center' | 'top' | 'bottom' | '
   standalone: true,
   imports: [CommonModule, ConfirmDialogModule],
   providers: [ConfirmationService],
-  template: `
-    <p-confirmDialog
-      [position]="position"
-      [acceptButtonStyleClass]="config.acceptButtonStyleClass || 'p-button-danger'"
-      [rejectButtonStyleClass]="config.rejectButtonStyleClass || 'p-button-secondary'"
-    ></p-confirmDialog>
-  `
+  templateUrl: './confirm-dialog.html',
+  styleUrl: './confirm-dialog.scss'
 })
 export class ConfirmDialogComponent {
   @Input() position: ConfirmDialogPosition = 'topright';

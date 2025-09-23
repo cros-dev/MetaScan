@@ -5,16 +5,16 @@ import { Topbar } from './components/topbar/topbar';
 import { Sidebar } from './components/sidebar/sidebar';
 import {NgClass} from '@angular/common';
 import { ConfirmationService } from 'primeng/api';
-import { LoadingSpinnerComponent } from '../shared/components/loading/loading-spinner.component';
+import { LoadingSpinner } from '../shared/components/loading/loading-spinner';
 import { LoadingService } from '../shared/services/loading.service';
 import { AsyncPipe } from '@angular/common';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { NotificationContainerComponent } from '../shared/components/notification/notification-container.component';
+import { NotificationContainer } from '../shared/components/notification/notification-container';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, Topbar, Sidebar, NgClass, LoadingSpinnerComponent, AsyncPipe, ConfirmDialogModule, NotificationContainerComponent],
+  imports: [RouterOutlet, Topbar, Sidebar, NgClass, LoadingSpinner, AsyncPipe, ConfirmDialogModule, NotificationContainer],
   providers: [ConfirmationService],
   templateUrl: './app-layout.component.html'
 })

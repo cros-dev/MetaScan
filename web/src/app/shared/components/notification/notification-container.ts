@@ -6,10 +6,10 @@ import { NotificationService } from '../../services/notification.service';
   selector: 'app-notification-container',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './notification-container.component.html',
-  styleUrls: ['./notification-container.component.css']
+  templateUrl: './notification-container.html',
+  styleUrl: './notification-container.scss'
 })
-export class NotificationContainerComponent {
+export class NotificationContainer {
   constructor(public notificationService: NotificationService) {}
 
   getNotificationClass(type: string): string {

@@ -1,0 +1,13 @@
+nav {
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .hover\:underline:hover {
+    text-decoration: underline;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
