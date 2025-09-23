@@ -30,8 +30,6 @@ def consult_sankhya_product(product_code, user_id, max_retries=2):
     
     for attempt in range(max_retries + 1):
         try:
-            # Na primeira tentativa, usa token do cache
-            # Nas tentativas seguintes, força renovação se houve erro 401/403
             force_refresh = attempt > 0
             bearer_token = get_valid_token(user, force_refresh=force_refresh)
         except SankhyaAuthError as e:
@@ -73,7 +71,6 @@ def consult_sankhya_product(product_code, user_id, max_retries=2):
             logging.info(f'Resposta Sankhya para produto {product_code}: Status {response.status_code}')
             
             if response.status_code == 200:
-                # Verificar se a resposta tem conteúdo antes de tentar fazer parse JSON
                 if not response.text.strip():
                     logging.error(f'Resposta vazia da Sankhya para produto {product_code}')
                     return None
@@ -83,6 +80,11 @@ def consult_sankhya_product(product_code, user_id, max_retries=2):
                     logging.info(f'Dados Sankhya para produto {product_code}: {data}')
                 except json.JSONDecodeError as e:
                     logging.error(f'Erro ao fazer parse JSON da resposta Sankhya para produto {product_code}: {e}. Response: {response.text}')
+                    if response.text.strip().startswith('<html>'):
+                        logging.error(f'Resposta HTML recebida da Sankhya para produto {product_code} - possível erro de autenticação')
+                        if attempt < max_retries:
+                            refresh_token_if_needed(user, 401)
+                            continue
                     return None
                 try:
                     produtos = data.get('responseBody', {}).get('produtos', {})
@@ -95,17 +97,14 @@ def consult_sankhya_product(product_code, user_id, max_retries=2):
                         logging.warning(f'Produto {product_code} não encontrado nos produtos: {data}')
                         return None
                     
-                    # Extrair campos principais
                     code = produto.get('CODPROD', {}).get('$')
                     description = produto.get('DESCRPROD', {}).get('$', '').strip()
                     
-                    # Extrair campos adicionais
                     marca = produto.get('Cadastro_MARCA', {}).get('$', '').strip()
                     referencia_fornecedor = produto.get('Cadastro_REFFORN', {}).get('$', '').strip()
                     localizacao = produto.get('Cadastro_LOCALIZACAO', {}).get('$', '').strip()
                     data_inventario = produto.get('Cadastro_AD_DTAINVENTARIO', {}).get('$', '')
                     
-                    # Extrair informações de preço e estoque
                     preco_base = produto.get('PRECOBASE', {}).get('$', '0')
                     estoque = produto.get('Estoque_1', {}).get('$', '0')
                     unidade = produto.get('CODVOL', {}).get('$', '')
@@ -125,12 +124,11 @@ def consult_sankhya_product(product_code, user_id, max_retries=2):
                     logging.exception(f'Erro ao processar resposta Sankhya para produto {product_code}: {e}')
                     return None
                     
-            elif response.status_code in [401, 403]:
-                # Erro de autenticação - limpar cache e tentar novamente
+            elif response.status_code in [401, 403, 404]:
                 refresh_token_if_needed(user, response.status_code)
                 if attempt < max_retries:
                     wait_time = (attempt + 1) * 2
-                    logging.warning(f'Token Sankhya expirado (tentativa {attempt + 1}). Tentando renovar em {wait_time}s...')
+                    logging.warning(f'Token Sankhya expirado ou endpoint não encontrado (tentativa {attempt + 1}). Tentando renovar em {wait_time}s...')
                     time.sleep(wait_time)
                     continue
                 else:
@@ -138,9 +136,8 @@ def consult_sankhya_product(product_code, user_id, max_retries=2):
                     raise SankhyaAuthError('Não foi possível autenticar na Sankhya.')
                 
             elif response.status_code in [502, 503, 504]:
-                # Erros de gateway/timeout - tentar novamente
                 if attempt < max_retries:
-                    wait_time = (attempt + 1) * 2  # 2s, 4s, 6s...
+                    wait_time = (attempt + 1) * 2
                     logging.warning(f'Erro de gateway/timeout na Sankhya (tentativa {attempt + 1}). Tentando novamente em {wait_time}s...')
                     time.sleep(wait_time)
                     continue

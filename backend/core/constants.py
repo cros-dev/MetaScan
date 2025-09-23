@@ -17,6 +17,12 @@ CAVALETE_STATUS_CHOICES = [
     ('inactive', 'Inactive'),
 ]
 
+# Choices para tipos de cavaletes
+CAVALETE_TYPE_CHOICES = [
+    ('corredor', 'Corredor'),
+    ('torre', 'Torre'),
+]
+
 # Choices para lados de slots
 SLOT_SIDE_CHOICES = [
     ('A', 'Side A'),
