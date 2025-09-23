@@ -1,6 +1,6 @@
 html {
     height: 100%;
-    font-size: 14px;
+    font-size: 16px; // Aumentado de 14px para 16px
 }
 
 body {
@@ -9,7 +9,6 @@ body {
     background-color: var(--surface-ground);
     margin: 0;
     padding: 0;
-    min-height: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.2;
@@ -19,8 +18,26 @@ a {
     text-decoration: none;
 }
 
+// Estilos globais para formulários
+input, select, textarea, button {
+    font-size: 1rem; // 16px - tamanho base consistente
+    font-family: inherit;
+}
+
+// Labels de formulário
+label {
+    font-size: 1rem; // 16px - tamanho base consistente
+    font-weight: 500;
+}
+
+// Botões
+button {
+    font-size: 1rem; // 16px - tamanho base consistente
+    font-weight: 500;
+}
+
 .layout-wrapper {
-    min-height: 100vh;
+    // Remove altura mínima para permitir conteúdo menor que viewport
 }
 
 .layout-main-container {
@@ -34,5 +51,146 @@ a {
 }
 
 .layout-main {
-    padding: 0 var(--content-padding) var(--content-padding-bottom) var(--content-padding);
-} 
+    padding: 0 var(--content-padding) 0 var(--content-padding);
+}
+
+// ===== ESTILOS GLOBAIS PARA COMPONENTES =====
+
+// Badge base (estilo neutro como padrão)
+.badge {
+    @apply px-2 py-1 rounded-full text-xs font-bold;
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    border: 1px solid var(--surface-border);
+
+    // Variantes por modificador
+    &.badge-primary {
+        background-color: var(--primary-color);
+        color: var(--primary-contrast-color);
+        border: none;
+    }
+
+    &.badge-secondary {
+        background-color: var(--text-color-secondary);
+        color: var(--surface-card);
+        border: none;
+    }
+
+    &.badge-success {
+        background-color: #10b981;  // Verde para status ativo/sucesso
+        color: #ffffff;
+        border: none;
+    }
+
+    &.badge-danger {
+        background-color: #ef4444;  // Vermelho para status inativo/erro
+        color: #ffffff;
+        border: none;
+    }
+
+    &.badge-warning {
+        background-color: #f59e0b;  // Amarelo para status de aviso
+        color: #ffffff;
+        border: none;
+    }
+
+    &.badge-info {
+        background-color: #3b82f6;  // Azul para informações
+        color: #ffffff;
+        border: none;
+    }
+
+    &.badge-occupied {
+        background-color: #f97316;  // Laranja para status ocupado/atribuído
+        color: #ffffff;
+        border: none;
+    }
+}
+
+// Layout de informações do card
+.card-info-row {
+    @apply flex justify-between items-center;
+}
+
+.card-info-label {
+    @apply text-sm;
+    color: var(--text-color-secondary);
+}
+
+// Card padrão
+.card-default {
+    @apply rounded-lg border p-4 transition-all hover:shadow-lg hover:scale-[1.02] flex flex-col min-h-[180px] cursor-pointer;
+    background-color: var(--surface-card);
+    border-color: var(--surface-border);
+}
+
+.card-default:hover {
+    @apply shadow-lg;
+    transform: scale(1.02);
+}
+
+// Card de usuário (largura fixa)
+.card-user {
+    @apply w-full max-w-sm mx-auto;
+}
+
+// Divisor de card
+.card-divider {
+    @apply border-t mb-3;
+    border-color: var(--surface-border);
+}
+
+// Cabeçalho de página
+.page-header {
+    @apply mb-6;
+}
+
+.page-title {
+    @apply text-2xl font-bold;
+    color: var(--text-color);
+}
+
+// Container de ações
+.actions-container {
+    @apply flex gap-2;
+}
+
+// Botão primário
+.btn-primary {
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 cursor-pointer;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
+    --tw-ring-color: var(--primary-color);
+}
+
+// Botão secundário
+.btn-secondary {
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 cursor-pointer;
+    background-color: var(--text-color-secondary);
+    color: var(--surface-card);
+    --tw-ring-color: var(--text-color-secondary);
+}
+
+// Botão de sucesso
+.btn-success {
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 cursor-pointer;
+    background-color: var(--success-color);
+    color: white;
+    --tw-ring-color: var(--success-color);
+}
+
+// Botão roxo
+.btn-purple {
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 cursor-pointer;
+    background-color: var(--purple-color);
+    color: white;
+    --tw-ring-color: var(--purple-color);
+}
+
+// Botão de perigo/vermelho
+.btn-danger {
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 cursor-pointer;
+    background-color: var(--error-color);
+    color: white;
+    --tw-ring-color: var(--error-color);
+}
