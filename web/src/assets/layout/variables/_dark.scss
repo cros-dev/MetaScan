@@ -1,4 +1,9 @@
 :root[class*='app-dark'] {
+    // Cor primária específica para tema escuro (mesma cor do tema claro)
+    --primary-color: #1D2055;  // Mesma cor do tema claro para consistência
+    --primary-contrast-color: #ffffff;  // Branco para contraste com azul escuro
+
+
     --surface-ground: var(--p-surface-950);
     --code-background: var(--p-surface-800);
     --code-color: var(--p-surface-100);
@@ -7,4 +12,4 @@
     --surface-card: #18181b;
     --surface-overlay: #232326;
     --surface-hover: #232326;
-} 
+}

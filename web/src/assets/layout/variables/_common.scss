@@ -1,14 +1,20 @@
 :root {
     // Cores principais
-    --primary-color: #3b82f6;
+    --primary-color: #1D2055;
     --primary-contrast-color: var(--p-primary-contrast-color);
-    
+
+    // Cores semânticas (mantendo notificações e loading com cores originais)
+    --success-color: #1D2055;  // Mudado para cor primária
+    --error-color: #ef4444;    // Mantido para notificações
+    --warning-color: #f59e0b;  // Mantido para notificações
+    --info-color: #1D2055;     // Mudado para cor primária
+    --purple-color: #1D2055;   // Mudado para cor primária
+
     // Espaçamentos do layout
     --sidebar-width: 22rem;
     --topbar-height: 6rem;
     --content-padding: 1.5rem;
-    --content-padding-bottom: 2rem;
-    
+
     // Cores e superfícies
     --text-color: var(--p-text-color);
     --text-color-secondary: var(--p-text-muted-color);
@@ -16,12 +22,12 @@
     --surface-card: var(--p-content-background);
     --surface-hover: var(--p-content-hover-background);
     --surface-overlay: var(--p-overlay-popover-background);
-    
+
     // Transições e animações
     --transition-duration: var(--p-transition-duration);
     --layout-section-transition-duration: 0.2s;
     --element-transition-duration: var(--p-transition-duration);
-    
+
     // Outros
     --maskbg: var(--p-mask-background);
     --content-border-radius: var(--p-content-border-radius);
