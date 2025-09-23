@@ -1,0 +1,40 @@
+<div>
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div>
+        <h1 class="page-title">Gestão de Produtos</h1>
+        <p class="text-sm" style="color: var(--text-color-secondary)">Consulte informações detalhadas de produtos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vazio elegante -->
+  <div class="empty-state">
+    <div class="empty-state-content">
+      <div class="empty-state-icon">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary-color);">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      <h3 class="empty-state-title">Consultar Produto</h3>
+      <p class="empty-state-description">
+        Digite o código do produto para ver informações detalhadas
+      </p>
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="openSearchModal()">
+        Buscar Produto
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal de Busca -->
+  @if (showSearchModal) {
+    <app-product-search-modal
+            (productFound)="onProductFound($event)"
+      (close)="closeSearchModal()">
+    </app-product-search-modal>
+  }
+</div>
