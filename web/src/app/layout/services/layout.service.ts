@@ -78,4 +78,15 @@ export class LayoutService {
       this.layoutState.update(prev => ({ ...prev, staticMenuMobileActive: !this.layoutState().staticMenuMobileActive }));
     }
   }
+
+  collapseMenu() {
+    if (this.isOverlay()) {
+      this.layoutState.update(prev => ({ ...prev, overlayMenuActive: false }));
+    }
+    if (this.isDesktop()) {
+      this.layoutState.update(prev => ({ ...prev, staticMenuDesktopInactive: true }));
+    } else {
+      this.layoutState.update(prev => ({ ...prev, staticMenuMobileActive: false }));
+    }
+  }
 }

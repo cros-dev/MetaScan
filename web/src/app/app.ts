@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {ConfirmDialog} from 'primeng/confirmdialog';
+import {MenuAutoCollapseService} from './layout/services/menu-auto-collapse.service';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +12,10 @@ import {ConfirmDialog} from 'primeng/confirmdialog';
     <router-outlet></router-outlet>
   `
 })
-export class App {
+export class App implements OnInit {
+  constructor(private menuAutoCollapseService: MenuAutoCollapseService) {}
+
+  ngOnInit() {
+    this.menuAutoCollapseService.ngOnInit();
+  }
 }

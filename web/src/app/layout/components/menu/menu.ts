@@ -29,6 +29,7 @@ export class Menu implements OnInit {
         label: 'Gestão',
         items: [
           { label: 'Cavaletes', icon: 'pi pi-fw pi-sitemap', routerLink: ['/cavaletes'] },
+          { label: 'Produtos', icon: 'pi pi-fw pi-box', routerLink: ['/products'] },
           ...(userRole === 'admin' ? [{ label: 'Usuários', icon: 'pi pi-fw pi-users', routerLink: ['/users'] }] : [])
         ]
       }
