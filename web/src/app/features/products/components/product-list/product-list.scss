@@ -1,0 +1,34 @@
+// ===== ESTILOS DO PRODUCT LIST =====
+
+.empty-state {
+  text-align: left;
+  padding: 3rem 2rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--content-border-radius);
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.empty-state-icon {
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.empty-state-description {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
