@@ -53,7 +53,7 @@ export class ProductService {
    * @param dateString String de data no formato brasileiro DD/MM/YYYY HH:mm:ss
    * @returns Data formatada em pt-BR ou string original se inválida
    */
-  formatDate(dateString: string): string {
+  formatDate(dateString: string | undefined): string {
     if (!dateString) return '';
 
     try {
