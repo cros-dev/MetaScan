@@ -1,0 +1,10 @@
+<app-topbar [minimal]="true" />
+<app-loading-spinner [show]="(loadingService.loading$ | async) ?? false" />
+<div class="login-container">
+  <h1 class="login-title">Login</h1>
+  <app-login-form 
+    [loading]="(loadingService.loading$ | async) ?? false" 
+    (login)="handleLogin($event)">
+  </app-login-form>
+</div>
+<app-notification-container></app-notification-container>
