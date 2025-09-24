@@ -48,9 +48,45 @@
     background-color: var(--error-color);
     color: #ffffff;
     border: 1px solid var(--error-color);
+    --tw-ring-color: var(--error-color);
 
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
+}
+
+// Botão de confirmação do overlay (com ring color)
+.overlay-confirm-btn {
+    --tw-ring-color: var(--primary-color);
+}
+
+// Label do campo
+.field-label {
+    color: var(--text-color-secondary);
+}
+
+// Ícone dropdown
+.dropdown-icon {
+    color: var(--text-color-secondary);
+}
+
+// Lista de usuários
+.user-list {
+    background-color: var(--surface-card);
+    border-color: var(--surface-border);
+}
+
+// Ícone de check
+.check-icon {
+    color: var(--text-color-secondary);
+}
+
+.check-icon-selected {
+    color: var(--primary-contrast-color);
+}
+
+// Texto secundário
+.secondary-text {
+    color: var(--text-color-secondary);
 }

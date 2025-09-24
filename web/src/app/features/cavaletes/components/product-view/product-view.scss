@@ -1,3 +1,9 @@
 @use '../../../../shared/styles/product-detail.scss' as product-detail;
 
 @include product-detail.product-detail-styles;
+
+// ===== ESTILOS ESPECÍFICOS DO PRODUCT VIEW =====
+
+.error-icon svg {
+  color: var(--error-color);
+}

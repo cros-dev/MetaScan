@@ -1,7 +1,7 @@
 <div class="p-6">
   <!-- Campo de Seleção -->
   <div class="mb-6">
-    <label class="block text-sm font-medium mb-2" style="color: var(--text-color-secondary)">Conferente</label>
+    <label class="block text-sm font-medium mb-2 field-label">Conferente</label>
 
     <!-- Input/Dropdown -->
     <div class="relative">
@@ -17,15 +17,14 @@
             Selecione um conferente...
           }
         </span>
-        <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showUserSelection" style="color: var(--text-color-secondary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 transition-transform dropdown-icon" [class.rotate-180]="showUserSelection" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
       </div>
 
       <!-- Lista de Usuários -->
       @if (showUserSelection) {
-        <div class="absolute z-10 w-full mt-1 rounded-md border shadow-lg max-h-60 overflow-y-auto"
-             style="background-color: var(--surface-card); border-color: var(--surface-border);">
+        <div class="absolute z-10 w-full mt-1 rounded-md border shadow-lg max-h-60 overflow-y-auto user-list">
 
           <!-- Lista de Usuários -->
           @for (user of users; track user.id) {
@@ -38,17 +37,17 @@
               }">
               <div class="flex items-center gap-2">
                 @if (currentUser?.id === user.id) {
-                  <svg class="w-4 h-4" style="color: var(--text-color-secondary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                 } @else if (selectedUserId === user.id) {
-                  <svg class="w-4 h-4" style="color: var(--primary-contrast-color)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 check-icon-selected" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                 }
                 <div class="flex-1">
                   <div class="font-medium">{{ user.email }}</div>
-                  <div class="text-xs" style="color: var(--text-color-secondary)">
+                  <div class="text-xs secondary-text">
                     @if (currentUser?.id === user.id) {
                       (Atual)
                     } @else {
@@ -71,8 +70,7 @@
       <button
         (click)="releaseCavalete()"
         [disabled]="assigning"
-        class="overlay-remove-btn flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2"
-        style="--tw-ring-color: var(--error-color);">
+        class="overlay-remove-btn flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2">
         @if (assigning) {
           <span class="flex items-center justify-center gap-2">
             <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -88,8 +86,7 @@
     <button
       (click)="confirmAssignment()"
       [disabled]="assigning || selectedUserId === null"
-      class="overlay-confirm-btn flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2"
-      style="--tw-ring-color: var(--primary-color);">
+      class="overlay-confirm-btn flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2">
       @if (assigning) {
         <span class="flex items-center justify-center gap-2">
           <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

@@ -32,3 +32,15 @@
   margin: 0;
   line-height: 1.5;
 }
+
+// ===== ESTILOS ESPECÍFICOS DO PRODUCT LIST =====
+
+// Descrição da página
+.page-description {
+  color: var(--text-color-secondary);
+}
+
+// Ícone do estado vazio
+.empty-icon {
+  color: var(--primary-color);
+}
