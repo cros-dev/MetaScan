@@ -1,0 +1,121 @@
+<!-- Modal de Busca e Associação de Produtos -->
+@if (show && slot) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+
+      <!-- Conteúdo do Modal -->
+      <div class="modal-body">
+        @if (!foundProduct) {
+          <!-- Busca do Produto -->
+          <div class="search-section">
+            <label class="search-label">Código do Produto</label>
+            <div class="search-input-group">
+              <input
+                #productCodeInput
+                type="text"
+                [(ngModel)]="productCode"
+                (keydown)="onKeyPress($event)"
+                placeholder="Digite o código do produto..."
+                class="search-input"
+                autofocus>
+              <button
+                type="button"
+                class="search-btn"
+                (click)="searchProduct()"
+                [disabled]="!productCode.trim() || loading">
+                @if (loading) {
+                  <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                } @else {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                }
+                {{ loading ? 'Buscando...' : 'Buscar' }}
+              </button>
+            </div>
+            <p class="search-hint">Digite o código do produto e pressione Enter ou clique em Buscar</p>
+          </div>
+        } @else {
+          <!-- Produto Encontrado -->
+          <div class="product-found-section">
+            <!-- Cabeçalho do Produto -->
+            <div class="product-header">
+              <div class="product-title">
+                <h3 class="product-name">{{ foundProduct.description }}</h3>
+              </div>
+              <div class="product-actions">
+                <button
+                  type="button"
+                  class="btn-secondary btn-header"
+                  (click)="clearFoundProduct()"
+                  [disabled]="loading">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                  Buscar Outro
+                </button>
+                <button
+                  type="button"
+                  class="btn-primary btn-header"
+                  (click)="associateProduct()"
+                  [disabled]="loading">
+                  @if (loading) {
+                    <svg class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Associando...
+                  } @else {
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Associar
+                  }
+                </button>
+              </div>
+            </div>
+
+            <!-- Informações do Produto -->
+            <div class="product-content">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Código -->
+                <div class="detail-item" title="Clique para selecionar todo o conteúdo">
+                  <span class="detail-label">Código</span>
+                  <span class="detail-value">{{ foundProduct.code }}</span>
+                </div>
+
+                <!-- Marca -->
+                @if (foundProduct.marca) {
+                  <div class="detail-item" title="Clique para selecionar todo o conteúdo">
+                    <span class="detail-label">Marca</span>
+                    <span class="detail-value">{{ foundProduct.marca }}</span>
+                  </div>
+                }
+
+                <!-- Referência do Fornecedor -->
+                @if (foundProduct.referencia_fornecedor) {
+                  <div class="detail-item" title="Clique para selecionar todo o conteúdo">
+                    <span class="detail-label">Referência do Fornecedor</span>
+                    <span class="detail-value">{{ foundProduct.referencia_fornecedor }}</span>
+                  </div>
+                }
+
+                <!-- Estoque -->
+                @if (foundProduct.estoque !== undefined) {
+                  <div class="detail-item" title="Clique para selecionar todo o conteúdo">
+                    <span class="detail-label">Estoque</span>
+                    <span class="detail-value price">{{ foundProduct.estoque | formatNumber }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

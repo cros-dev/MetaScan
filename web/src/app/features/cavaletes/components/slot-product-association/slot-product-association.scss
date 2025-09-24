@@ -1,0 +1,244 @@
+// ===== ESTILOS PARA MODAL DE BUSCA DE PRODUTOS =====
+
+@use '../../../../shared/styles/mixins.scss' as mixins;
+
+.modal-overlay {
+    @include mixins.modal-overlay;
+}
+
+.modal-content {
+    background-color: var(--surface-card);
+    border-radius: var(--content-border-radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+
+.modal-body {
+    padding: 0;
+}
+
+.search-section {
+    padding: 1.5rem;
+
+    .search-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .search-input-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid var(--surface-border);
+        border-radius: 0.375rem;
+        background-color: var(--surface-card);
+        color: var(--text-color);
+        font-size: 0.875rem;
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        &::placeholder {
+            color: var(--text-color-secondary);
+        }
+    }
+
+    .search-btn {
+        padding: 0.75rem 1rem;
+        background-color: var(--primary-color);
+        color: var(--primary-contrast-color);
+        border: none;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover:not(:disabled) {
+            background-color: var(--primary-color-dark);
+            transform: translateY(-1px);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    .search-hint {
+        font-size: 0.75rem;
+        color: var(--text-color-secondary);
+        margin: 0;
+    }
+}
+
+.product-found-section {
+    // Cabeçalho do Produto (estilo product-view)
+    .product-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, rgba(29, 32, 85, 0.8) 100%);
+        color: var(--primary-contrast-color);
+        padding: 1rem 1.5rem;
+        border-radius: var(--content-border-radius) var(--content-border-radius) 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+
+        .product-title {
+            flex: 1;
+
+            .product-name {
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin: 0;
+                line-height: 1.2;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+
+             .btn-header {
+                 padding: 0.5rem 1rem;
+                 font-size: 0.875rem;
+                 border-radius: 0.375rem;
+                 transition: all 0.2s ease;
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+                 gap: 0.25rem;
+                 text-decoration: none;
+                 font-weight: 500;
+                 border: none;
+                 cursor: pointer;
+                 width: 120px; // Largura fixa para todos os botões
+                 white-space: nowrap; // Evita quebra de linha
+
+                &.btn-secondary {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    color: var(--primary-contrast-color);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+
+                    &:hover:not(:disabled) {
+                        background-color: rgba(255, 255, 255, 0.2);
+                        border-color: rgba(255, 255, 255, 0.3);
+                        transform: translateY(-1px);
+                    }
+
+                    &:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+                }
+
+                &.btn-primary {
+                    background-color: rgba(255, 255, 255, 0.9);
+                    color: var(--primary-color);
+                    border: 1px solid rgba(255, 255, 255, 0.9);
+
+                    &:hover:not(:disabled) {
+                        background-color: rgba(255, 255, 255, 1);
+                        border-color: rgba(255, 255, 255, 1);
+                        transform: translateY(-1px);
+                    }
+
+                    &:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+                }
+            }
+        }
+    }
+
+    // Conteúdo do Produto (estilo product-view)
+    .product-content {
+        padding: 1.5rem;
+        margin-bottom: 0;
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 1rem;
+            background-color: var(--surface-hover);
+            border-radius: 0.5rem;
+            border: 1px solid var(--surface-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: text;
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                border-color: var(--primary-color);
+                background-color: var(--primary-color-light);
+            }
+
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .detail-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--text-color-secondary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .detail-value {
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--text-color);
+
+                &.price {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    color: var(--primary-color);
+                }
+
+                &.empty {
+                    color: var(--text-color-secondary);
+                    font-style: italic;
+                }
+            }
+        }
+    }
+
+}
+
+// Animação de loading
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
