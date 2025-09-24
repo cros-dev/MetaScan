@@ -1,0 +1,122 @@
+<div>
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div>
+        <h1 class="page-title">Usuários</h1>
+      </div>
+      <div class="actions-container">
+        <button
+          (click)="createUser()"
+          class="btn-primary">
+          Criar Usuário
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="mb-6 filters-container">
+    <!-- Filtros em Grid Responsivo -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+      <!-- Filtro por Role -->
+      <div>
+        <label class="block text-sm font-medium mb-1 filter-label">Função</label>
+        <select
+          [(ngModel)]="filters.role"
+          (change)="applyFilters()"
+          class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 filter-input">
+          @for (option of roleOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Busca por Nome ou Email -->
+      <div>
+        <label class="block text-sm font-medium mb-1 filter-label">Buscar por Nome ou Email</label>
+        <div class="relative">
+          <input
+            type="text"
+            (input)="onSearchInput($event)"
+            placeholder="Nome ou email"
+            class="w-full px-3 py-2 pl-10 rounded-md focus:outline-none focus:ring-2 filter-input">
+          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Status Ativo -->
+      <div>
+        <label class="block text-sm font-medium mb-1 filter-label">Status</label>
+        <select
+          [(ngModel)]="filters.is_active"
+          (change)="applyFilters()"
+          class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 filter-input">
+          <option [value]="true">Ativos</option>
+          <option [value]="false">Inativos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Usuários -->
+  @if (users.length === 0) {
+    <div class="text-center py-8">
+      <svg class="mx-auto h-12 w-12 mb-4 empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+      </svg>
+      <h3 class="text-lg font-medium mb-2 empty-state-title">Nenhum usuário encontrado</h3>
+      <p class="text-sm empty-state-description">Comece criando seu primeiro usuário usando o botão acima.</p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      @for (user of users; track user.id) {
+        <div class="card-default card-user"
+             (click)="viewUser(user.id)">
+
+          <!-- Cabeçalho do Card -->
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1 min-w-0 mr-2 overflow-hidden">
+              <h3 class="text-base font-semibold truncate user-card-title" title="{{ user.first_name }} {{ user.last_name }}">
+                {{ user.first_name }} {{ user.last_name }}
+              </h3>
+              <p class="text-sm truncate mt-1 user-card-email" title="{{ user.email }}">
+                {{ user.email }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Informações do Usuário -->
+          <div class="space-y-2 mb-3 flex-1">
+            <div class="card-info-row">
+              <span class="card-info-label">Função:</span>
+              <span [ngClass]="getUserRoleClass(user.role)" class="badge truncate ml-2">
+                {{ getUserRoleLabel(user.role) }}
+              </span>
+            </div>
+            <div class="card-info-row">
+              <span class="card-info-label">Status:</span>
+              <span class="badge"
+                    [ngClass]="{
+                      'badge-success': user.is_active,
+                      'badge-danger': !user.is_active
+                    }">
+                {{ user.is_active ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Divisor -->
+          <div class="card-divider"></div>
+
+          <!-- Área de ação (vazia, mas mantém estrutura) -->
+          <div class="flex justify-end">
+            <!-- Botão removido - card é clicável -->
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
