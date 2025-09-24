@@ -1,0 +1,139 @@
+<div>
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div>
+        <h1 class="page-title">
+          {{ isEditing ? 'Editar Usuário' : 'Criar Usuário' }}
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <div class="card-default form-card">
+    <form [formGroup]="userForm" (ngSubmit)="createUser()">
+      <div class="space-y-6">
+      <!-- Nome, Sobrenome e Função -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Nome -->
+        <div>
+          <label class="block font-medium mb-2 form-label">
+            Nome @if (!isEditing) {<span class="text-red-500">*</span>}
+          </label>
+          <input
+            type="text"
+            formControlName="first_name"
+            placeholder="Digite o nome"
+            (input)="onFirstNameInput($event)"
+            [readonly]="isEditing"
+            class="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
+            [class.form-input]="!isEditing"
+            [class.form-input-readonly]="isEditing"
+            [class.border-red-500]="hasError()">
+          @if (hasError()) {
+            <p class="mt-1 text-sm text-red-500">{{ getErrorMessage() }}</p>
+          }
+        </div>
+
+        <!-- Sobrenome -->
+        <div>
+          <label class="block font-medium mb-2 form-label">
+            Sobrenome @if (!isEditing) {<span class="text-red-500">*</span>}
+          </label>
+          <input
+            type="text"
+            formControlName="last_name"
+            placeholder="Digite o sobrenome"
+            (input)="onLastNameInput($event)"
+            [readonly]="isEditing"
+            class="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
+            [class.form-input]="!isEditing"
+            [class.form-input-readonly]="isEditing"
+            [class.border-red-500]="hasError()">
+          @if (hasError()) {
+            <p class="mt-1 text-sm text-red-500">{{ getErrorMessage() }}</p>
+          }
+        </div>
+
+        <!-- Função -->
+        <div>
+          <label class="block font-medium mb-2 form-label">
+            Função <span class="text-red-500">*</span>
+          </label>
+          <select
+            formControlName="role"
+            class="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 form-input"
+            [class.border-red-500]="hasError()">
+            @for (option of roleOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+          @if (hasError()) {
+            <p class="mt-1 text-sm text-red-500">{{ getErrorMessage() }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block font-medium mb-2 form-label">
+          Email @if (!isEditing) {<span class="text-red-500">*</span>}
+        </label>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Email será gerado automaticamente"
+          readonly
+          class="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 form-input-readonly"
+          [class.border-red-500]="hasError()">
+        @if (hasError()) {
+          <p class="mt-1 text-sm text-red-500">{{ getErrorMessage() }}</p>
+        }
+        <p class="mt-1 text-xs help-text">
+          @if (isEditing) {
+            Email não pode ser alterado após a criação
+          } @else {
+            "O email será gerado automaticamente no formato: nome.sobrenome&#64;metalaluminio.com.br
+          }
+        </p>
+      </div>
+
+      <!-- Status Ativo -->
+      <div>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="is_active"
+            class="w-4 h-4 rounded border focus:ring-2 checkbox-input cursor-pointer">
+          <span class="font-medium checkbox-label cursor-pointer">
+            Usuário ativo
+          </span>
+        </label>
+        <p class="mt-1 text-xs help-text">
+          Usuários inativos não conseguem fazer login no sistema
+        </p>
+      </div>
+    </div>
+
+        <!-- Botões de Ação -->
+        <div class="actions-container mt-6 flex gap-3">
+          <button
+            type="submit"
+            [disabled]="userForm.invalid || (isEditing && !hasFormChanges())"
+            class="btn-primary disabled:opacity-50">
+            {{ isEditing ? 'Atualizar Usuário' : 'Criar Usuário' }}
+          </button>
+
+          @if (isEditing) {
+            <button
+              type="button"
+              (click)="deleteUser()"
+              class="btn-danger">
+              Excluir Usuário
+            </button>
+          }
+        </div>
+      </form>
+    </div>
+</div>
