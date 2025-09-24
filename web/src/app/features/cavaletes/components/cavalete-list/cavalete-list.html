@@ -1,0 +1,178 @@
+<div>
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div>
+        <h1 class="page-title">Gestão de Cavaletes</h1>
+      </div>
+
+      <!-- Ações Principais -->
+      <div class="actions-container">
+        <button
+          (click)="openCreateModal()"
+          class="btn-success">
+          Criar Cavalete
+        </button>
+        <button
+          (click)="exportToExcel()"
+          class="btn-success">
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="mb-6 filters-section">
+    <!-- Filtros em Grid Responsivo -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <!-- Filtro por Status -->
+      <div>
+        <label class="block text-sm font-medium mb-1 filter-label">Status</label>
+        <select
+          [(ngModel)]="filters.status"
+          (change)="onFilterChange()"
+          class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 cursor-pointer filter-select">
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+
+      <!-- Busca -->
+      <div>
+        <label class="block text-sm font-medium mb-1 filter-label">Buscar por Código</label>
+        <div class="relative">
+          <input
+            type="text"
+            [(ngModel)]="filters.search"
+            (input)="onSearchInput($event)"
+            placeholder="Digite o código do cavalete..."
+            class="w-full px-3 py-2 pr-8 rounded-md focus:outline-none focus:ring-2 filter-input">
+          <div class="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <svg class="w-4 h-4 search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+        @if (filters.search) {
+          <p class="text-xs mt-1 pagination-info">Buscando em tempo real...</p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Cavaletes -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    @for (cavalete of cavaletes; track cavalete.id) {
+      <div class="card-default"
+           [routerLink]="['/cavaletes', cavalete.id]">
+
+        <!-- Cabeçalho do Card -->
+        <div class="flex justify-between items-start mb-3">
+          <div class="flex-1 min-w-0 mr-2">
+            <h3 class="text-base font-semibold truncate card-title">{{ cavalete.name }}</h3>
+          </div>
+          <span [ngClass]="getStatusClass(cavalete.status)"
+                class="badge flex-shrink-0">
+            {{ getStatusLabel(cavalete.status) }}
+          </span>
+        </div>
+
+        <!-- Informações do Cavalete -->
+        <div class="space-y-2 mb-3 flex-1">
+          <div class="card-info-row">
+            <span class="card-info-label">Código:</span>
+              <span class="badge">
+                {{ cavalete.code }}
+              </span>
+          </div>
+          <div class="card-info-row">
+            <span class="card-info-label">Tipo:</span>
+            <span class="badge">
+              {{ cavalete.type === 'torre' ? 'Torre' : 'Corredor' }}
+            </span>
+          </div>
+          <div class="card-info-row">
+            <span class="card-info-label">Usuário:</span>
+            <span class="badge truncate ml-2">
+              {{ cavalete.user?.email || 'Não atribuído' }}
+            </span>
+          </div>
+          <div class="card-info-row">
+            <span class="card-info-label">Ocupação:</span>
+            <span class="badge">
+              {{ cavalete.occupancy }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Divisor -->
+        <div class="card-divider"></div>
+
+        <!-- Botão de Editar -->
+      </div>
+    }
+  </div>
+
+  <!-- Mensagem quando não há cavaletes -->
+  @if (cavaletes.length === 0) {
+    <div class="text-center py-12">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center empty-icon-container">
+        <svg class="w-8 h-8 empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium mb-2 empty-title">Nenhum cavalete encontrado</h3>
+      <p class="text-sm empty-description">Tente ajustar os filtros ou criar um novo cavalete usando o botão acima.</p>
+    </div>
+  }
+
+</div>
+
+<!-- Modal de Criação de Cavalete -->
+@if (showCreateModal) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto modal-container">
+      <div class="sticky top-0 border-b p-4 flex items-center justify-between modal-header">
+        <h3 class="text-lg font-semibold modal-title">Criar Novo Cavalete</h3>
+        <button
+          (click)="closeCreateModal()"
+          class="p-2 rounded-md transition-colors modal-close-button">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 modal-label">
+            Tipo do Cavalete
+          </label>
+          <select
+            [(ngModel)]="selectedType"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-blue-500 modal-input">
+            @for (option of typeOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            (click)="closeCreateModal()"
+            class="btn-secondary">
+            Cancelar
+          </button>
+          <button
+            (click)="createCavalete()"
+            class="btn-primary">
+            Criar Cavalete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
