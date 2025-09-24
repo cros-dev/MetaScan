@@ -1,0 +1,100 @@
+<div class="layout-main">
+  <!-- Breadcrumb -->
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+  <!-- Conteúdo Principal -->
+  <div class="product-detail-page">
+    @if (loading) {
+      <!-- Loading State -->
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Carregando produto...</p>
+      </div>
+    } @else if (product) {
+      <!-- Detalhes do Produto -->
+      <div class="product-detail-card">
+        <!-- Cabeçalho do Produto -->
+        <div class="product-header">
+          <div class="product-title">
+            <h1 class="product-name">{{ product.description }}</h1>
+          </div>
+          <div class="product-actions">
+            <button
+              type="button"
+              class="btn-secondary btn-header"
+              (click)="goBack()">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Voltar ao Cavalete
+            </button>
+          </div>
+        </div>
+
+        <!-- Informações Detalhadas -->
+        <div class="product-details">
+          <div class="details-grid">
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Código</span>
+              <span class="detail-value">{{ product.code }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Marca</span>
+              <span class="detail-value" [class.empty]="!product.marca">{{ product.marca || '-' }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Referência Fornecedor</span>
+              <span class="detail-value" [class.empty]="!product.referencia_fornecedor">{{ product.referencia_fornecedor || '-' }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Localização</span>
+              <span class="detail-value" [class.empty]="!product.localizacao">{{ product.localizacao || '-' }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Preço Base</span>
+              <span class="detail-value" [class.empty]="!product.preco_base">{{ product.preco_base ? 'R$ ' + product.preco_base : '-' }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Estoque</span>
+              <span class="detail-value" [class.empty]="!product.estoque" [class.price]="product.estoque">{{ product.estoque ? (product.estoque | formatNumber) : '-' }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Unidade</span>
+              <span class="detail-value" [class.empty]="!product.unidade">{{ product.unidade || '-' }}</span>
+            </div>
+
+            <div class="detail-item" (click)="productService.selectCardText($event)" title="Clique para selecionar todo o conteúdo">
+              <span class="detail-label">Data Inventário</span>
+              <span class="detail-value" [class.empty]="!product.data_inventario">{{ product.data_inventario ? productService.formatDate(product.data_inventario) : '-' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Estado de Erro -->
+      <div class="error-state">
+        <div class="error-icon">
+          <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--error-color);">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+        <h3 class="error-title">Produto não encontrado</h3>
+        <p class="error-description">
+          O produto com código "{{ productCode }}" não foi encontrado.
+        </p>
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="goBack()">
+          Voltar ao Cavalete
+        </button>
+      </div>
+    }
+  </div>
+</div>
