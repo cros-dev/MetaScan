@@ -1,0 +1,26 @@
+<form (ngSubmit)="submit()" class="login-form">
+  <input 
+    pInputText 
+    [(ngModel)]="username" 
+    name="username" 
+    placeholder="Usuário" 
+    required 
+    class="login-input" />
+  
+  <input 
+    pInputText 
+    [(ngModel)]="password" 
+    name="password" 
+    type="password" 
+    placeholder="Senha" 
+    required 
+    class="login-input" />
+  
+  <button 
+    pButton 
+    type="submit" 
+    [disabled]="loading"
+    class="login-button">
+    <span pButtonLabel>Entrar</span>
+  </button>
+</form>

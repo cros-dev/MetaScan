@@ -8,15 +8,10 @@ import { CommonModule } from '@angular/common';
   selector: 'app-login-form',
   standalone: true,
   imports: [CommonModule, FormsModule, InputTextModule, ButtonModule],
-  template: `
-    <form (ngSubmit)="submit()" class="flex flex-col gap-4">
-      <input pInputText [(ngModel)]="username" name="username" placeholder="Usuário" required />
-      <input pInputText [(ngModel)]="password" name="password" type="password" placeholder="Senha" required />
-      <button pButton type="submit" label="Entrar" [disabled]="loading"></button>
-    </form>
-  `
+  templateUrl: './login-form.html',
+  styleUrl: './login-form.scss'
 })
-export class LoginFormComponent {
+export class LoginForm {
   @Input() loading = false;
   @Output() login = new EventEmitter<{ email: string; password: string }>();
 
