@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../products/services/product.service';
 import { ProductResponse } from '../../../products/models/product.model';
-import { Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { FormatNumberPipe } from '../../../../shared/pipes/format-number.pipe';
 import { CavaleteService } from '../../services/cavalete.service';
 import { Cavalete } from '../../models/cavalete.model';
@@ -11,7 +10,7 @@ import { Cavalete } from '../../models/cavalete.model';
 @Component({
   selector: 'app-product-view',
   standalone: true,
-  imports: [CommonModule, Breadcrumb, FormatNumberPipe],
+  imports: [CommonModule, FormatNumberPipe],
   templateUrl: './product-view.html',
   styleUrl: './product-view.scss'
 })
@@ -22,7 +21,6 @@ export class ProductView implements OnInit {
   productCode = '';
   cavaleteId: number | null = null;
   slotLocation = '';
-  breadcrumbItems: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -53,24 +51,13 @@ export class ProductView implements OnInit {
     this.cavaleteService.getCavalete(this.cavaleteId).subscribe({
       next: (cavalete) => {
         this.cavalete = cavalete;
-        this.updateBreadcrumb();
       },
       error: (error) => {
         console.error('Erro ao carregar cavalete:', error);
-        this.updateBreadcrumb();
       }
     });
   }
 
-  private updateBreadcrumb() {
-    const cavaleteLabel = this.cavalete?.code || `Cavalete ${this.cavaleteId}`;
-    this.breadcrumbItems = [
-      { label: 'Dashboard', url: '/' },
-      { label: 'Cavaletes', url: '/cavaletes' },
-      { label: cavaleteLabel, url: `/cavaletes/${this.cavaleteId}` },
-      { label: `Produto ${this.productCode}` }
-    ];
-  }
 
   loadProduct() {
     this.loading = true;
