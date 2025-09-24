@@ -1,10 +1,10 @@
-<nav class="flex items-center space-x-2 mb-4" style="color: var(--text-color-secondary)">
+<nav class="flex items-center space-x-2 mb-4">
   @for (item of items; track $index; let isLast = $last) {
     @if (isLast) {
-      <span class="font-medium" style="color: var(--text-color)">{{ item.label }}</span>
+      <span class="font-medium">{{ item.label }}</span>
     } @else {
       @if (item.url) {
-        <a [routerLink]="item.url" class="hover:underline" style="color: var(--primary-color)">
+        <a [routerLink]="item.url" class="hover:underline">
           {{ item.label }}
         </a>
       } @else {

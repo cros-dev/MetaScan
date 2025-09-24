@@ -1,10 +1,17 @@
 nav {
+  color: var(--text-color-secondary);
+
   .font-medium {
     font-weight: 500;
+    color: var(--text-color);
   }
 
   .hover\:underline:hover {
     text-decoration: underline;
+  }
+
+  a {
+    color: var(--primary-color);
   }
 
   svg {
