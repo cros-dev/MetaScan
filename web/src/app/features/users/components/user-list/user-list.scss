@@ -1,0 +1,51 @@
+// Estilos específicos para user-list
+
+.filters-container {
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--content-border-radius);
+  padding: 1rem;
+}
+
+.filter-label {
+  color: var(--text-color-secondary);
+}
+
+.filter-input {
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  color: var(--text-color);
+  --tw-ring-color: var(--primary-color);
+}
+
+.search-icon {
+  color: var(--text-color-secondary);
+}
+
+.loading-spinner {
+  border-color: var(--primary-color);
+}
+
+.loading-text {
+  color: var(--text-color-secondary);
+}
+
+.empty-state-icon {
+  color: var(--text-color-secondary);
+}
+
+.empty-state-title {
+  color: var(--text-color);
+}
+
+.empty-state-description {
+  color: var(--text-color-secondary);
+}
+
+.user-card-title {
+  color: var(--text-color);
+}
+
+.user-card-email {
+  color: var(--text-color-secondary);
+}
