@@ -6,8 +6,8 @@ import { CavaleteDetailPage } from './features/cavaletes/pages/cavalete-detail.p
 import { ProductViewPage } from './features/cavaletes/pages/product-view.page';
 import { UserListPage } from './features/users/pages/user-list-page';
 import { UserFormPage } from './features/users/pages/user-form-page';
-import { Products } from './features/products/products';
-import { ProductDetail } from './features/products/components/product-detail/product-detail';
+import { ProductsPage } from './features/products/pages/products.page';
+import { ProductDetailPage } from './features/products/pages/product-detail.page';
 import { Notfound } from './pages/not-found/not-found';
 import { authGuard } from './core/guards/auth-guard';
 import {LoginPage} from './features/login/pages/login.page';
@@ -21,8 +21,8 @@ export const routes: Routes = [
             { path: 'cavaletes', component: CavaleteListPage, canActivate: [authGuard] },
             { path: 'cavaletes/:id', component: CavaleteDetailPage, canActivate: [authGuard] },
             { path: 'cavaletes/:cavaleteId/products/:code/slots/:slotLocation', component: ProductViewPage, canActivate: [authGuard] },
-            { path: 'products', component: Products, canActivate: [authGuard] },
-            { path: 'products/:code', component: ProductDetail, canActivate: [authGuard] },
+            { path: 'products', component: ProductsPage, canActivate: [authGuard] },
+            { path: 'products/:code', component: ProductDetailPage, canActivate: [authGuard] },
             { path: 'users', component: UserListPage, canActivate: [authGuard] },
             { path: 'users/new', component: UserFormPage, canActivate: [authGuard] },
             { path: 'users/:id/edit', component: UserFormPage, canActivate: [authGuard] },

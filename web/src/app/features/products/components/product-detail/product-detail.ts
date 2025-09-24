@@ -4,14 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { ProductResponse } from '../../models/product.model';
 import { LoadingService } from '../../../../shared/services/loading.service';
-import { Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { ProductSearchModal } from '../product-search-modal/product-search-modal';
 import { FormatNumberPipe } from '../../../../shared/pipes/format-number.pipe';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, Breadcrumb, ProductSearchModal, FormatNumberPipe],
+  imports: [CommonModule, ProductSearchModal, FormatNumberPipe],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss'
 })
@@ -19,7 +18,6 @@ export class ProductDetail implements OnInit {
   product?: ProductResponse;
   loading = false;
   productCode = '';
-  breadcrumbItems: any[] = [];
   showSearchModal = false;
 
   constructor(
@@ -32,11 +30,6 @@ export class ProductDetail implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.productCode = params['code'];
-      this.breadcrumbItems = [
-        { label: 'Dashboard', url: '/' },
-        { label: 'Produtos', url: '/products' },
-        { label: this.productCode || 'Produto' }
-      ];
 
       if (this.productCode) {
         this.loadProduct();
