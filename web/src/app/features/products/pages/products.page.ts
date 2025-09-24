@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ProductList } from './components/product-list/product-list';
-import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb';
+import { ProductList } from '../components/product-list/product-list';
+import { Breadcrumb } from '../../../shared/components/breadcrumb/breadcrumb';
 
 @Component({
-  selector: 'app-products',
+  selector: 'app-products-page',
   standalone: true,
   imports: [RouterModule, ProductList, Breadcrumb],
   template: `
@@ -14,7 +14,7 @@ import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb';
     </div>
   `
 })
-export class Products {
+export class ProductsPage {
   breadcrumbItems = [
     { label: 'Dashboard', url: '/' },
     { label: 'Produtos' }
