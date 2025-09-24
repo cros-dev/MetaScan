@@ -1,9 +1,9 @@
-@import '../../../../shared/styles/mixins.scss';
+@use '../../../../shared/styles/mixins.scss' as mixins;
 
 // ===== ESTILOS DO MODAL DE BUSCA DE PRODUTOS =====
 
 .modal-overlay {
-  @include modal-overlay;
+  @include mixins.modal-overlay;
 }
 
 .modal-content {
