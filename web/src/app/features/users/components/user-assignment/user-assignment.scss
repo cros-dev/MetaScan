@@ -1,0 +1,56 @@
+// ===== ESTILOS ESPECÍFICOS DO OVERLAY DE ATRIBUIÇÃO DE USUÁRIO =====
+
+// Campo de seleção do overlay
+.overlay-select-field {
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    border: 1px solid var(--surface-border);
+
+    &:hover {
+        background-color: var(--surface-hover);
+    }
+}
+
+// Item da lista de usuários
+.overlay-user-item {
+    color: var(--text-color);
+
+    &:hover {
+        background-color: var(--surface-hover);
+    }
+
+    &.overlay-user-selected {
+        background-color: var(--primary-color);
+        color: var(--primary-contrast-color);
+    }
+
+    &.overlay-user-current {
+        background-color: var(--surface-hover);
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+// Botão de confirmação do overlay
+.overlay-confirm-btn {
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
+    border: 1px solid var(--primary-color);
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// Botão de remoção do overlay
+.overlay-remove-btn {
+    background-color: var(--error-color);
+    color: #ffffff;
+    border: 1px solid var(--error-color);
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
