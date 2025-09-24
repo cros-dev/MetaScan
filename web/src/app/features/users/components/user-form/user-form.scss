@@ -1,0 +1,53 @@
+// Estilos específicos para user-form
+
+.form-card {
+  // Remove efeito hover do card para formulários
+  &:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+}
+
+.form-label {
+  color: var(--text-color-secondary);
+}
+
+.form-input {
+  background-color: var(--surface-card);
+  border-color: var(--surface-border);
+  color: var(--text-color);
+  --tw-ring-color: var(--primary-color);
+}
+
+.form-input-readonly {
+  background-color: var(--surface-card);
+  border-color: var(--surface-border);
+  color: var(--text-color-secondary);
+  --tw-ring-color: var(--primary-color);
+  cursor: not-allowed;
+}
+
+.checkbox-input {
+  border-color: var(--surface-border);
+  --tw-ring-color: var(--primary-color);
+
+  // Remove outline/focus ring
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.checkbox-label {
+  color: var(--text-color-secondary);
+}
+
+.help-text {
+  color: var(--text-color-secondary);
+  cursor: default; // Garante que não pareça clicável
+}

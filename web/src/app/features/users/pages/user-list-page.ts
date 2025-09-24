@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { UserList } from './components/user-list/user-list';
-import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb';
+import { UserList } from '../components/user-list/user-list';
+import { Breadcrumb } from '../../../shared/components/breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-users',
@@ -14,7 +14,7 @@ import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb';
     </div>
   `
 })
-export class Users {
+export class UserListPage {
   breadcrumbItems = [
     { label: 'Dashboard', url: '/' },
     { label: 'Usuários' }
