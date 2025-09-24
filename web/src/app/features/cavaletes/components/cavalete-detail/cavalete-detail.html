@@ -1,0 +1,200 @@
+<div class="p-4">
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div>
+        <h1 class="page-title">Detalhes do Cavalete - {{ cavalete?.name }}</h1>
+      </div>
+
+      <!-- Ações -->
+      @if (cavalete) {
+        <div class="actions-container">
+          <button
+            (click)="openUserAssignment()"
+            class="btn-purple">
+            Atribuir Usuário
+          </button>
+          <button
+            (click)="exportCavalete()"
+            class="btn-success">
+            Exportar Excel
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+
+  <!-- Detalhes do Cavalete -->
+  @if (cavalete) {
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <!-- Informações Principais -->
+      <div class="lg:col-span-1 rounded-lg border p-4" style="background-color: var(--surface-card); border-color: var(--surface-border);">
+        <h3 class="text-lg font-semibold mb-4" style="color: var(--text-color)">Informações do Cavalete</h3>
+        <div class="space-y-2">
+          <!-- Código -->
+          <div class="card-info-row">
+            <span class="card-info-label">Código:</span>
+            <span class="badge">
+              {{ cavalete.code }}
+            </span>
+          </div>
+
+          <!-- Tipo -->
+          <div class="card-info-row">
+            <span class="card-info-label">Tipo:</span>
+            <span class="badge">
+              {{ cavalete.type === 'torre' ? 'Torre' : 'Corredor' }}
+            </span>
+          </div>
+
+          <!-- Status -->
+          <div class="card-info-row">
+            <span class="card-info-label">Status:</span>
+            <span [ngClass]="getStatusClass(cavalete.status)"
+                  class="badge">
+              {{ getStatusLabel(cavalete.status) }}
+            </span>
+          </div>
+
+          <!-- Usuário Responsável -->
+          <div class="card-info-row">
+            <span class="card-info-label">Usuário:</span>
+            <span class="badge truncate ml-2">
+              {{ cavalete.user?.email || 'Não atribuído' }}
+            </span>
+          </div>
+
+          <!-- Ocupação -->
+          <div class="card-info-row">
+            <span class="card-info-label">Ocupação:</span>
+            <span class="badge">
+              {{ cavalete.occupancy }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slots do Cavalete -->
+      <div class="lg:col-span-4 rounded-lg border p-4" style="background-color: var(--surface-card); border-color: var(--surface-border);">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold" style="color: var(--text-color)">Slots do Cavalete - Lado {{ selectedSide }}</h3>
+
+            <!-- Seletor de Lado -->
+            <div class="flex rounded-lg p-1 gap-1">
+              <button
+                (click)="selectedSide = 'A'"
+                [ngClass]="selectedSide === 'A' ? 'side-btn-active' : 'side-btn-inactive'"
+                class="px-3 py-1 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2"
+                style="--tw-ring-color: var(--primary-color);">
+                Lado A
+              </button>
+              <button
+                (click)="selectedSide = 'B'"
+                [ngClass]="selectedSide === 'B' ? 'side-btn-active' : 'side-btn-inactive'"
+                class="px-3 py-1 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2"
+                style="--tw-ring-color: var(--primary-color);">
+                Lado B
+              </button>
+            </div>
+          </div>
+
+          <!-- Slots do Lado Selecionado -->
+          <div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              @for (slot of getSlotsBySide(selectedSide); track slot.number) {
+                <div class="slot-clickable rounded-lg border p-4 flex items-center gap-3 w-full cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+                     [ngClass]="getSlotStatusClass(slot)"
+                     (click)="onSlotClick(slot)">
+
+                  <!-- Número do Slot -->
+                  <div class="slot-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                    {{ slot.number }}
+                  </div>
+
+                  <!-- Informações do Slot -->
+                  <div class="flex-1 text-left min-h-0 flex flex-col justify-center overflow-hidden">
+                    @if (slot.product_code) {
+                      <div class="font-bold text-sm truncate" style="color: var(--text-color)">
+                        {{ slot.product_code }}
+                      </div>
+                      @if (slot.product_description) {
+                        <div class="text-xs truncate" style="color: var(--text-color-secondary)" [title]="slot.product_description">
+                          {{ slot.product_description | truncate:25 }}
+                        </div>
+                      }
+                      <div class="text-xs" style="color: var(--text-color-secondary)">
+                        Qtd: {{ slot.quantity }}
+                      </div>
+                    } @else {
+                      <div class="text-sm" style="color: var(--text-color-secondary)">
+                        Slot vazio
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Badge de Localização -->
+                  <div class="text-xs font-medium px-2 py-1 rounded flex-shrink-0 text-center" style="background-color: var(--surface-hover); color: var(--text-color-secondary);">
+                    {{ slot.location_code }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+      </div>
+    </div>
+  }
+
+  <!-- Erro -->
+  @if (!cavalete) {
+    <div class="text-center py-12">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background-color: var(--surface-hover);">
+        <svg class="w-8 h-8" style="color: var(--text-color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium mb-2" style="color: var(--text-color)">Cavalete não encontrado</h3>
+      <p style="color: var(--text-color-secondary)">O cavalete solicitado não existe ou foi removido.</p>
+      <button
+        class="mt-4 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2"
+        style="background-color: var(--primary-color); color: var(--primary-contrast-color); --tw-ring-color: var(--primary-color);">
+        Voltar para Lista
+      </button>
+    </div>
+  }
+</div>
+
+<!-- Modal de Atribuição de Usuário -->
+@if (showUserAssignment && cavalete) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+         style="background-color: var(--surface-card);">
+      <div class="sticky top-0 border-b p-4 flex items-center justify-between"
+           style="background-color: var(--surface-card); border-color: var(--surface-border);">
+        <h3 class="text-lg font-semibold" style="color: var(--text-color)">{{ cavalete.code }} - Atribuir Usuário</h3>
+        <button
+          (click)="closeUserAssignment()"
+          class="p-2 rounded-md transition-colors"
+          style="color: var(--text-color-secondary); background-color: var(--surface-hover);">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <app-user-assignment
+        [cavaleteId]="cavaleteId!"
+        [currentUser]="cavalete.user"
+        (closeModal)="closeUserAssignment()">
+      </app-user-assignment>
+    </div>
+  </div>
+}
+
+<!-- Modal de Associação de Produto -->
+<app-slot-product-association
+  [show]="showSlotProductAssociation"
+  [slot]="selectedSlotForProduct"
+  (close)="closeSlotProductAssociation()"
+  (productAssociated)="onProductAssociated()">
+</app-slot-product-association>

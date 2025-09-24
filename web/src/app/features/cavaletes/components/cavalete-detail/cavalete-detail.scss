@@ -1,0 +1,112 @@
+// ===== ESTILOS ESPECÍFICOS DO CAVALETE DETAIL =====
+
+// ===== ESTILOS PARA SLOTS =====
+
+// Slot clicável (base para todos os slots)
+.slot-clickable {
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    border: 1px solid var(--surface-border);
+    height: 80px; // Altura fixa para todos os slots
+    min-height: 80px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: scale(1.02);
+    }
+
+    .slot-number {
+        background-color: var(--surface-border);
+        color: var(--text-color-secondary);
+        flex-shrink: 0; // Não encolhe
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: bold;
+    }
+
+    // Container das informações do slot
+    .flex-1 {
+        min-width: 0; // Permite que o flex item encolha
+        overflow: hidden;
+
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+// Slot vazio (estilo neutro)
+.slot-empty {
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    border: 1px solid var(--surface-border);
+    height: 80px; // Altura fixa para todos os slots
+    min-height: 80px;
+
+    .slot-number {
+        background-color: var(--surface-border);
+        color: var(--text-color-secondary);
+        flex-shrink: 0; // Não encolhe
+    }
+}
+
+// Slot preenchido (estilo com destaque azul)
+.slot-filled {
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    height: 80px; // Altura fixa para todos os slots
+    min-height: 80px;
+
+    .slot-number {
+        background-color: var(--primary-color);
+        color: var(--primary-contrast-color);
+        flex-shrink: 0; // Não encolhe
+    }
+}
+
+// Classes de compatibilidade (mantidas para não quebrar)
+.slot-available {
+    @extend .slot-empty;
+}
+
+.slot-auditing {
+    @extend .slot-filled;
+}
+
+.slot-awaiting-approval {
+    @extend .slot-filled;
+}
+
+.slot-completed {
+    @extend .slot-filled;
+}
+
+// ===== BOTÕES DE ALTERNÂNCIA DE LADO =====
+
+// Botão de lado ativo (selecionado)
+.side-btn-active {
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
+    border: 1px solid var(--primary-color);
+}
+
+// Botão de lado inativo (não selecionado)
+.side-btn-inactive {
+    background-color: var(--surface-card);
+    color: var(--text-color-secondary);
+    border: 1px solid var(--surface-border);
+}
+
