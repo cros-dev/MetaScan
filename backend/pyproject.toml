@@ -1,0 +1,37 @@
+[tool.black]
+# Configuração do Black (formatador de código)
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # Diretórios
+  \.git
+  | \.venv
+  | venv
+  | env
+  | __pycache__
+  | migrations
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_tests.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--strict-markers",
+    "--tb=short",
+    "--cov=apps",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-fail-under=0",
+    "--ignore=tests.py",
+]
+testpaths = ["apps"]
+norecursedirs = [".git", "__pycache__", "venv", "env", "migrations"]
