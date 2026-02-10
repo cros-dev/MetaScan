@@ -1,8 +1,4 @@
-"""
-Configurações do Django - Backend MetaScan.
-
-API REST com Django + DRF + JWT.
-"""
+"""Configurações Django do backend MetaScan (API REST + DRF + JWT)."""
 
 from pathlib import Path
 from datetime import timedelta
@@ -181,6 +177,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+    "EXCEPTION_HANDLER": "apps.core.exceptions.custom_exception_handler",
 }
 
 # =========================================================
@@ -241,3 +238,15 @@ CORS_ALLOW_CREDENTIALS = True
 # DEFAULT FIELD
 # =========================================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# =========================================================
+# SANKHYA API (Base URL, AppKey, Token)
+# =========================================================
+SANKHYA_API_BASE_URL = os.getenv("SANKHYA_API_BASE_URL", "https://api.sankhya.com.br")
+SANKHYA_APPKEY = os.getenv("SANKHYA_APPKEY", "")
+SANKHYA_TOKEN = os.getenv("SANKHYA_TOKEN", "")
+
+# =========================================================
+# Criptografia de campos sensíveis (ex.: senha Sankhya no User)
+# =========================================================
+FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "")

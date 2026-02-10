@@ -1,7 +1,3 @@
-"""
-Testes para o app core.
-
-Importa todos os testes da pasta tests/ para compatibilidade.
-"""
+"""Testes do app core (compatibilidade com discover da pasta tests/)."""
 
 from .tests import *

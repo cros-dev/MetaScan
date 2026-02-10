@@ -1,8 +1,4 @@
-"""
-URLs para o app accounts.
-
-Endpoints para gerenciamento de usuários e perfis.
-"""
+"""URLs do app accounts (perfil e detalhe de usuário)."""
 
 from django.urls import path
 from .views import UserProfileView, UserDetailView

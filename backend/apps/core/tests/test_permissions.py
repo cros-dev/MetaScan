@@ -1,6 +1,4 @@
-"""
-Testes para permissões customizadas do app core.
-"""
+"""Testes das permissões customizadas do app core."""
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model

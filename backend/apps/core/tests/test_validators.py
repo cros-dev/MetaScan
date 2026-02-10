@@ -1,6 +1,4 @@
-"""
-Testes para validators do app core.
-"""
+"""Testes dos validators do app core."""
 
 from django.test import TestCase
 from django.core.exceptions import ValidationError
