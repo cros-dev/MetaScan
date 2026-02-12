@@ -20,8 +20,16 @@ class UserAdmin(BaseUserAdmin):
     """
     Admin customizado para User.
 
-    Mantém todas as funcionalidades padrão do Django UserAdmin,
-    permitindo personalização futura se necessário.
+    Adiciona o campo 'role' à listagem e aos fieldsets.
     """
 
-    pass
+    list_display = ("username", "email", "first_name", "last_name", "role", "is_staff")
+    list_filter = ("role", "is_staff", "is_superuser", "is_active")
+    
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ("MetaScan Info", {"fields": ("role",)}),
+    )
+    
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ("MetaScan Info", {"fields": ("role",)}),
+    )
