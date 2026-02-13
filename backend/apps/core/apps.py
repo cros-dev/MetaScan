@@ -1,8 +1,4 @@
-"""
-Configuração do app core.
-
-App para funcionalidades compartilhadas: validators, utils, permissions, etc.
-"""
+"""Configuração do app core (validators, utils, permissions)."""
 
 from django.apps import AppConfig
 

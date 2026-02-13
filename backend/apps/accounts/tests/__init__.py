@@ -1,8 +1,4 @@
-"""
-Testes para o app accounts.
-
-Importa todos os testes para facilitar execução.
-"""
+"""Testes do app accounts (importa test_serializers, test_views, test_auth)."""
 
 from .test_serializers import *
 from .test_views import *

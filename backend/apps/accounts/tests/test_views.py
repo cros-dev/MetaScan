@@ -1,6 +1,4 @@
-"""
-Testes para views do app accounts.
-"""
+"""Testes das views do app accounts."""
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model

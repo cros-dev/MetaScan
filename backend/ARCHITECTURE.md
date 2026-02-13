@@ -6,6 +6,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 
 - **Choices:** ficam como atributos de classe no modelo que possui o campo (ex.: `User.ROLE_CHOICES` em `accounts/models.py`). Serializers e views importam do modelo quando precisarem da lista. Não usar `constants.py` só para choices de um único modelo.
 - **Mensagens da API:** textos de resposta (erro, validação, sucesso) ficam em `messages.py` — em `core` para mensagens genéricas e em cada app para mensagens do domínio. Views e serializers importam e usam as constantes (ex.: `Response({"detail": USER_NOT_REGISTERED}, status=401)`).
+- **Comentários e documentação (Django + PEP 257):** docstrings concisos — uma linha quando o propósito for óbvio; usar Args/Returns quando ajudar. Comentários e docstrings com quebra de linha em 79 caracteres. Evitar "we" em comentários. Não usar emojis em código, comentários, docstrings, commits ou documentação. Em `.env.example`, usar apenas cabeçalho de seção (`# ===`) e no máximo uma linha de explicação por bloco de variáveis. Contexto longo (ex.: migração OAuth) fica em ARCHITECTURE ou ADR, não no código.
 
 ### Boas práticas Django/DRF
 
@@ -46,6 +47,9 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - Rotação de refresh tokens
 - Tempo de vida configurável via variáveis de ambiente
 
+**Exception handler (DRF)**
+- Handler customizado em `apps.core.exceptions.custom_exception_handler` converte exceções do client Sankhya em respostas HTTP: `SankhyaAuthError` -> 503 (detail com mensagem); `SankhyaProductError` -> 404 se "Produto não encontrado", senão 502. Views que chamam `get_valid_token()` ou `get_product()` podem deixar a exceção subir; o DRF devolve JSON padronizado.
+
 ### Configurações
 
 **settings.py**
@@ -79,9 +83,8 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 
 ### Testes
 
-- Estrutura organizada em `tests/` dentro de cada app
-- Testes básicos para serializers, views e autenticação
-- Testes para validators, utils e permissions
+- **Apps:** estrutura em `tests/` dentro de cada app (`apps/<app>/tests/`). Testes para serializers, views, autenticação, validators, utils e permissions.
+- **Clients:** estrutura em `tests/` dentro de cada client (`clients/<client>/tests/`). Usar mock de HTTP (ex.: `unittest.mock.patch` em `requests`) para não chamar API real. Pytest descobre e executa com `testpaths = apps clients`.
 
 ### Documentação
 
@@ -195,6 +198,21 @@ apps/
 │   ├── permissions.py
 │   └── tests/
 └── ...                # Apps de domínio (cavaletes, inventory, sankhya)
+```
+
+**Clients (fora de apps/)**
+
+```
+clients/
+├── sankhya/
+│   ├── auth.py
+│   ├── product.py
+│   ├── constants.py
+│   ├── exceptions.py
+│   └── tests/
+│       ├── test_auth.py
+│       └── test_product.py
+└── ...
 ```
 
 ## Notas

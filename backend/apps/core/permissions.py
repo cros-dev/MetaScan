@@ -1,19 +1,10 @@
-"""
-Permissões genéricas para o app core.
-
-Permissões customizadas reutilizáveis em todo o projeto.
-"""
+"""Permissões genéricas do app core (reutilizáveis no projeto)."""
 
 from rest_framework import permissions
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Permissão customizada: apenas o dono do objeto pode editá-lo.
-    Outros usuários podem apenas ler.
-
-    Requer que o objeto tenha um atributo 'owner' ou 'user'.
-    """
+    """Apenas o dono pode editar; outros só leitura. Objeto deve ter owner ou user."""
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

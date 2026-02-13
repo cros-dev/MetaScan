@@ -1,6 +1,4 @@
-"""
-Testes para funções utilitárias do app core.
-"""
+"""Testes das funções utilitárias do app core."""
 
 from django.test import TestCase
 

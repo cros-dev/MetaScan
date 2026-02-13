@@ -1,8 +1,4 @@
-"""
-Admin para o app accounts.
-
-Configuração genérica do Django Admin para User.
-"""
+"""Admin do app accounts (User customizado)."""
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model

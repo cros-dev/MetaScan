@@ -1,8 +1,4 @@
-"""
-Views para o app accounts.
-
-Views genéricas para gerenciamento de usuários, compatíveis com JWT.
-"""
+"""Views do app accounts (perfil e detalhes de usuário, JWT)."""
 
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -15,13 +11,7 @@ User = get_user_model()
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
-    """
-    View para obter e atualizar perfil do usuário autenticado.
-
-    GET: Retorna dados do usuário autenticado
-    PUT/PATCH: Atualiza dados do usuário (email, first_name, last_name)
-    Requer autenticação JWT.
-    """
+    """Perfil do usuário autenticado (GET/PUT/PATCH). Requer JWT."""
 
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileSerializer
@@ -39,12 +29,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
 
 class UserDetailView(generics.RetrieveAPIView):
-    """
-    View para obter detalhes de um usuário por ID.
-
-    GET: Retorna dados públicos do usuário
-    Requer autenticação JWT.
-    """
+    """Detalhes de um usuário por ID (GET). Requer JWT."""
 
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer

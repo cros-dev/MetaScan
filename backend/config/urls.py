@@ -1,6 +1,4 @@
-"""
-URL configuration for config project.
-"""
+"""URL configuration do projeto."""
 
 from django.contrib import admin
 from django.urls import path, include

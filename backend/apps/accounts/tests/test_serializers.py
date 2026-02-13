@@ -1,6 +1,4 @@
-"""
-Testes para serializers do app accounts.
-"""
+"""Testes dos serializers do app accounts."""
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
