@@ -21,7 +21,6 @@ class Cavalete(models.Model):
     name = models.CharField(_("nome/descrição"), max_length=100, blank=True)
 
     # Usuário responsável pela conferência atual
-    # Usuário responsável pela conferência atual
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

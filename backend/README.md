@@ -21,12 +21,16 @@ venv\Scripts\activate  # Windows
 # Instale dependências
 pip install -r requirements.txt
 
-# Configure variáveis de ambiente
-cp .env.example .env
-# Edite .env (mantenha variáveis de banco vazias para usar SQLite)
+    # Sankhya
+    SANKHYA_API_BASE_URL=https://api.sandbox.sankhya.com.br
+    SANKHYA_APPKEY=...
+    SANKHYA_TOKEN=...
+    SANKHYA_USER=service_user
+    SANKHYA_PASSWORD=service_pass
 
-# Execute migrações
-python manage.py migrate
+    # Execute migrações (incluindo novos apps)
+    python manage.py makemigrations accounts core cavaletes inventory sankhya
+    python manage.py migrate
 
 # Execute o servidor
 python manage.py runserver
@@ -181,11 +185,17 @@ O arquivo `settings.py` carrega o `.env` por padrão, mas o Docker Compose Local
 - `POST /api/token/refresh/` - Renovar access token
 - `POST /api/token/verify/` - Verificar token
 
-### Usuários
+### Sankhya
+- `GET /api/sankhya/products/<code>/` - Consulta de produto por código (autenticada)
 
-- `GET /api/users/profile/` - Perfil do usuário autenticado
-- `PUT/PATCH /api/users/profile/` - Atualizar perfil
-- `GET /api/users/<id>/` - Detalhes de um usuário
+### Cavaletes
+- `GET /api/inventory/cavaletes/` - Listar cavaletes
+- `POST /api/inventory/cavaletes/` - Criar cavalete (Gestor)
+- `PATCH /api/inventory/cavaletes/<id>/` - Atualizar cavalete
+
+### Slots
+- `POST /api/inventory/slots/<id>/start-confirmation/` - Iniciar conferência
+- `POST /api/inventory/slots/<id>/finish-confirmation/` - Finalizar conferência
 
 ## Recursos
 

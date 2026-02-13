@@ -4,30 +4,52 @@ Este documento descreve o modelo de dados do MetaScan em alto nível.
 
 ### Usuário (CustomUser)
 
-Login por email; papéis: admin, gestor, conferente. Senha Sankhya (criptografada) para integração com o ERP.
+Login por username (matrícula); papéis: admin, gestor, conferente.
 
 | Campo | Tipo | Obrigatório | Descrição |
 | --- | --- | --- | --- |
 | id | Int | Sim | Identificador |
-| email | String | Sim | Login (único) |
+| username | String | Sim | Login (único) |
+| email | String | Não | Email opcional |
 | first_name, last_name | String | Não | Nome |
-| role | String | Sim | admin / manager / auditor |
+| role | Enum | Sim | ADMIN, MANAGER, AUDITOR |
 | is_active | Boolean | Sim | Status |
-| sankhya_password | Encrypted | Não | Senha para API Sankhya |
 
 ### Cavalete
 
-Estrutura física com código (ex.: CAV01), tipo (corredor/torre), usuário atribuído e status.
+Estrutura física que contém slots.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| id | Int | PK |
+| code | String | Código único (ex: CAV-001) |
+| name | String | Descrição amigável |
+| user | FK(User) | Conferente responsável |
+| status | Enum | AVAILABLE, IN_PROGRESS, COMPLETED, BLOCKED |
 
 ### Slot
 
-Posição no cavalete (lado A/B + número). Produto, descrição, quantidade e status (available, auditing, completed).
+Posição no cavalete.
 
-### SlotHistory / CavaleteHistory
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| id | Int | PK |
+| cavalete | FK(Cavalete) | Cavalete pai |
+| side | Enum | A, B |
+| number | Int | Número da posição |
+| product_code | String | Código do produto conferido |
+| quantity | Int | Quantidade conferida |
+| status | Enum | AVAILABLE, AUDITING, COMPLETED |
 
-Registros de auditoria: quem fez qual ação e quando (slots e cavaletes).
+### Histórico (CavaleteHistory / SlotHistory)
 
----
+Logs de auditoria imutáveis.
 
-**Status:** Modelo do MetaScan (será detalhado com cavaletes, slots, históricos)  
-**Última atualização:** 2026-02-09
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| ... | FK | Link para Cavalete ou Slot |
+| user | FK(User) | Quem realizou a ação |
+| action | Enum | CREATE, UPDATE, DELETE, START_AUDIT, etc. |
+| timestamp | DateTime | Quando ocorreu |
+| description | Text | Detalhes adicionais |
+| snapshot | Fields | (Apenas SlotHistory) Dados antigos e novos |

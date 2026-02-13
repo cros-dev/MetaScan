@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -38,23 +39,26 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Salva e registra log de criação."""
-        instance = serializer.save()
-        log_cavalete_action(instance, self.request.user, Action.CREATE)
+        with transaction.atomic():
+            instance = serializer.save()
+            log_cavalete_action(instance, self.request.user, Action.CREATE)
 
     def perform_update(self, serializer):
         """Salva e registra log de atualização."""
-        instance = serializer.save()
-        log_cavalete_action(instance, self.request.user, Action.UPDATE)
+        with transaction.atomic():
+            instance = serializer.save()
+            log_cavalete_action(instance, self.request.user, Action.UPDATE)
 
     def perform_destroy(self, instance):
         """Deleta e registra log de exclusão."""
-        log_cavalete_action(
-            instance,
-            self.request.user,
-            Action.DELETE,
-            description=f"Cavalete {instance.code} excluído",
-        )
-        instance.delete()
+        with transaction.atomic():
+            log_cavalete_action(
+                instance,
+                self.request.user,
+                Action.DELETE,
+                description=f"Cavalete {instance.code} excluído",
+            )
+            instance.delete()
 
 
 class SlotViewSet(viewsets.ModelViewSet):
@@ -68,44 +72,49 @@ class SlotViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         """Salva e registra log detalhado de atualização."""
-        instance = serializer.instance
-        old_data = {
-            "product_code": instance.product_code,
-            "quantity": instance.quantity,
-        }
+        with transaction.atomic():
+            instance = serializer.instance
+            old_data = {
+                "product_code": instance.product_code,
+                "quantity": instance.quantity,
+            }
 
-        updated_instance = serializer.save()
+            updated_instance = serializer.save()
 
-        new_data = {
-            "product_code": updated_instance.product_code,
-            "quantity": updated_instance.quantity,
-        }
+            new_data = {
+                "product_code": updated_instance.product_code,
+                "quantity": updated_instance.quantity,
+            }
 
-        log_slot_action(
-            updated_instance,
-            self.request.user,
-            Action.UPDATE,
-            old_data=old_data,
-            new_data=new_data,
-        )
+            log_slot_action(
+                updated_instance,
+                self.request.user,
+                Action.UPDATE,
+                old_data=old_data,
+                new_data=new_data,
+            )
 
     @action(detail=True, methods=["post"], url_path="start-confirmation")
     def start_confirmation(self, request, pk=None):
         """Inicia a conferência de um slot (Muda status para AUDITING)."""
-        slot = self.get_object()
+        with transaction.atomic():
+            slot = self.get_object()
 
-        if slot.status != Slot.Status.AVAILABLE:
-            return Response(
-                {"detail": messages.SLOT_INVALID_STATUS},
-                status=status.HTTP_400_BAD_REQUEST,
+            if slot.status != Slot.Status.AVAILABLE:
+                return Response(
+                    {"detail": messages.SLOT_INVALID_STATUS},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            slot.status = Slot.Status.AUDITING
+            slot.save()
+
+            log_slot_action(
+                slot,
+                request.user,
+                Action.START_AUDIT,
+                description="Conferência iniciada",
             )
-
-        slot.status = Slot.Status.AUDITING
-        slot.save()
-
-        log_slot_action(
-            slot, request.user, Action.START_AUDIT, description="Conferência iniciada"
-        )
 
         return Response(
             {"status": "AUDITING", "detail": messages.SLOT_CONFIRMATION_STARTED}
@@ -114,23 +123,24 @@ class SlotViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="finish-confirmation")
     def finish_confirmation(self, request, pk=None):
         """Finaliza a conferência de um slot (Muda status para COMPLETED)."""
-        slot = self.get_object()
+        with transaction.atomic():
+            slot = self.get_object()
 
-        if slot.status != Slot.Status.AUDITING:
-            return Response(
-                {"detail": messages.SLOT_INVALID_STATUS},
-                status=status.HTTP_400_BAD_REQUEST,
+            if slot.status != Slot.Status.AUDITING:
+                return Response(
+                    {"detail": messages.SLOT_INVALID_STATUS},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            slot.status = Slot.Status.COMPLETED
+            slot.save()
+
+            log_slot_action(
+                slot,
+                request.user,
+                Action.FINISH_AUDIT,
+                description="Conferência finalizada",
             )
-
-        slot.status = Slot.Status.COMPLETED
-        slot.save()
-
-        log_slot_action(
-            slot,
-            request.user,
-            Action.FINISH_AUDIT,
-            description="Conferência finalizada",
-        )
 
         return Response(
             {"status": "COMPLETED", "detail": messages.SLOT_CONFIRMATION_FINISHED}

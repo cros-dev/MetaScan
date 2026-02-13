@@ -36,14 +36,17 @@ def _build_login_headers(appkey: str, token: str, username: str, password: str) 
     }
 
 
-def login(username: str, password: str) -> str:
+def login() -> str:
     """Login na API Sankhya (legado). Retorna bearerToken. Raises SankhyaAuthError em falha."""
     url = _login_url()
     appkey = getattr(settings, "SANKHYA_APPKEY", None)
     token = getattr(settings, "SANKHYA_TOKEN", None)
-    if not url or url == LOGIN_PATH or not appkey or not token:
-        logger.error("SANKHYA_API_BASE_URL, SANKHYA_APPKEY e SANKHYA_TOKEN devem estar configurados.")
-        raise SankhyaAuthError("SANKHYA_API_BASE_URL, SANKHYA_APPKEY e SANKHYA_TOKEN devem estar configurados.")
+    username = getattr(settings, "SANKHYA_USER", None)
+    password = getattr(settings, "SANKHYA_PASSWORD", None)
+
+    if not url or url == LOGIN_PATH or not appkey or not token or not username or not password:
+        logger.error("Credenciais Sankhya (URL, AppKey, Token, User, Pass) incompletas.")
+        raise SankhyaAuthError("Credenciais Sankhya incompletas no .env.")
 
     headers = _build_login_headers(appkey, token, username, password)
     try:
@@ -68,33 +71,28 @@ def login(username: str, password: str) -> str:
     return bearer
 
 
-def get_valid_token(user, force_refresh: bool = False) -> str:
-    """BearerToken válido para o user (cache + renovação). Raises SankhyaAuthError se falhar."""
-    if not user or not getattr(user, "sankhya_password", None):
-        uid = getattr(user, "id", None)
-        logger.error("Usuário não encontrado ou senha Sankhya ausente para user_id=%s.", uid)
-        raise SankhyaAuthError("Não foi possível autenticar na Sankhya (usuário ou senha ausente).")
-
-    cache_key = f"sankhya:v1:token:{user.id}"
+def get_valid_token(force_refresh: bool = False) -> str:
+    """BearerToken válido (cache global + renovação). Raises SankhyaAuthError se falhar."""
+    cache_key = "sankhya:v1:token:service_user"
     cached = cache.get(cache_key)
 
     if force_refresh or not cached:
-        logger.info("Token Sankhya não em cache ou refresh forçado para user_id=%s. Renovando login.", user.id)
+        logger.info("Token Sankhya não em cache ou refresh forçado. Renovando login.")
         try:
-            cached = login(user.email, user.sankhya_password)
+            cached = login()
             cache.set(cache_key, cached, timeout=BEARER_CACHE_TIMEOUT_SECONDS)
         except SankhyaAuthError as e:
-            logger.error("Falha ao renovar token Sankhya para user_id=%s.", user.id)
+            logger.error("Falha ao renovar token Sankhya.")
             raise SankhyaAuthError("Não foi possível autenticar na Sankhya (login de renovação falhou).") from e
 
     return cached
 
 
-def refresh_token_if_needed(user, response_status_code: int) -> bool:
+def refresh_token_if_needed(response_status_code: int) -> bool:
     """Limpa cache do token se response_status_code for 401 ou 403. Retorna True se limpou."""
     if response_status_code in (401, 403):
-        cache_key = f"sankhya:v1:token:{user.id}"
+        cache_key = "sankhya:v1:token:service_user"
         cache.delete(cache_key)
-        logger.warning("Token Sankhya invalidado (status %s) para user_id=%s. Cache limpo.", response_status_code, user.id)
+        logger.warning("Token Sankhya invalidado (status %s). Cache limpo.", response_status_code)
         return True
     return False
