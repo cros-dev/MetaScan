@@ -21,11 +21,9 @@ class UserAdmin(BaseUserAdmin):
 
     list_display = ("username", "email", "first_name", "last_name", "role", "is_staff")
     list_filter = ("role", "is_staff", "is_superuser", "is_active")
-    
-    fieldsets = BaseUserAdmin.fieldsets + (
-        ("MetaScan Info", {"fields": ("role",)}),
-    )
-    
+
+    fieldsets = BaseUserAdmin.fieldsets + (("MetaScan Info", {"fields": ("role",)}),)
+
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
         ("MetaScan Info", {"fields": ("role",)}),
     )

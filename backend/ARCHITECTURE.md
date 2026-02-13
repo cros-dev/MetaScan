@@ -22,15 +22,23 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 ### Apps
 
 **apps.accounts**
-- Serializers genéricos para User do Django (`UserSerializer`, `UserProfileSerializer`)
+- Modelo customizado `User` com `role` (Admin, Manager, Auditor)
+- Serializers genéricos (`UserSerializer`, `UserProfileSerializer`)
 - Views para perfil e detalhes de usuário
 - Endpoints: `/api/users/profile/` e `/api/users/<id>/`
 - Configuração do Django Admin para User
 
+**apps.cavaletes**
+- Gestão de cavaletes e slots de estoque.
+- Modelos: `Cavalete` (status: AVAILABLE, IN_PROGRESS, COMPLETED) e `Slot` (posições A/B).
+- Workflow de conferência: Iniciar -> Editar -> Finalizar.
+- Permissões: Conferentes veem apenas cavaletes atribuídos e editam apenas slots em conferência.
+
 **apps.core**
 - Validators genéricos (`validate_cpf`, `validate_cnpj`)
 - Funções utilitárias (`format_phone`, `format_cpf`, `format_cnpj`)
-- Permissão customizada (`IsOwnerOrReadOnly`)
+- Permissões customizadas (`IsAdmin`, `IsManager`, `IsAuditor`, `IsOwnerOrReadOnly`)
+- Mensagens padronizadas (`messages.py`)
 
 **Filtros**
 - Suporte a filtros com `django-filter` para endpoints de listagem

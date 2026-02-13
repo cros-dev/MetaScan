@@ -24,7 +24,7 @@ class IsManager(permissions.BasePermission):
     def has_permission(self, request, view):
         if not (request.user and request.user.is_authenticated):
             return False
-        
+
         return request.user.role in [User.Role.MANAGER, User.Role.ADMIN]
 
 
@@ -36,8 +36,12 @@ class IsAuditor(permissions.BasePermission):
     def has_permission(self, request, view):
         if not (request.user and request.user.is_authenticated):
             return False
-            
-        return request.user.role in [User.Role.AUDITOR, User.Role.MANAGER, User.Role.ADMIN]
+
+        return request.user.role in [
+            User.Role.AUDITOR,
+            User.Role.MANAGER,
+            User.Role.ADMIN,
+        ]
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
