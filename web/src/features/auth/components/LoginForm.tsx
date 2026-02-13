@@ -9,19 +9,19 @@ import {
   Input,
   FormErrorMessage,
   VStack,
-  useToast,
   Text,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 import { loginSchema, type LoginCredentials, loginWithPassword } from '../api/login';
+import { useNotify } from '@/hooks/useNotify';
 
 /**
  * Formulário de Login.
  * Gerencia validação, estado de loading e feedback de erro.
  */
 export const LoginForm = () => {
-  const toast = useToast();
+  const notify = useNotify();
   const navigate = useNavigate();
 
   const {
@@ -38,23 +38,15 @@ export const LoginForm = () => {
       localStorage.setItem('metascan_token', data.access);
       localStorage.setItem('metascan_refresh', data.refresh);
       
-      toast({
-        title: 'Login realizado com sucesso.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      notify.success('Login realizado com sucesso.');
 
-      navigate('/'); // Redireciona para Dashboard
+      navigate('/');
     },
     onError: () => {
-      toast({
-        title: 'Erro ao entrar.',
-        description: 'Verifique suas credenciais e tente novamente.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
+      notify.error(
+        'Erro ao entrar.',
+        'Verifique suas credenciais e tente novamente.'
+      );
     },
   });
 

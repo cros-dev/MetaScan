@@ -15,12 +15,12 @@ const theme = extendTheme({
     body: 'Inter, system-ui, sans-serif',
   },
   styles: {
-    global: {
+    global: (props: any) => ({
       body: {
-        bg: 'gray.50',
-        color: 'gray.900',
+        bg: props.colorMode === 'dark' ? 'gray.900' : 'gray.50',
+        color: props.colorMode === 'dark' ? 'gray.100' : 'gray.800',
       },
-    },
+    }),
   },
 });
 

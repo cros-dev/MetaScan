@@ -2,13 +2,13 @@
 
 Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
 
-## 1. Setup & Fundação (Status: Em Andamento)
+## 1. Setup & Fundação (Status: Concluído)
 - [x] Inicializar projeto Vite + React + TS.
 - [x] Configurar Chakra UI e Tema.
 - [x] Configurar Axios e React Query.
 - [x] Definir estrutura de pastas (Feature-based).
-- [ ] Implementar Layout Base (Sidebar, Header responsivo).
-- [ ] Configurar Rotas Protegidas (AuthGuard).
+- [x] Implementar Layout Base (Sidebar, Header responsivo).
+- [x] Configurar Rotas Protegidas (AuthGuard).
 
 ## 2. Autenticação (Epic 1) (Status: Concluído)
 - [x] Tela de Login (`/login`).

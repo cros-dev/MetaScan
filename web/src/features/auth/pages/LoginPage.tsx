@@ -1,4 +1,4 @@
-import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react';
+import { Box, Container, Heading, Text, VStack, useColorModeValue } from '@chakra-ui/react';
 import { LoginForm } from '../components/LoginForm';
 
 /**
@@ -6,20 +6,24 @@ import { LoginForm } from '../components/LoginForm';
  * Exibe o layout centralizado com o formulário de autenticação.
  */
 export const LoginPage = () => {
+  const bg = useColorModeValue('gray.50', 'gray.800');
+  const cardBg = useColorModeValue('white', 'gray.700');
+  const titleColor = useColorModeValue('blue.600', 'blue.200');
+
   return (
     <Box 
       minH="100vh" 
       display="flex" 
       alignItems="center" 
       justifyContent="center" 
-      bg="gray.50"
+      bg={bg}
     >
-      <Container maxW="md" bg="white" p={8} borderRadius="lg" boxShadow="lg">
+      <Container maxW="md" bg={cardBg} p={8} borderRadius="lg" boxShadow="lg">
         <VStack spacing={6} mb={8}>
-          <Heading as="h1" size="xl" color="blue.600">
+          <Heading as="h1" size="xl" color={titleColor}>
             MetaScan
           </Heading>
-          <Text color="gray.600" textAlign="center">
+          <Text color="gray.500" textAlign="center">
             Sistema de Conferência de Estoque
           </Text>
         </VStack>

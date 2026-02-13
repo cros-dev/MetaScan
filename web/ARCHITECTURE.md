@@ -60,9 +60,21 @@ Temos duas categorias de estado:
 -   **Rotas Protegidas:** Componente `ProtectedRoute` verifica se há token válido. Se não, redireciona para `/login`.
 -   **Lazy Loading:** Páginas principais carregadas via `React.lazy` para code splitting.
 
+## Componentes e Hooks Globais
+
+### Layout
+- **DashboardLayout:** Wrapper para páginas logadas.
+  - **Sidebar:** Navegação lateral (fixa no desktop, drawer no mobile).
+  - **Header:** Barra superior com menu de usuário, avatar e toggle de tema.
+
+### Hooks Customizados
+- **`useNotify`:** Wrapper sobre o `useToast` do Chakra. Garante consistência (posição `bottom-right`, duração 5s) e semântica (`notify.success`, `notify.error`).
+- **`useProfile`:** Hook para buscar e cachear os dados do usuário logado via React Query.
+
 ## Estilização
 
 -   **Chakra UI v2** como biblioteca de componentes base.
+-   **Dark Mode:** Suporte nativo. Cores globais (`body bg`, `text`) definidas em `src/config/theme.ts`.
 -   Estilização via **Props** (`<Box p={4} />`) para manter o CSS junto do componente.
 -   Responsividade usando breakpoints de objeto/array: `width={{ base: "100%", md: "50%" }}`.
 -   Tema customizado em `src/config/theme.ts` para cores da marca e fontes.
