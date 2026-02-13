@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     # Apps locais
     "apps.core",
     "apps.accounts",
+    "apps.cavaletes",
 ]
 
 MIDDLEWARE = [

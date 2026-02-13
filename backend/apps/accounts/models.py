@@ -41,8 +41,8 @@ class User(AbstractUser):
         elif self.role == self.Role.MANAGER:
             self.is_staff = True
             self.is_superuser = False
-        else:  # AUDITOR
+        else:
             self.is_staff = False
             self.is_superuser = False
-            
+
         super().save(*args, **kwargs)

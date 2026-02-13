@@ -2,6 +2,31 @@
 
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
+## [1.3.0] - 2026-02-13
+
+### Adicionado
+- **App Cavaletes:** Implementado app de domínio `cavaletes`.
+- **Modelos:** `Cavalete` (com status e responsável) e `Slot` (com posições e produtos).
+- **API:**
+  - `CavaleteViewSet`: CRUD completo, filtro por usuário para conferentes.
+  - `SlotViewSet`: Workflow de conferência (`start-confirmation`, `finish-confirmation`).
+- **Validação:** Conferentes só podem editar slots com status `AUDITING`.
+- **Testes:** Cobertura para Views, Permissões e Workflow de Slots.
+- **Admin:** Interface administrativa com `SlotInline` para gestão facilitada.
+
+## [1.2.0] - 2026-02-12
+
+### Adicionado
+- **Autenticação:** Modelo `CustomUser` implementado com campos `username`, `email` e `role`.
+- **Roles:** Sistema de papéis (`ADMIN`, `MANAGER`, `AUDITOR`) para controle de acesso.
+- **Admin:** Interface administrativa customizada para `CustomUser`.
+- **Core:** Módulo de permissões (`IsAdmin`, `IsManager`, `IsAuditor`, `IsOwnerOrReadOnly`) em `apps/core/permissions.py`.
+- **Core:** Módulo de mensagens centralizadas em `apps/core/messages.py`.
+
+### Alterado
+- `settings.py`: Configurado `AUTH_USER_MODEL = "accounts.User"`.
+- `UserSerializer`: Atualizado para incluir e validar o campo `role`.
+
 ## [1.1.0] - 2026-01-26
 
 ### Adicionado
