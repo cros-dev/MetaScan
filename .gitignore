@@ -1,51 +1,18 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environment
-.venv/
-venv/
-env/
-ENV/
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
-
-# Environment variables
-.env
-.env.local
-.env.*
-
-# IDE
+# Global / IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.DS_Store
 
-# Cursor
+# Logs Globais
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node Modules (Proteção Global)
+node_modules/
+
+# Cursor (Regras versionadas)
 .cursor/
+web/.env

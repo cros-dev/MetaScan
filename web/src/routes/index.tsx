@@ -1,19 +1,20 @@
 /**
  * Definição das rotas da aplicação.
  */
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { LoginPage } from '@/features/auth/pages/LoginPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>Dashboard (Em breve)</div>,
+    element: <div>Dashboard (Em breve) - <a href="/login">Ir para Login</a></div>,
   },
   {
     path: '/login',
-    element: <div>Login (Em breve)</div>,
+    element: <LoginPage />,
   },
   {
     path: '*',
-    element: <div>404 - Not Found</div>,
+    element: <Navigate to="/" replace />,
   },
 ]);
