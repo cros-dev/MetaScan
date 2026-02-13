@@ -67,7 +67,7 @@ Temos duas categorias de estado:
 - **Sidebar:** Navegação lateral.
   - **Desktop (md+):** Fixa à esquerda, recolhível (só ícones) ou expandida (ícone + texto). Toggle no rodapé para expandir/recolher. Item da rota atual em destaque (azul); hover neutro (cinza) nos demais. Proporção do hover idêntica nos dois estados (constante `SIDEBAR_HORIZONTAL_INSET`).
   - **Mobile:** Drawer em tela cheia; botão hamburger no Header abre/fecha.
-- **Header:** Barra superior com mesma altura que a área da logo (`BAR_HEIGHT`). Menu de usuário, avatar e toggle de tema; no mobile exibe hamburger e título MetaScan.
+- **Header:** Barra superior com mesma altura que a área da logo (`BAR_HEIGHT`). À esquerda (desktop): Breadcrumb gerado pela rota (separador `>`, links anteriores suaves, página atual em negrito; na raiz só "Dashboard", em Cavaletes/Histórico só "Inventário > …"). À direita: toggle de tema e menu de usuário (avatar, Perfil, Sair). No mobile: hamburger e título MetaScan à esquerda.
 - **Constantes (`constants.ts`):** Dimensões centralizadas: `BAR_HEIGHT`, `SIDEBAR_WIDTH_EXPANDED`, `SIDEBAR_WIDTH_COLLAPSED`, `SIDEBAR_ICON_SIZE`, `SIDEBAR_FONT_SIZE`, `SIDEBAR_NAV_ITEM_H`, `SIDEBAR_HORIZONTAL_INSET`. Alterações de largura, altura dos itens ou recuo do hover devem ser feitas ali.
 
 ### Hooks Customizados
