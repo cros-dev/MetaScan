@@ -7,7 +7,7 @@ Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
 - [x] Configurar Chakra UI e Tema.
 - [x] Configurar Axios e React Query.
 - [x] Definir estrutura de pastas (Feature-based).
-- [x] Implementar Layout Base (Sidebar, Header responsivo).
+- [x] Implementar Layout Base (Sidebar recolhível no desktop, Drawer no mobile, Header responsivo, constantes em `Layout/constants.ts`).
 - [x] Configurar Rotas Protegidas (AuthGuard).
 
 ## 2. Autenticação (Epic 1) (Status: Concluído)
