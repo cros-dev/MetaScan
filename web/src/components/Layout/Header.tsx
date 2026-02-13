@@ -1,5 +1,8 @@
 import {
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Flex,
   IconButton,
   Text,
@@ -16,7 +19,7 @@ import {
   type FlexProps,
 } from '@chakra-ui/react';
 import { FiMenu, FiLogOut, FiMoon, FiSun, FiUser } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getProfile } from '@/features/users/api/getProfile';
 import { BAR_HEIGHT, SIDEBAR_WIDTH_EXPANDED } from './constants';
@@ -27,11 +30,35 @@ interface HeaderProps extends FlexProps {
 
 /**
  * Header (Barra Superior).
- * Contém o botão de menu (mobile) e o perfil do usuário.
+ * Breadcrumb à esquerda (desktop), menu/perfil à direita; no mobile: hamburger + título à esquerda.
  */
+const ROUTE_LABELS: Record<string, string> = {
+  '': 'Dashboard',
+  inventory: 'Inventário',
+  cavaletes: 'Cavaletes',
+  history: 'Histórico',
+};
+
 export const Header = ({ onOpen, ...rest }: HeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const bgColor = useColorModeValue('white', 'gray.900');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const breadcrumbLinkColor = useColorModeValue('gray.600', 'gray.400');
+  const menuListBg = useColorModeValue('white', 'gray.800');
+  const menuItemHover = useColorModeValue('gray.100', 'gray.700');
+  const logoutHover = useColorModeValue('red.50', 'red.900');
+
+  const pathSegments = location.pathname.split('/').filter(Boolean);
+  const isHome = pathSegments.length === 0;
+  const breadcrumbItems = isHome
+    ? [{ path: '/', label: ROUTE_LABELS[''] ?? 'Dashboard' }]
+    : pathSegments.map((segment, i) => ({
+        path: '/' + pathSegments.slice(0, i + 1).join('/'),
+        label: ROUTE_LABELS[segment] ?? segment,
+      }));
 
   const { data: user, isLoading } = useQuery({
     queryKey: ['profile'],
@@ -50,34 +77,57 @@ export const Header = ({ onOpen, ...rest }: HeaderProps) => {
   return (
     <Flex
       ml={{ base: 0, md: SIDEBAR_WIDTH_EXPANDED }}
-      px={{ base: 4, md: 4 }}
+      px="4"
       height={BAR_HEIGHT}
       alignItems="center"
-      bg={useColorModeValue('white', 'gray.900')}
+      bg={bgColor}
       borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      borderBottomColor={borderColor}
+      justifyContent="space-between"
       {...rest}
     >
-      <IconButton
-        display={{ base: 'flex', md: 'none' }}
-        onClick={onOpen}
-        variant="outline"
-        aria-label="open menu"
-        icon={<FiMenu />}
-      />
+      <HStack spacing={3} flex="1" minW={0}>
+        <IconButton
+          display={{ base: 'flex', md: 'none' }}
+          onClick={onOpen}
+          variant="outline"
+          aria-label="open menu"
+          icon={<FiMenu />}
+        />
+        <Text
+          display={{ base: 'flex', md: 'none' }}
+          fontSize="2xl"
+          fontFamily="monospace"
+          fontWeight="bold"
+          color="blue.600"
+        >
+          MetaScan
+        </Text>
+        <Breadcrumb
+          display={{ base: 'none', md: 'block' }}
+          listProps={{ flexWrap: 'wrap', gap: 1 }}
+          separator=">"
+        >
+          {breadcrumbItems.map((item, i) => {
+            const isCurrent = i === breadcrumbItems.length - 1;
+            return (
+              <BreadcrumbItem key={item.path} isCurrentPage={isCurrent}>
+                <BreadcrumbLink
+                  {...(!isCurrent && { as: Link, to: item.path })}
+                  isCurrentPage={isCurrent}
+                  fontSize="sm"
+                  color={isCurrent ? undefined : breadcrumbLinkColor}
+                  fontWeight={isCurrent ? 'semibold' : 'normal'}
+                >
+                  {item.label}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            );
+          })}
+        </Breadcrumb>
+      </HStack>
 
-      <Text
-        display={{ base: 'flex', md: 'none' }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
-        color="blue.600"
-      >
-        MetaScan
-      </Text>
-
-      <HStack spacing={{ base: '0', md: '6' }}>
+      <HStack spacing={{ base: '0', md: '6' }} flexShrink={0}>
         <IconButton
           size="lg"
           variant="ghost"
@@ -99,8 +149,8 @@ export const Header = ({ onOpen, ...rest }: HeaderProps) => {
               </HStack>
             </MenuButton>
             <MenuList
-              bg={useColorModeValue('white', 'gray.800')}
-              borderColor={useColorModeValue('gray.200', 'gray.700')}
+              bg={menuListBg}
+              borderColor={borderColor}
               boxShadow="lg"
             >
               <Box px={3} py={2}>
@@ -114,11 +164,11 @@ export const Header = ({ onOpen, ...rest }: HeaderProps) => {
                 </Skeleton>
               </Box>
               <MenuDivider />
-              <MenuItem icon={<FiUser />} _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }} bg="transparent">
+              <MenuItem icon={<FiUser />} _hover={{ bg: menuItemHover }} bg="transparent">
                 Perfil
               </MenuItem>
               <MenuDivider />
-              <MenuItem icon={<FiLogOut />} onClick={handleLogout} _hover={{ bg: useColorModeValue('red.50', 'red.900'), color: 'red.500' }} bg="transparent">
+              <MenuItem icon={<FiLogOut />} onClick={handleLogout} _hover={{ bg: logoutHover, color: 'red.500' }} bg="transparent">
                 Sair
               </MenuItem>
             </MenuList>
