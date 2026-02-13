@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.cavaletes",
     "apps.inventory",
+    "apps.sankhya",
 ]
 
 MIDDLEWARE = [
@@ -185,6 +186,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "EXCEPTION_HANDLER": "apps.core.exceptions.custom_exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/day",
+        "user": "2000/day",
+        "sankhya": "60/min",  # Proteção específica para o ERP
+    },
 }
 
 # =========================================================
@@ -252,8 +262,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SANKHYA_API_BASE_URL = os.getenv("SANKHYA_API_BASE_URL", "https://api.sankhya.com.br")
 SANKHYA_APPKEY = os.getenv("SANKHYA_APPKEY", "")
 SANKHYA_TOKEN = os.getenv("SANKHYA_TOKEN", "")
-
-# =========================================================
-# Criptografia de campos sensíveis (ex.: senha Sankhya no User)
-# =========================================================
-FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "")
+SANKHYA_USER = os.getenv("SANKHYA_USER", "")
+SANKHYA_PASSWORD = os.getenv("SANKHYA_PASSWORD", "")

@@ -2,6 +2,24 @@
 
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
+
+## [1.6.0] - 2026-02-13
+
+### Melhorado
+- **Integridade de Dados:** Implementado `transaction.atomic` nos fluxos críticos do app `cavaletes` para garantir consistência entre operação e log.
+- **Segurança:** Implementado Rate Limiting (Throttling) global e específico para integração Sankhya (60 req/min).
+- **Testes:** Adicionados testes unitários para o modelo `User` (verificação de permissões por role) e permissões do app `inventory`.
+- **Limpeza:** Removida configuração obsoleta `FIELD_ENCRYPTION_KEY`.
+- **Qualidade:** Corrigidos warnings de lint e imports não utilizados.
+
+
+### Adicionado
+- **App Sankhya:** Implementado proxy para integração com ERP Sankhya (`apps.sankhya`).
+- **Autenticação Sankhya:** Atualizado client para usar usuário de serviço global (`SANKHYA_USER`).
+- **API:** Endpoint `GET /api/sankhya/products/<code>/` para consulta de detalhes do produto.
+- **Configuração:** Variáveis de ambiente `SANKHYA_USER` e `SANKHYA_PASSWORD` adicionadas.
+- **Testes:** Cobertura para client Sankhya (auth/product) e views do app proxy.
+
 ## [1.4.0] - 2026-02-13
 
 ### Adicionado

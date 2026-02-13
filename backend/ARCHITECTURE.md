@@ -15,6 +15,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - **Admin:** registrar novos modelos no Django Admin para operação e debug (list_display, list_filter quando fizer sentido).
 - **Validação:** regras de negócio que dependem do estado do objeto (ex.: “só editar produto se status=auditing”) devem ser implementadas no **serializer** (validate ou validate_*), não apenas na view; a view delega ao serializer.
 - **Lógica repetida:** uso de helper ou service (ex.: criação de histórico) em vez de duplicar lógica nas views; views permanecem enxutas.
+- **Transações:** usar `transaction.atomic` em operações que envolvem múltiplas escritas no banco (ex.: salvar objeto e criar log) para garantir integridade.
 - **Chamadas externas (ex.: Sankhya):** usar timeout e retry com backoff nas requisições HTTP para não bloquear workers.
 
 ## Componentes principais
@@ -71,6 +72,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - **Banco de Dados**: Prioriza PostgreSQL se as variáveis estiverem definidas; caso contrário, usa SQLite em modo DEBUG.
 - **Segurança**: HTTPS forçado em produção via `SECURE_SSL_REDIRECT` (configurável via env var).
 - **Cache**: Usa Redis dinamicamente se `REDIS_URL` estiver definido, senão LocMemCache.
+- **Rate Limiting**: Proteção global (Anon: 100/dia, User: 2000/dia) e específica para Sankhya (60/min) via Throttling do DRF.
 - **WhiteNoise**: Middleware configurado para servir arquivos estáticos em produção.
 - CORS configurado (permissivo em dev, restritivo em prod)
 - Logging configurado
@@ -214,7 +216,12 @@ apps/
 └── ...                # Apps de domínio (cavaletes, inventory, sankhya)
 ```
 
-**Clients (fora de apps/)**
+**apps.sankhya**
+- Proxy para a API externa do Sankhya.
+- Endpoint de consulta de produtos autenticada.
+- Usa o client `clients.sankhya` para comunicação.
+
+**clients.sankhya**
 
 ```
 clients/
