@@ -28,6 +28,12 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - Endpoints: `/api/users/profile/` e `/api/users/<id>/`
 - Configuração do Django Admin para User
 
+**apps.inventory**
+- Histórico e auditoria de ações.
+- Modelos: `CavaleteHistory`, `SlotHistory`.
+- Services: `log_cavalete_action`, `log_slot_action`.
+- Integração: Chamado automaticamente pelos ViewSets de `cavaletes`.
+
 **apps.cavaletes**
 - Gestão de cavaletes e slots de estoque.
 - Modelos: `Cavalete` (status: AVAILABLE, IN_PROGRESS, COMPLETED) e `Slot` (posições A/B).

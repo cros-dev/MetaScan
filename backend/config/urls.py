@@ -17,6 +17,7 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api/users/", include("apps.accounts.urls")),
     path("api/inventory/", include("apps.cavaletes.urls")),
+    path("api/inventory/", include("apps.inventory.urls")),
 ]
 
 # Servir arquivos media em desenvolvimento

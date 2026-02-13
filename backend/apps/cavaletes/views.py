@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.core.permissions import IsAuditor, IsManager
-from apps.core import messages as core_messages
+from apps.inventory.models import Action
+from apps.inventory.services import log_cavalete_action, log_slot_action
 from .models import Cavalete, Slot
 from .serializers import CavaleteSerializer, SlotSerializer
 from . import messages
@@ -35,6 +36,26 @@ class CavaleteViewSet(viewsets.ModelViewSet):
 
         return qs
 
+    def perform_create(self, serializer):
+        """Salva e registra log de criação."""
+        instance = serializer.save()
+        log_cavalete_action(instance, self.request.user, Action.CREATE)
+
+    def perform_update(self, serializer):
+        """Salva e registra log de atualização."""
+        instance = serializer.save()
+        log_cavalete_action(instance, self.request.user, Action.UPDATE)
+
+    def perform_destroy(self, instance):
+        """Deleta e registra log de exclusão."""
+        log_cavalete_action(
+            instance,
+            self.request.user,
+            Action.DELETE,
+            description=f"Cavalete {instance.code} excluído",
+        )
+        instance.delete()
+
 
 class SlotViewSet(viewsets.ModelViewSet):
     """
@@ -44,6 +65,29 @@ class SlotViewSet(viewsets.ModelViewSet):
     queryset = Slot.objects.all()
     serializer_class = SlotSerializer
     permission_classes = [IsAuditor]
+
+    def perform_update(self, serializer):
+        """Salva e registra log detalhado de atualização."""
+        instance = serializer.instance
+        old_data = {
+            "product_code": instance.product_code,
+            "quantity": instance.quantity,
+        }
+
+        updated_instance = serializer.save()
+
+        new_data = {
+            "product_code": updated_instance.product_code,
+            "quantity": updated_instance.quantity,
+        }
+
+        log_slot_action(
+            updated_instance,
+            self.request.user,
+            Action.UPDATE,
+            old_data=old_data,
+            new_data=new_data,
+        )
 
     @action(detail=True, methods=["post"], url_path="start-confirmation")
     def start_confirmation(self, request, pk=None):
@@ -58,6 +102,10 @@ class SlotViewSet(viewsets.ModelViewSet):
 
         slot.status = Slot.Status.AUDITING
         slot.save()
+
+        log_slot_action(
+            slot, request.user, Action.START_AUDIT, description="Conferência iniciada"
+        )
 
         return Response(
             {"status": "AUDITING", "detail": messages.SLOT_CONFIRMATION_STARTED}
@@ -76,6 +124,13 @@ class SlotViewSet(viewsets.ModelViewSet):
 
         slot.status = Slot.Status.COMPLETED
         slot.save()
+
+        log_slot_action(
+            slot,
+            request.user,
+            Action.FINISH_AUDIT,
+            description="Conferência finalizada",
+        )
 
         return Response(
             {"status": "COMPLETED", "detail": messages.SLOT_CONFIRMATION_FINISHED}
