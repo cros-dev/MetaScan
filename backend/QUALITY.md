@@ -147,6 +147,9 @@ pytest
 # Executar testes de um app específico
 pytest apps/accounts/
 
+# Executar testes de um client específico
+pytest clients/sankhya/
+
 # Executar um arquivo de teste específico
 pytest apps/accounts/tests/test_views.py
 
@@ -232,7 +235,8 @@ pytest
 ### Pytest
 - **Coverage mínimo:** Configurável (atualmente 0% para desenvolvimento inicial)
 - **Relatórios:** HTML, XML, terminal
-- **Cobertura de:** apenas `apps/`
+- **Cobertura de:** `apps/` e `clients/`
+- **Testpaths:** `apps` e `clients` (cada app/client com pasta `tests/`)
 - **Ignora:** arquivos `tests.py` (usa apenas diretório `tests/`)
 
 ### Coverage

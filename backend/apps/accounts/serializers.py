@@ -1,8 +1,4 @@
-"""
-Serializers para o app accounts.
-
-Serializers genéricos para User do Django, compatíveis com JWT.
-"""
+"""Serializers do app accounts (User e perfil, JWT)."""
 
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
@@ -20,7 +16,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "role", "date_joined"]
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "date_joined",
+        ]
         read_only_fields = ["id", "role", "date_joined"]
 
 

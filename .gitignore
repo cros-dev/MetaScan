@@ -48,4 +48,4 @@ staticfiles/
 *.swo
 
 # Cursor
-.cursor/rules/documentation.mdc
+.cursor/

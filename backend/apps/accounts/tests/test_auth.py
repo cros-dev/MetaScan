@@ -1,8 +1,4 @@
-"""
-Testes de autenticação JWT para o app accounts.
-
-Testa endpoints de login, refresh token e verificação de token.
-"""
+"""Testes de autenticação JWT do app accounts (login, refresh, verify)."""
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model

@@ -1,6 +1,4 @@
-"""
-URL configuration for config project.
-"""
+"""URL configuration do projeto."""
 
 from django.contrib import admin
 from django.urls import path, include
@@ -18,6 +16,9 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api/users/", include("apps.accounts.urls")),
+    path("api/inventory/", include("apps.cavaletes.urls")),
+    path("api/inventory/", include("apps.inventory.urls")),
+    path("api/sankhya/", include("apps.sankhya.urls")),
 ]
 
 # Servir arquivos media em desenvolvimento

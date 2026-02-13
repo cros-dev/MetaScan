@@ -5,6 +5,7 @@ Repositório do **MetaScan** — sistema de conferência de estoque em cavaletes
 ## Estrutura do repositório
 
 - **backend/** — API Django (DRF, JWT, cavaletes, slots, histórico, Sankhya). Veja [backend/README.md](backend/README.md) para execução e configuração.
+- **web/** — Frontend React (Vite, Chakra UI, PWA). Veja [web/README.md](web/README.md).
 - **docs/** — Documentação técnica, produto e governança. Veja [docs/README.md](docs/README.md).
 
 ## Início rápido (backend)

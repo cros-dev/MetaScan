@@ -1,0 +1,36 @@
+# Backlog Frontend - MetaScan
+
+Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
+
+## 1. Setup & Fundação (Status: Em Andamento)
+- [x] Inicializar projeto Vite + React + TS.
+- [x] Configurar Chakra UI e Tema.
+- [x] Configurar Axios e React Query.
+- [x] Definir estrutura de pastas (Feature-based).
+- [ ] Implementar Layout Base (Sidebar, Header responsivo).
+- [ ] Configurar Rotas Protegidas (AuthGuard).
+
+## 2. Autenticação (Epic 1)
+- [ ] Tela de Login (`/login`).
+- [ ] Integração com `POST /api/token/`.
+- [ ] Armazenamento de Token (LocalStorage) e Contexto de Auth.
+- [ ] Logout e Refresh Token automático (Interceptor).
+
+## 3. Gestão de Cavaletes (Epic 2)
+- [ ] Listagem de Cavaletes (`/inventory/cavaletes`).
+- [ ] Filtros por Status (Disponível, Em Conferência, Concluído).
+- [ ] Modal de Criação de Cavalete.
+- [ ] Detalhes do Cavalete (Visualizar Slots).
+- [ ] Atribuir Conferente (Dropdown de usuários).
+
+## 4. Conferência (Epic 3)
+- [ ] Tela "Meus Cavaletes" (Visão do Conferente).
+- [ ] Workflow de Slot:
+    - [ ] Botão "Iniciar Conferência".
+    - [ ] Input de Código de Barras (integração Sankhya).
+    - [ ] Input de Quantidade.
+    - [ ] Botão "Finalizar Conferência".
+
+## 5. Histórico e Auditoria (Epic 4)
+- [ ] Tela de Histórico de Cavaletes (Readonly).
+- [ ] Visualização de Logs de Slot (Quem fez o quê).

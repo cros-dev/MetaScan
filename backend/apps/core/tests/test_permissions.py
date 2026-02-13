@@ -1,6 +1,4 @@
-"""
-Testes para permissões customizadas do app core.
-"""
+"""Testes das permissões customizadas do app core."""
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -23,20 +21,18 @@ class PermissionsTestCase(TestCase):
         )
 
     def test_is_owner_or_read_only_with_owner_attr(self):
-        """Testa IsOwnerOrReadOnly com objeto que tem atributo 'owner'."""
+        """Testa IsOwnerOrReadOnly com objeto que tem atributo 'user' (mapeado de owner)."""
 
         class MockObject:
-            def __init__(self, owner):
-                self.owner = owner
+            def __init__(self, user):
+                self.user = user
 
         permission = IsOwnerOrReadOnly()
         obj = MockObject(self.owner)
 
-        # GET permite para qualquer um
         request = type("Request", (), {"user": self.other_user, "method": "GET"})()
         self.assertTrue(permission.has_object_permission(request, None, obj))
 
-        # PUT permite apenas para owner
         request_owner = type("Request", (), {"user": self.owner, "method": "PUT"})()
         request_other = type(
             "Request", (), {"user": self.other_user, "method": "PUT"}
@@ -69,18 +65,16 @@ class PermissionsTestCase(TestCase):
         self.assertFalse(permission.has_object_permission(request_other, None, obj))
 
     def test_is_owner_or_read_only_without_owner_or_user(self):
-        """Testa IsOwnerOrReadOnly com objeto sem atributo 'owner' ou 'user'."""
+        """Testa IsOwnerOrReadOnly com objeto sem atributo 'user'."""
 
         class MockObject:
-            pass
+            user = None  # Simula objeto sem dono definido ou atributo nulo
 
         permission = IsOwnerOrReadOnly()
         obj = MockObject()
 
-        # GET permite
         request = type("Request", (), {"user": self.owner, "method": "GET"})()
         self.assertTrue(permission.has_object_permission(request, None, obj))
 
-        # PUT não permite (objeto sem owner/user)
         request = type("Request", (), {"user": self.owner, "method": "PUT"})()
         self.assertFalse(permission.has_object_permission(request, None, obj))

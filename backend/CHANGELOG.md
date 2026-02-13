@@ -2,6 +2,59 @@
 
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
+
+## [1.6.0] - 2026-02-13
+
+### Melhorado
+- **Integridade de Dados:** Implementado `transaction.atomic` nos fluxos críticos do app `cavaletes` para garantir consistência entre operação e log.
+- **Segurança:** Implementado Rate Limiting (Throttling) global e específico para integração Sankhya (60 req/min).
+- **Testes:** Adicionados testes unitários para o modelo `User` (verificação de permissões por role) e permissões do app `inventory`.
+- **Limpeza:** Removida configuração obsoleta `FIELD_ENCRYPTION_KEY`.
+- **Qualidade:** Corrigidos warnings de lint e imports não utilizados.
+
+
+### Adicionado
+- **App Sankhya:** Implementado proxy para integração com ERP Sankhya (`apps.sankhya`).
+- **Autenticação Sankhya:** Atualizado client para usar usuário de serviço global (`SANKHYA_USER`).
+- **API:** Endpoint `GET /api/sankhya/products/<code>/` para consulta de detalhes do produto.
+- **Configuração:** Variáveis de ambiente `SANKHYA_USER` e `SANKHYA_PASSWORD` adicionadas.
+- **Testes:** Cobertura para client Sankhya (auth/product) e views do app proxy.
+
+## [1.4.0] - 2026-02-13
+
+### Adicionado
+- **App Inventory:** Implementado app para histórico e auditoria (`apps.inventory`).
+- **Modelos de Histórico:** `CavaleteHistory` e `SlotHistory` registram todas as ações.
+- **Auditoria:** Logs automáticos de criação, atualização, exclusão e mudança de status.
+- **Snapshots:** `SlotHistory` armazena valores anteriores e novos (produto/quantidade).
+- **API:** Endpoints readonly para consulta de histórico (`api/inventory/history/...`).
+- **Admin:** Visualização de histórico no Django Admin (readonly).
+
+## [1.3.0] - 2026-02-13
+
+### Adicionado
+- **App Cavaletes:** Implementado app de domínio `cavaletes`.
+- **Modelos:** `Cavalete` (com status e responsável) e `Slot` (com posições e produtos).
+- **API:**
+  - `CavaleteViewSet`: CRUD completo, filtro por usuário para conferentes.
+  - `SlotViewSet`: Workflow de conferência (`start-confirmation`, `finish-confirmation`).
+- **Validação:** Conferentes só podem editar slots com status `AUDITING`.
+- **Testes:** Cobertura para Views, Permissões e Workflow de Slots.
+- **Admin:** Interface administrativa com `SlotInline` para gestão facilitada.
+
+## [1.2.0] - 2026-02-12
+
+### Adicionado
+- **Autenticação:** Modelo `CustomUser` implementado com campos `username`, `email` e `role`.
+- **Roles:** Sistema de papéis (`ADMIN`, `MANAGER`, `AUDITOR`) para controle de acesso.
+- **Admin:** Interface administrativa customizada para `CustomUser`.
+- **Core:** Módulo de permissões (`IsAdmin`, `IsManager`, `IsAuditor`, `IsOwnerOrReadOnly`) em `apps/core/permissions.py`.
+- **Core:** Módulo de mensagens centralizadas em `apps/core/messages.py`.
+
+### Alterado
+- `settings.py`: Configurado `AUTH_USER_MODEL = "accounts.User"`.
+- `UserSerializer`: Atualizado para incluir e validar o campo `role`.
+
 ## [1.1.0] - 2026-01-26
 
 ### Adicionado

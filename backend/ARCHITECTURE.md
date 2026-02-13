@@ -6,6 +6,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 
 - **Choices:** ficam como atributos de classe no modelo que possui o campo (ex.: `User.ROLE_CHOICES` em `accounts/models.py`). Serializers e views importam do modelo quando precisarem da lista. Não usar `constants.py` só para choices de um único modelo.
 - **Mensagens da API:** textos de resposta (erro, validação, sucesso) ficam em `messages.py` — em `core` para mensagens genéricas e em cada app para mensagens do domínio. Views e serializers importam e usam as constantes (ex.: `Response({"detail": USER_NOT_REGISTERED}, status=401)`).
+- **Comentários e documentação (Django + PEP 257):** docstrings concisos — uma linha quando o propósito for óbvio; usar Args/Returns quando ajudar. Comentários e docstrings com quebra de linha em 79 caracteres. Evitar "we" em comentários. Não usar emojis em código, comentários, docstrings, commits ou documentação. Em `.env.example`, usar apenas cabeçalho de seção (`# ===`) e no máximo uma linha de explicação por bloco de variáveis. Contexto longo (ex.: migração OAuth) fica em ARCHITECTURE ou ADR, não no código.
 
 ### Boas práticas Django/DRF
 
@@ -14,6 +15,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - **Admin:** registrar novos modelos no Django Admin para operação e debug (list_display, list_filter quando fizer sentido).
 - **Validação:** regras de negócio que dependem do estado do objeto (ex.: “só editar produto se status=auditing”) devem ser implementadas no **serializer** (validate ou validate_*), não apenas na view; a view delega ao serializer.
 - **Lógica repetida:** uso de helper ou service (ex.: criação de histórico) em vez de duplicar lógica nas views; views permanecem enxutas.
+- **Transações:** usar `transaction.atomic` em operações que envolvem múltiplas escritas no banco (ex.: salvar objeto e criar log) para garantir integridade.
 - **Chamadas externas (ex.: Sankhya):** usar timeout e retry com backoff nas requisições HTTP para não bloquear workers.
 
 ## Componentes principais
@@ -21,15 +23,29 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 ### Apps
 
 **apps.accounts**
-- Serializers genéricos para User do Django (`UserSerializer`, `UserProfileSerializer`)
+- Modelo customizado `User` com `role` (Admin, Manager, Auditor)
+- Serializers genéricos (`UserSerializer`, `UserProfileSerializer`)
 - Views para perfil e detalhes de usuário
 - Endpoints: `/api/users/profile/` e `/api/users/<id>/`
 - Configuração do Django Admin para User
 
+**apps.inventory**
+- Histórico e auditoria de ações.
+- Modelos: `CavaleteHistory`, `SlotHistory`.
+- Services: `log_cavalete_action`, `log_slot_action`.
+- Integração: Chamado automaticamente pelos ViewSets de `cavaletes`.
+
+**apps.cavaletes**
+- Gestão de cavaletes e slots de estoque.
+- Modelos: `Cavalete` (status: AVAILABLE, IN_PROGRESS, COMPLETED) e `Slot` (posições A/B).
+- Workflow de conferência: Iniciar -> Editar -> Finalizar.
+- Permissões: Conferentes veem apenas cavaletes atribuídos e editam apenas slots em conferência.
+
 **apps.core**
 - Validators genéricos (`validate_cpf`, `validate_cnpj`)
 - Funções utilitárias (`format_phone`, `format_cpf`, `format_cnpj`)
-- Permissão customizada (`IsOwnerOrReadOnly`)
+- Permissões customizadas (`IsAdmin`, `IsManager`, `IsAuditor`, `IsOwnerOrReadOnly`)
+- Mensagens padronizadas (`messages.py`)
 
 **Filtros**
 - Suporte a filtros com `django-filter` para endpoints de listagem
@@ -46,6 +62,9 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - Rotação de refresh tokens
 - Tempo de vida configurável via variáveis de ambiente
 
+**Exception handler (DRF)**
+- Handler customizado em `apps.core.exceptions.custom_exception_handler` converte exceções do client Sankhya em respostas HTTP: `SankhyaAuthError` -> 503 (detail com mensagem); `SankhyaProductError` -> 404 se "Produto não encontrado", senão 502. Views que chamam `get_valid_token()` ou `get_product()` podem deixar a exceção subir; o DRF devolve JSON padronizado.
+
 ### Configurações
 
 **settings.py**
@@ -53,6 +72,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 - **Banco de Dados**: Prioriza PostgreSQL se as variáveis estiverem definidas; caso contrário, usa SQLite em modo DEBUG.
 - **Segurança**: HTTPS forçado em produção via `SECURE_SSL_REDIRECT` (configurável via env var).
 - **Cache**: Usa Redis dinamicamente se `REDIS_URL` estiver definido, senão LocMemCache.
+- **Rate Limiting**: Proteção global (Anon: 100/dia, User: 2000/dia) e específica para Sankhya (60/min) via Throttling do DRF.
 - **WhiteNoise**: Middleware configurado para servir arquivos estáticos em produção.
 - CORS configurado (permissivo em dev, restritivo em prod)
 - Logging configurado
@@ -79,9 +99,8 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 
 ### Testes
 
-- Estrutura organizada em `tests/` dentro de cada app
-- Testes básicos para serializers, views e autenticação
-- Testes para validators, utils e permissions
+- **Apps:** estrutura em `tests/` dentro de cada app (`apps/<app>/tests/`). Testes para serializers, views, autenticação, validators, utils e permissions.
+- **Clients:** estrutura em `tests/` dentro de cada client (`clients/<client>/tests/`). Usar mock de HTTP (ex.: `unittest.mock.patch` em `requests`) para não chamar API real. Pytest descobre e executa com `testpaths = apps clients`.
 
 ### Documentação
 
@@ -195,6 +214,26 @@ apps/
 │   ├── permissions.py
 │   └── tests/
 └── ...                # Apps de domínio (cavaletes, inventory, sankhya)
+```
+
+**apps.sankhya**
+- Proxy para a API externa do Sankhya.
+- Endpoint de consulta de produtos autenticada.
+- Usa o client `clients.sankhya` para comunicação.
+
+**clients.sankhya**
+
+```
+clients/
+├── sankhya/
+│   ├── auth.py
+│   ├── product.py
+│   ├── constants.py
+│   ├── exceptions.py
+│   └── tests/
+│       ├── test_auth.py
+│       └── test_product.py
+└── ...
 ```
 
 ## Notas

@@ -1,5 +1,1 @@
-"""
-Pasta para apps do projeto.
-
-Apps organizados em uma pasta separada para melhor estruturação.
-"""
+"""Pasta dos apps do projeto."""

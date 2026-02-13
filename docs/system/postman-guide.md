@@ -13,6 +13,21 @@ A Collection deve seguir a hierarquia abaixo:
   - **Users** (Perfil do usuário logado)
     - `GET My Profile`
     - `PATCH My Profile`
+  - **Inventory** (Estoque)
+    - **Cavaletes**
+      - `GET List Cavaletes`
+      - `POST Create Cavalete`
+      - `PATCH Update Cavalete`
+    - **Slots**
+      - `GET List Slots`
+      - `PATCH Update Slot (Product/Qty)`
+      - `POST Start Confirmation`
+      - `POST Finish Confirmation`
+  - **History** (Auditoria - Readonly)
+    - `GET Cavalete History`
+    - `GET Slot History`
+  - **Sankhya** (Integração)
+    - `GET Product Detail`
   - **Admin** (Gestão administrativa)
     - `GET User by ID`
     - `PATCH User by ID`

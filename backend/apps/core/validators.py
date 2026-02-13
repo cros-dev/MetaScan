@@ -1,17 +1,11 @@
-"""
-Validators genéricos para o app core.
-
-Validators reutilizáveis que podem ser usados em qualquer app do projeto.
-"""
+"""Validators genéricos do app core (reutilizáveis no projeto)."""
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
 def validate_cpf(value):
-    """
-    Validador robusto de CPF com algoritmo de dígitos verificadores.
-    """
+    """Valida CPF (11 dígitos e dígitos verificadores)."""
     if not value:
         return
 
@@ -31,12 +25,7 @@ def validate_cpf(value):
 
 
 def validate_cnpj(value):
-    """
-    Validador básico de CNPJ.
-
-    Remove formatação e valida se tem 14 dígitos numéricos.
-    Para validação completa, considere usar biblioteca externa.
-    """
+    """Valida CNPJ (14 dígitos). Validação básica; para completa use lib externa."""
     if not value:
         return
 

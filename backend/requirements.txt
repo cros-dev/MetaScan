@@ -13,6 +13,9 @@ psycopg2-binary==2.9.9
 # Variáveis de ambiente
 python-dotenv==1.2.1
 
+# HTTP client
+requests>=2.31.0
+
 # Qualidade de código e testes
 pytest==8.3.3
 pytest-django==4.8.0
