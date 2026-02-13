@@ -14,23 +14,23 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer para dados públicos do usuário.
 
-    Campos: id, username, email, first_name, last_name, date_joined
-    Campos somente leitura: id, date_joined
+    Campos: id, username, email, first_name, last_name, role, date_joined
+    Campos somente leitura: id, role, date_joined
     """
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "date_joined"]
-        read_only_fields = ["id", "date_joined"]
+        fields = ["id", "username", "email", "first_name", "last_name", "role", "date_joined"]
+        read_only_fields = ["id", "role", "date_joined"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """
     Serializer para perfil editável do usuário.
 
-    Campos: id, username, email, first_name, last_name, date_joined, is_active
+    Campos: id, username, email, first_name, last_name, role, date_joined, is_active
     Campos editáveis: email, first_name, last_name
-    Campos somente leitura: id, username, date_joined, is_active
+    Campos somente leitura: id, username, role, date_joined, is_active
     """
 
     class Meta:
@@ -41,7 +41,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "role",
             "date_joined",
             "is_active",
         ]
-        read_only_fields = ["id", "username", "date_joined", "is_active"]
+        read_only_fields = ["id", "username", "role", "date_joined", "is_active"]
