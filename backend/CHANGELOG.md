@@ -2,6 +2,16 @@
 
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
+## [1.4.0] - 2026-02-13
+
+### Adicionado
+- **App Inventory:** Implementado app para histórico e auditoria (`apps.inventory`).
+- **Modelos de Histórico:** `CavaleteHistory` e `SlotHistory` registram todas as ações.
+- **Auditoria:** Logs automáticos de criação, atualização, exclusão e mudança de status.
+- **Snapshots:** `SlotHistory` armazena valores anteriores e novos (produto/quantidade).
+- **API:** Endpoints readonly para consulta de histórico (`api/inventory/history/...`).
+- **Admin:** Visualização de histórico no Django Admin (readonly).
+
 ## [1.3.0] - 2026-02-13
 
 ### Adicionado

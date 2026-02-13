@@ -60,17 +60,51 @@ class TestCavaleteViewSet:
 class TestSlotWorkflow:
     """Testes para o workflow de Slots."""
 
-    def test_start_confirmation(self, api_client, auditor_user, slot):
-        """Deve iniciar a conferência (AVAILABLE -> AUDITING)."""
+    def test_start_confirmation_creates_history(self, api_client, auditor_user, slot):
+        """Deve criar histórico ao iniciar conferência."""
         api_client.force_authenticate(user=auditor_user)
         url = reverse("cavaletes:slot-start-confirmation", args=[slot.id])
 
-        response = api_client.post(url)
+        api_client.post(url)
 
-        slot.refresh_from_db()
-        assert response.status_code == status.HTTP_200_OK
-        assert slot.status == Slot.Status.AUDITING
-        assert response.data["detail"] == messages.SLOT_CONFIRMATION_STARTED
+        assert slot.history.count() == 1
+        history = slot.history.first()
+        assert history.action == "START_AUDIT"
+        assert history.user == auditor_user
+
+    def test_finish_confirmation_creates_history(self, api_client, auditor_user, slot):
+        """Deve criar histórico ao finalizar conferência."""
+        slot.status = Slot.Status.AUDITING
+        slot.save()
+
+        api_client.force_authenticate(user=auditor_user)
+        url = reverse("cavaletes:slot-finish-confirmation", args=[slot.id])
+
+        api_client.post(url)
+
+        assert slot.history.count() == 1
+        assert slot.history.first().action == "FINISH_AUDIT"
+
+    def test_edit_slot_creates_history(self, api_client, auditor_user, slot):
+        """Deve criar histórico ao editar slot."""
+        slot.status = Slot.Status.AUDITING
+        slot.quantity = 5
+        slot.product_code = "OLD"
+        slot.save()
+
+        api_client.force_authenticate(user=auditor_user)
+        url = reverse("cavaletes:slot-detail", args=[slot.id])
+        data = {"quantity": 10, "product_code": "NEW"}
+
+        api_client.patch(url, data)
+
+        assert slot.history.count() == 1
+        history = slot.history.first()
+        assert history.action == "UPDATE"
+        assert history.old_quantity == 5
+        assert history.new_quantity == 10
+        assert history.old_product_code == "OLD"
+        assert history.new_product_code == "NEW"
 
     def test_finish_confirmation(self, api_client, auditor_user, slot):
         """Deve finalizar a conferência (AUDITING -> COMPLETED)."""
