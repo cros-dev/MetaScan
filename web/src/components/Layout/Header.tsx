@@ -19,6 +19,7 @@ import { FiMenu, FiLogOut, FiMoon, FiSun, FiUser } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getProfile } from '@/features/users/api/getProfile';
+import { BAR_HEIGHT, SIDEBAR_WIDTH_EXPANDED } from './constants';
 
 interface HeaderProps extends FlexProps {
   onOpen: () => void;
@@ -48,9 +49,9 @@ export const Header = ({ onOpen, ...rest }: HeaderProps) => {
 
   return (
     <Flex
-      ml={{ base: 0, md: 60 }}
+      ml={{ base: 0, md: SIDEBAR_WIDTH_EXPANDED }}
       px={{ base: 4, md: 4 }}
-      height="20"
+      height={BAR_HEIGHT}
       alignItems="center"
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth="1px"

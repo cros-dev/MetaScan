@@ -2,6 +2,17 @@
 
 Este arquivo registra mudanças notáveis no frontend do MetaScan.
 
+## [0.3.0] - 2026-02-13
+
+### Adicionado
+- **Sidebar recolhível (desktop):** Toggle no rodapé para expandir/recolher; modo recolhido exibe só ícones com Tooltip; ícone da logo (FiPackage) + texto "MetaScan" quando expandida.
+- **Constantes de layout (`Layout/constants.ts`):** Centralização de dimensões: `BAR_HEIGHT`, `SIDEBAR_WIDTH_EXPANDED`, `SIDEBAR_WIDTH_COLLAPSED`, `SIDEBAR_ICON_SIZE`, `SIDEBAR_FONT_SIZE`, `SIDEBAR_NAV_ITEM_H`, `SIDEBAR_HORIZONTAL_INSET`.
+- **Item selecionado vs hover:** Rota atual em destaque (azul); hover neutro (cinza) nos demais itens e no toggle; mesma proporção do hover recolhida e expandida (recuo em %).
+
+### Melhorado
+- **Layout:** Altura da barra (logo + header) alinhada entre Sidebar e Header; linhas divisórias contínuas; altura fixa dos itens de nav e do toggle nos dois estados.
+- **Sidebar:** Larguras e recuos passam a usar constantes; Header usa `SIDEBAR_WIDTH_EXPANDED` no fallback de `ml`.
+
 ## [0.2.0] - 2026-02-13
 
 ### Adicionado
@@ -31,5 +42,4 @@ Este arquivo registra mudanças notáveis no frontend do MetaScan.
 ## [Unreleased]
 
 ### Planejado
-- Layout Base (Sidebar, Header).
-- Dashboard e Gestão de Cavaletes.
+- Dashboard e Gestão de Cavaletes (listagem, filtros, modal de criação).
