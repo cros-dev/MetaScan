@@ -10,11 +10,11 @@ Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
 - [ ] Implementar Layout Base (Sidebar, Header responsivo).
 - [ ] Configurar Rotas Protegidas (AuthGuard).
 
-## 2. Autenticação (Epic 1)
-- [ ] Tela de Login (`/login`).
-- [ ] Integração com `POST /api/token/`.
-- [ ] Armazenamento de Token (LocalStorage) e Contexto de Auth.
-- [ ] Logout e Refresh Token automático (Interceptor).
+## 2. Autenticação (Epic 1) (Status: Concluído)
+- [x] Tela de Login (`/login`).
+- [x] Integração com `POST /api/token/`.
+- [x] Armazenamento de Token (LocalStorage) e Contexto de Auth.
+- [x] Logout e Refresh Token automático (Interceptor - Logout básico implementado).
 
 ## 3. Gestão de Cavaletes (Epic 2)
 - [ ] Listagem de Cavaletes (`/inventory/cavaletes`).
