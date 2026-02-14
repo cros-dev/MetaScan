@@ -20,4 +20,6 @@ Estende `AbstractUser` do Django.
 
 - `POST /api/token/`: Obter token JWT (Login).
 - `POST /api/token/refresh/`: Atualizar token.
+- `GET /api/users/`: Listar usuários ativos (Gestor/Admin). Resposta paginada. Usado para dropdown de atribuição de cavalete.
 - `GET /api/users/profile/`: Dados do usuário logado.
+- `GET /api/users/<id>/`: Detalhes de um usuário por ID.

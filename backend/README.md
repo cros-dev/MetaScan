@@ -185,6 +185,12 @@ O arquivo `settings.py` carrega o `.env` por padrão, mas o Docker Compose Local
 - `POST /api/token/refresh/` - Renovar access token
 - `POST /api/token/verify/` - Verificar token
 
+### Usuários
+- `GET /api/users/` - Listar usuários ativos (Gestor/Admin; resposta paginada)
+- `GET /api/users/profile/` - Perfil do usuário logado
+- `PATCH /api/users/profile/` - Atualizar perfil
+- `GET /api/users/<id>/` - Detalhes de usuário por ID
+
 ### Sankhya
 - `GET /api/sankhya/products/<code>/` - Consulta de produto por código (autenticada)
 

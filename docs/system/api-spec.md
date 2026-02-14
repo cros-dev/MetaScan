@@ -18,8 +18,11 @@ Este documento descreve os endpoints da API do MetaScan (conferência de estoque
 
 ## Usuários
 
+- `GET /api/users/` - Listar usuários ativos (Gestor/Admin). Usado para dropdown de atribuição de cavalete. Resposta paginada.
 - `GET /api/users/profile/` - Perfil do usuário logado
 - `PATCH /api/users/profile/` - Atualização do perfil logado
+- `GET /api/users/{id}/` - Detalhes de um usuário por ID
+
 ## Cavaletes (Inventory)
 
 - `GET /api/inventory/cavaletes/` - Listar cavaletes
