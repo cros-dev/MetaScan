@@ -15,7 +15,7 @@ const theme = extendTheme({
     body: 'Inter, system-ui, sans-serif',
   },
   styles: {
-    global: (props: any) => ({
+    global: (props: { colorMode?: 'light' | 'dark' }) => ({
       body: {
         bg: props.colorMode === 'dark' ? 'gray.900' : 'gray.50',
         color: props.colorMode === 'dark' ? 'gray.100' : 'gray.800',

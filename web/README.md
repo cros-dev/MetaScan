@@ -9,8 +9,9 @@ O projeto segue uma arquitetura orientada a features (Feature-based Architecture
 ```
 src/
 ├── assets/          # Imagens, ícones globais
-├── components/      # Componentes UI genéricos (botões, layouts)
-│   └── Layout/     # Layout logado: Layout, Sidebar (recolhível no desktop), Header (breadcrumb no desktop), constants
+├── components/      # Componentes UI genéricos (botões, layouts, modais)
+│   ├── Layout/     # Layout logado: Layout, Sidebar (recolhível no desktop), Header (breadcrumb no desktop), constants
+│   └── AppModal.tsx # Modal padrão do app (overlay escuro, centralizado)
 ├── config/          # Configurações globais (Axios, Theme, Env)
 ├── features/        # Módulos do domínio (Auth, Inventory, Users)
 ├── hooks/           # Hooks globais customizados

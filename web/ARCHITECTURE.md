@@ -15,7 +15,8 @@ Adotamos uma arquitetura onde o código é organizado por **funcionalidade (feat
 ```
 src/
 ├── components/      # Componentes reutilizáveis (UI Kit interno)
-│   └── Layout/     # Layout logado: Layout, Sidebar, Header, constants
+│   ├── Layout/     # Layout logado: Layout, Sidebar, Header, constants
+│   └── AppModal.tsx # Modal padrão (overlay escuro, centralizado) para modais do app
 ├── config/          # Singletons e configurações (Axios, Theme)
 ├── features/        # Módulos de negócio
 │   ├── auth/        # Login, Logout, Recuperação de Senha
@@ -69,6 +70,9 @@ Temos duas categorias de estado:
   - **Mobile:** Drawer em tela cheia; botão hamburger no Header abre/fecha.
 - **Header:** Barra superior com mesma altura que a área da logo (`BAR_HEIGHT`). À esquerda (desktop): Breadcrumb gerado pela rota (separador `>`, links anteriores suaves, página atual em negrito; na raiz só "Dashboard", em Cavaletes/Histórico só "Inventário > …"). À direita: toggle de tema e menu de usuário (avatar, Perfil, Sair). No mobile: hamburger e título MetaScan à esquerda.
 - **Constantes (`constants.ts`):** Dimensões centralizadas: `BAR_HEIGHT`, `SIDEBAR_WIDTH_EXPANDED`, `SIDEBAR_WIDTH_COLLAPSED`, `SIDEBAR_ICON_SIZE`, `SIDEBAR_FONT_SIZE`, `SIDEBAR_NAV_ITEM_H`, `SIDEBAR_HORIZONTAL_INSET`. Alterações de largura, altura dos itens ou recuo do hover devem ser feitas ali.
+
+### Componentes globais (além do Layout)
+- **`AppModal`:** Envolve `Modal` + `ModalOverlay` com overlay escuro padronizado (`blackAlpha.800`) e `isCentered`. Use com `ModalContent`, `ModalHeader`, `ModalBody`, `ModalFooter` do Chakra. Garante consistência visual entre todos os modais.
 
 ### Hooks Customizados
 - **`useNotify`:** Wrapper sobre o `useToast` do Chakra. Garante consistência (posição `bottom-right`, duração 5s) e semântica (`notify.success`, `notify.error`).
