@@ -32,7 +32,7 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 **apps.inventory**
 - Histórico e auditoria de ações.
 - Modelos: `CavaleteHistory`, `SlotHistory`.
-- Services: `log_cavalete_action`, `log_slot_action`.
+- Services: `log_cavalete_action`, `log_slot_action`, `create_cavalete_structure`.
 - Integração: Chamado automaticamente pelos ViewSets de `cavaletes`.
 
 **apps.cavaletes**

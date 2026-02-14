@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from apps.core.permissions import IsAuditor, IsManager
 from apps.inventory.models import Action
-from apps.inventory.services import log_cavalete_action, log_slot_action
+from apps.inventory.services import log_cavalete_action, log_slot_action, create_cavalete_structure
 from .models import Cavalete, Slot
 from .serializers import CavaleteSerializer, SlotSerializer
 from . import messages
@@ -40,8 +40,17 @@ class CavaleteViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Salva e registra log de criação."""
         with transaction.atomic():
+            structure_data = serializer.validated_data.pop("structure", None)
+            
             instance = serializer.save()
             log_cavalete_action(instance, self.request.user, Action.CREATE)
+
+            if structure_data:
+                create_cavalete_structure(
+                    instance,
+                    slots_a=structure_data.get("slots_a", 0),
+                    slots_b=structure_data.get("slots_b", 0),
+                )
 
     def perform_update(self, serializer):
         """Salva e registra log de atualização."""

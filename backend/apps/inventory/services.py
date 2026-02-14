@@ -1,4 +1,36 @@
 from .models import CavaleteHistory, SlotHistory, Action
+from apps.cavaletes.models import Slot
+
+
+def create_cavalete_structure(cavalete, slots_a: int, slots_b: int):
+    """
+    Gera automaticamente os slots para um cavalete recém-criado.
+    slots_a: Quantidade de slots no Lado A.
+    slots_b: Quantidade de slots no Lado B.
+    """
+    new_slots = []
+
+    for i in range(1, slots_a + 1):
+        new_slots.append(
+            Slot(
+                cavalete=cavalete,
+                side=Slot.Side.SIDE_A,
+                number=i,
+                status=Slot.Status.AVAILABLE,
+            )
+        )
+
+    for i in range(1, slots_b + 1):
+        new_slots.append(
+            Slot(
+                cavalete=cavalete,
+                side=Slot.Side.SIDE_B,
+                number=i,
+                status=Slot.Status.AVAILABLE,
+            )
+        )
+
+    Slot.objects.bulk_create(new_slots)
 
 
 def log_cavalete_action(cavalete, user, action, description=""):
