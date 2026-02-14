@@ -2,6 +2,11 @@
 
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
+## [1.8.1] - 2026-02-14
+
+### Adicionado
+- **Accounts:** Endpoint `GET /api/users/` — listagem de usuários ativos (Gestor/Admin), resposta paginada; usado para dropdown de atribuição de conferente no frontend.
+
 ## [1.8.0] - 2026-02-14
 
 ### Adicionado

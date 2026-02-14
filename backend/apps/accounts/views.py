@@ -5,9 +5,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
+from apps.core.permissions import IsManager
 from .serializers import UserSerializer, UserProfileSerializer
 
 User = get_user_model()
+
+
+class UserListView(generics.ListAPIView):
+    """Lista usuários (Gestor/Admin). Usado para dropdown de atribuição de cavalete."""
+
+    permission_classes = [IsAuthenticated, IsManager]
+    serializer_class = UserSerializer
+    queryset = User.objects.filter(is_active=True).order_by("username")
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):

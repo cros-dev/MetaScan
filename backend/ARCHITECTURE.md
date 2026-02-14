@@ -25,8 +25,8 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 **apps.accounts**
 - Modelo customizado `User` com `role` (Admin, Manager, Auditor)
 - Serializers genéricos (`UserSerializer`, `UserProfileSerializer`)
-- Views para perfil e detalhes de usuário
-- Endpoints: `/api/users/profile/` e `/api/users/<id>/`
+- Views: `UserListView` (listagem, Gestor/Admin), perfil e detalhes de usuário
+- Endpoints: `GET /api/users/` (lista paginada), `/api/users/profile/`, `/api/users/<id>/`
 - Configuração do Django Admin para User
 
 **apps.inventory**
