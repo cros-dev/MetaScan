@@ -23,5 +23,5 @@ Posição no cavalete (Lado A/B + Número).
 
 ## Endpoints
 
-- `/api/inventory/cavaletes/`: CRUD de cavaletes.
+- `/api/inventory/cavaletes/`: CRUD de cavaletes. Listagem: `?search=` (código), `?status=AVAILABLE|IN_PROGRESS|COMPLETED|BLOCKED`. Action: `POST .../cavaletes/{id}/assign-user/` (body `{"user_id": <id>}`) para atribuir conferente.
 - `/api/inventory/slots/`: Gestão de slots e actions de workflow.

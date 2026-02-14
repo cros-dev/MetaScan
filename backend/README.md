@@ -189,9 +189,12 @@ O arquivo `settings.py` carrega o `.env` por padrão, mas o Docker Compose Local
 - `GET /api/sankhya/products/<code>/` - Consulta de produto por código (autenticada)
 
 ### Cavaletes
-- `GET /api/inventory/cavaletes/` - Listar cavaletes
+- `GET /api/inventory/cavaletes/` - Listar cavaletes (`?search=`, `?status=`)
 - `POST /api/inventory/cavaletes/` - Criar cavalete (Gestor)
+- `GET /api/inventory/cavaletes/<id>/` - Detalhes do cavalete
 - `PATCH /api/inventory/cavaletes/<id>/` - Atualizar cavalete
+- `POST /api/inventory/cavaletes/<id>/assign-user/` - Atribuir conferente (Gestor; body: `{"user_id": <id>}`)
+- `DELETE /api/inventory/cavaletes/<id>/` - Excluir cavalete (Gestor)
 
 ### Slots
 - `POST /api/inventory/slots/<id>/start-confirmation/` - Iniciar conferência

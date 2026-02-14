@@ -49,7 +49,7 @@ Logs de auditoria imutáveis.
 | --- | --- | --- |
 | ... | FK | Link para Cavalete ou Slot |
 | user | FK(User) | Quem realizou a ação |
-| action | Enum | CREATE, UPDATE, DELETE, START_AUDIT, etc. |
+| action | Enum | CREATE, UPDATE, DELETE, ASSIGN, START_AUDIT, FINISH_AUDIT, etc. |
 | timestamp | DateTime | Quando ocorreu |
 | description | Text | Detalhes adicionais |
 | snapshot | Fields | (Apenas SlotHistory) Dados antigos e novos |

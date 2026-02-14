@@ -25,12 +25,15 @@ Este documento descreve os endpoints da API do MetaScan (conferência de estoque
 - `GET /api/inventory/cavaletes/` - Listar cavaletes
   - Gestor: Vê todos.
   - Conferente: Vê apenas os atribuídos a ele.
+  - Query: `?search=<termo>` (busca por código); `?status=AVAILABLE|IN_PROGRESS|COMPLETED|BLOCKED` (filtro por status).
 - `POST /api/inventory/cavaletes/` - Criar cavalete (Gestor)
   - Payload: `code`, `type` (DEFAULT, PINE).
   - Payload Opcional: `structure: { "slots_a": int, "slots_b": int }`. Se enviado, deve ter pelo menos 1 slot no total.
 - `GET /api/inventory/cavaletes/{id}/` - Detalhes do cavalete
 - `PATCH /api/inventory/cavaletes/{id}/` - Atualizar cavalete (Gestor)
 - `DELETE /api/inventory/cavaletes/{id}/` - Excluir cavalete (Gestor)
+- `POST /api/inventory/cavaletes/{id}/assign-user/` - Atribuir conferente ao cavalete (Gestor)
+  - Payload: `{ "user_id": <id> }`. Registra ação ASSIGN em CavaleteHistory.
 
 ## Slots (Inventory)
 
