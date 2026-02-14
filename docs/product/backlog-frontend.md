@@ -4,9 +4,9 @@ Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
 
 ---
 
-## Checkpoint atual (commit 0.5.0 — 2026-02-14)
+## Checkpoint atual (commit 0.6.0 — 2026-02-14)
 
-**Entregue:** Lista de cavaletes com linha clicável para detalhes e botão "Atribuir"; a11y na tabela (`role="button"`, tabIndex, Enter/Space); modal de criação com overlay mais escuro, sem rótulo "Estrutura Inicial", cursor pointer no Select, tipagem do erro sem `any`; página placeholder Histórico (`HistoryPage`, Chakra) em `/inventory/history`; alinhamento às .cursor/rules (TypeScript estrito, JSDoc, feature-based). To-do de localização por rua registrado neste backlog, no backlog-backend e em `types.ts`. Detalhes em `web/CHANGELOG.md` (0.5.0).
+**Entregue:** Lista de cavaletes com linha clicável, botão "Atribuir", busca por código e filtro por status; modal de atribuição de conferente (RHF + Zod); modal de criação; AppModal reutilizável (overlay padronizado); CavaletesPage orquestra modais, CavaleteList apenas exibe e notifica; a11y na tabela; placeholder Histórico; tipos em `inventory/types.ts`; getUsers em `users/api`. To-do de localização por rua registrado. Detalhes em `web/CHANGELOG.md` (0.5.0 e 0.6.0).
 
 ---
 
@@ -26,21 +26,14 @@ Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
 
 ## 3. Gestão de Cavaletes (Epic 2)
 - [x] Listagem de Cavaletes (`/inventory/cavaletes`).
-- [ ] Filtros por Status (Disponível, Em Conferência, Concluído).
+- [x] Filtros por Status (Disponível, Em Conferência, Concluído, Bloqueado).
 - [ ] Filtros/listagem por localização (rua do cavalete) — alinhar quando backend/cliente tiver ruas definidas.
 - [x] Modal de Criação de Cavalete (com definição de estrutura e tipo).
 - [ ] Detalhes do Cavalete (Visualização em Grade/Rack):
     - [ ] Componente `CavaleteGrid`: Renderiza Lado A e Lado B.
     - [ ] Componente `SlotCard`: Mostra estado (Vazio, Conferido) e produto.
-- [ ] Atribuir Conferente (Dropdown de usuários).
-
-### Próximos passos (pós-checkpoint)
-
-Backend disponível: `POST .../cavaletes/{id}/assign-user/`, `?search=`, `?status=` (ver backlog-backend e CHANGELOG backend 1.8.0).
-
-- [ ] **Modal de Atribuição de Conferente:** Abrir ao clicar em "Atribuir" na lista; dropdown de usuários (conferentes); chamar `POST .../assign-user/` com `user_id`; fechar e invalidar lista.
-- [ ] **Busca por código de cavalete:** Campo de busca na tela; enviar `?search=...` na listagem.
-- [ ] **Filtro por status:** Filtros (chips ou select) por Status; enviar `?status=AVAILABLE|IN_PROGRESS|COMPLETED|BLOCKED` na listagem.
+- [x] Atribuir Conferente (Modal com dropdown de usuários; RHF + Zod; POST assign-user).
+- [x] Busca por código e filtro por status na listagem (`?search=`, `?status=`).
 
 ## 4. Conferência (Epic 3)
 - [ ] Tela "Meus Cavaletes" (Visão do Conferente).

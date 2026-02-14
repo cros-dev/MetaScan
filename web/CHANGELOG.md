@@ -2,6 +2,20 @@
 
 Este arquivo registra mudanças notáveis no frontend do MetaScan.
 
+## [0.6.0] - 2026-02-14
+
+### Adicionado
+- **Modal de Atribuição de Conferente:** Abre ao clicar em "Atribuir" na lista; dropdown de usuários (GET /api/users/); envia POST .../assign-user/ com user_id; fecha e invalida lista. Formulário com React Hook Form + Zod.
+- **Busca por código:** Campo de busca na tela de cavaletes; parâmetro `?search=` na listagem.
+- **Filtro por status:** Select por status (Todos, Disponível, Em Conferência, Concluído, Bloqueado); parâmetro `?status=` na listagem.
+- **AppModal:** Componente reutilizável em `components/AppModal.tsx`; overlay escuro padronizado (`blackAlpha.800`) e centralizado para todos os modais.
+- **API e tipos:** `getCavaletes(params)` com search/status; `assignCavaleteUser()`; `getUsers()` em `features/users/api`; `features/inventory/types.ts` com tipos do domínio.
+
+### Melhorado
+- **Separação de responsabilidades:** CavaletesPage é dona dos dois modais (criar e atribuir); CavaleteList apenas exibe e notifica via `onAssignClick(cavalete)`.
+- **AssignConferenteModal:** Migrado para React Hook Form + Controller + Zod (conformidade com as convenções do projeto).
+- **theme.ts:** Remoção de `any` na função global do tema (tipagem explícita para colorMode).
+
 ## [0.5.0] - 2026-02-12
 
 ### Adicionado
@@ -12,7 +26,7 @@ Este arquivo registra mudanças notáveis no frontend do MetaScan.
 ### Melhorado
 - **Modal Novo Cavalete:** Overlay mais escuro; removido rótulo "Estrutura Inicial"; cursor `pointer` no Select "Tipo de Estrutura"; hover das linhas da tabela alinhado ao estilo do toggle do menu (`gray.200`/`gray.700`).
 - **CreateCavaleteModal:** Tipagem do erro da mutation com `unknown` e interface `ApiErrorResponse` (sem `any`), em conformidade com as regras do projeto.
-- **CavaleteList:** Removido `isPlaceholderData` não utilizado; consistência com .rules.
+- **CavaleteList:** Removido `isPlaceholderData` não utilizado; consistência com as convenções do projeto.
 
 ## [0.4.0] - 2026-02-13
 

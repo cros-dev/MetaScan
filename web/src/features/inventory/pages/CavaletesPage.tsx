@@ -1,14 +1,21 @@
+import { useState } from 'react';
 import { Box, Flex, Heading, Button, useDisclosure, Text, VStack } from '@chakra-ui/react';
 import { FiPlus } from 'react-icons/fi';
 import { CavaleteList } from '../components/CavaleteList';
 import { CreateCavaleteModal } from '../components/CreateCavaleteModal';
+import { AssignConferenteModal } from '../components/AssignConferenteModal';
+import type { Cavalete } from '../types';
 
 /**
  * Página de Gestão de Cavaletes.
- * Lista todos os cavaletes e permite criar novos.
+ * Orquestra listagem, criação e atribuição de conferentes (donos dos modais).
  */
 export const CavaletesPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [assignCavalete, setAssignCavalete] = useState<{
+    id: number;
+    code: string;
+  } | null>(null);
 
   return (
     <Box>
@@ -24,9 +31,18 @@ export const CavaletesPage = () => {
         </Button>
       </Flex>
 
-      <CavaleteList />
+      <CavaleteList onAssignClick={(cavalete: Cavalete) => setAssignCavalete({ id: cavalete.id, code: cavalete.code })} />
 
       <CreateCavaleteModal isOpen={isOpen} onClose={onClose} />
+
+      {assignCavalete && (
+        <AssignConferenteModal
+          isOpen={!!assignCavalete}
+          onClose={() => setAssignCavalete(null)}
+          cavaleteId={assignCavalete.id}
+          cavaleteCode={assignCavalete.code}
+        />
+      )}
     </Box>
   );
 };

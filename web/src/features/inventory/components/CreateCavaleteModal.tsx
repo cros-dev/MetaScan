@@ -1,6 +1,4 @@
 import {
-  Modal,
-  ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
@@ -21,6 +19,7 @@ import {
   NumberDecrementStepper,
   Divider,
 } from '@chakra-ui/react';
+import { AppModal } from '@/components/AppModal';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -44,6 +43,7 @@ interface ApiErrorResponse {
   };
 }
 
+/** Props do modal de criação de cavalete. */
 interface CreateCavaleteModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -105,8 +105,7 @@ export const CreateCavaleteModal = ({ isOpen, onClose }: CreateCavaleteModalProp
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay bg="blackAlpha.900" />
+    <AppModal isOpen={isOpen} onClose={onClose}>
       <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader>Novo Cavalete</ModalHeader>
         <ModalCloseButton />
@@ -207,6 +206,6 @@ export const CreateCavaleteModal = ({ isOpen, onClose }: CreateCavaleteModalProp
           </Button>
         </ModalFooter>
       </ModalContent>
-    </Modal>
+    </AppModal>
   );
 };

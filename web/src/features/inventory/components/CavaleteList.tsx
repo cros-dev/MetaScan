@@ -9,31 +9,62 @@ import {
   Td,
   Text,
   Button,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
   useColorModeValue,
   Skeleton,
   Stack,
+  Flex,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { FiSearch } from 'react-icons/fi';
+import type { Cavalete } from '../types';
 import { getCavaletes } from '../api/cavaletes';
 import { StatusBadge } from './StatusBadge';
 import { Pagination } from '@/components/Pagination';
 
+/** Tamanho da página na listagem (alinhado ao backend). */
+const CAVALETES_PAGE_SIZE = 20;
+
+const STATUS_OPTIONS = [
+  { value: '', label: 'Todos' },
+  { value: 'AVAILABLE', label: 'Disponível' },
+  { value: 'IN_PROGRESS', label: 'Em Conferência' },
+  { value: 'COMPLETED', label: 'Concluído' },
+  { value: 'BLOCKED', label: 'Bloqueado' },
+] as const;
+
+export interface CavaleteListProps {
+  /** Chamado quando o usuário clica em Atribuir na linha (a página abre o modal). */
+  onAssignClick?: (cavalete: Cavalete) => void;
+}
+
 /**
- * Lista de Cavaletes em formato de tabela com paginação.
+ * Lista de Cavaletes em formato de tabela com paginação, busca e filtro por status.
+ * Apenas exibe dados e notifica eventos (ex.: onAssignClick); não possui modais.
  */
-export const CavaleteList = () => {
+export const CavaleteList = ({ onAssignClick }: CavaleteListProps) => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
   const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const hoverBg = useColorModeValue('gray.200', 'gray.700'); // mesmo estilo do toggle expandir/recolher do menu
+  const hoverBg = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('gray.50', 'gray.900');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['cavaletes', page],
-    queryFn: () => getCavaletes(page),
-    placeholderData: (previousData) => previousData, // Mantém dados antigos enquanto carrega novos
+    queryKey: ['cavaletes', page, search, statusFilter],
+    queryFn: () =>
+      getCavaletes({
+        page,
+        search: search.trim() || undefined,
+        status: statusFilter || undefined,
+      }),
+    placeholderData: (previousData) => previousData,
   });
 
   const cavaletes = data?.results || [];
@@ -80,8 +111,44 @@ export const CavaleteList = () => {
     );
   }
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
+
   return (
     <Stack spacing={4}>
+      <Flex gap={4} flexWrap="wrap" align="center">
+        <InputGroup maxW="xs">
+          <InputLeftElement pointerEvents="none">
+            <FiSearch color="gray" />
+          </InputLeftElement>
+          <Input
+            placeholder="Buscar por código"
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
+          />
+        </InputGroup>
+        <Select
+          w="fit-content"
+          minW="180px"
+          placeholder="Status"
+          value={statusFilter}
+          onChange={(e) => handleStatusChange(e.target.value)}
+          cursor="pointer"
+        >
+          {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value || 'all'} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+
       <Box borderWidth="1px" borderRadius="lg" overflow="hidden" borderColor={borderColor}>
         <Table variant="simple">
           <Thead bg={headerBg}>
@@ -94,7 +161,7 @@ export const CavaleteList = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {cavaletes.map((cavalete) => (
+            {cavaletes.map((cavalete: Cavalete) => (
               <Tr
                 key={cavalete.id}
                 role="button"
@@ -122,7 +189,7 @@ export const CavaleteList = () => {
                     variant="outline"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // TODO: abrir modal de atribuir conferente
+                      onAssignClick?.(cavalete);
                     }}
                   >
                     Atribuir
@@ -137,7 +204,7 @@ export const CavaleteList = () => {
       <Pagination
         currentPage={page}
         totalCount={totalCount}
-        pageSize={20} // Padrão do backend
+        pageSize={CAVALETES_PAGE_SIZE}
         onPageChange={setPage}
       />
     </Stack>
