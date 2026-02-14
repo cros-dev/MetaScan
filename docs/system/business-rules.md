@@ -19,6 +19,8 @@ Este documento descreve regras de negócio do MetaScan (conferência de estoque 
 
 - **Cavaletes:** Código único. Tipo (Default/Pine). Status: `AVAILABLE`, `IN_PROGRESS`, `COMPLETED`, `BLOCKED`.
   - **Criação:** Ao criar um cavalete com estrutura inicial, é obrigatório definir pelo menos um slot (Lado A ou B).
+  - **Listagem:** Suporta filtro por `status` e busca por `code` (parâmetros de query).
+  - **Atribuição:** Gestor pode atribuir um conferente ao cavalete via action `assign-user`; a ação é registrada em CavaleteHistory (ASSIGN).
 - **Slots:**
   - Posição definida por Lado (A/B) e Número.
   - Workflow de 3 estados: `AVAILABLE` → `AUDITING` → `COMPLETED`.
@@ -35,4 +37,4 @@ Este documento descreve regras de negócio do MetaScan (conferência de estoque 
 ---
 
 **Status:** Regras do MetaScan  
-**Última atualização:** 2026-02-09
+**Última atualização:** 2026-02-14

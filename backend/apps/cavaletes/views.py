@@ -1,14 +1,20 @@
 from django.db import transaction
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.core.permissions import IsAuditor, IsManager
+from apps.core import messages as core_messages
 from apps.inventory.models import Action
 from apps.inventory.services import log_cavalete_action, log_slot_action, create_cavalete_structure
 from .models import Cavalete, Slot
 from .serializers import CavaleteSerializer, SlotSerializer
 from . import messages
+
+User = get_user_model()
 
 
 class CavaleteViewSet(viewsets.ModelViewSet):
@@ -16,14 +22,18 @@ class CavaleteViewSet(viewsets.ModelViewSet):
     CRUD de Cavaletes.
     Gestores podem gerenciar tudo.
     Conferentes veem apenas os atribuídos a eles.
+    Filtros: ?status=AVAILABLE. Busca: ?search=CAV-001 (por código).
     """
 
     queryset = Cavalete.objects.all()
     serializer_class = CavaleteSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ["status"]
+    search_fields = ["code"]
 
     def get_permissions(self):
         """Define permissões baseadas na action."""
-        if self.action in ["create", "update", "partial_update", "destroy"]:
+        if self.action in ["create", "update", "partial_update", "destroy", "assign_user"]:
             return [IsManager()]
         return [IsAuditor()]
 
@@ -68,6 +78,35 @@ class CavaleteViewSet(viewsets.ModelViewSet):
                 description=f"Cavalete {instance.code} excluído",
             )
             instance.delete()
+
+    @action(detail=True, methods=["post"], url_path="assign-user")
+    def assign_user(self, request, pk=None):
+        """Atribui um conferente ao cavalete. Apenas gestores."""
+        cavalete = self.get_object()
+        user_id = request.data.get("user_id")
+        if user_id is None:
+            return Response(
+                {"detail": "user_id é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": str(core_messages.USER_NOT_FOUND)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        with transaction.atomic():
+            cavalete.user = user
+            cavalete.save()
+            log_cavalete_action(
+                cavalete,
+                request.user,
+                Action.ASSIGN,
+                description=f"Atribuído a {user.username}",
+            )
+        serializer = self.get_serializer(cavalete)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SlotViewSet(viewsets.ModelViewSet):

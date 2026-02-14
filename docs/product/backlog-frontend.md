@@ -36,9 +36,11 @@ Este backlog foca exclusivamente nas tarefas do cliente web (React/Vite).
 
 ### Próximos passos (pós-checkpoint)
 
-- [ ] **Modal de Atribuição de Conferente:** Abrir ao clicar em "Atribuir" na lista; dropdown de usuários (conferentes); chamar endpoint do backend para associar cavalete ao usuário; fechar e invalidar lista.
-- [ ] **Busca por código de cavalete:** Campo de busca na tela de cavaletes; enviar parâmetro de search/code para a API e refletir na listagem.
-- [ ] **Filtro por status:** Filtros (chips ou select) por Status (Disponível, Em Conferência, Concluído, Bloqueado); enviar parâmetro de filtro para a API e refletir na listagem.
+Backend disponível: `POST .../cavaletes/{id}/assign-user/`, `?search=`, `?status=` (ver backlog-backend e CHANGELOG backend 1.8.0).
+
+- [ ] **Modal de Atribuição de Conferente:** Abrir ao clicar em "Atribuir" na lista; dropdown de usuários (conferentes); chamar `POST .../assign-user/` com `user_id`; fechar e invalidar lista.
+- [ ] **Busca por código de cavalete:** Campo de busca na tela; enviar `?search=...` na listagem.
+- [ ] **Filtro por status:** Filtros (chips ou select) por Status; enviar `?status=AVAILABLE|IN_PROGRESS|COMPLETED|BLOCKED` na listagem.
 
 ## 4. Conferência (Epic 3)
 - [ ] Tela "Meus Cavaletes" (Visão do Conferente).

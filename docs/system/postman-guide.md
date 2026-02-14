@@ -15,9 +15,12 @@ A Collection deve seguir a hierarquia abaixo:
     - `PATCH My Profile`
   - **Inventory** (Estoque)
     - **Cavaletes**
-      - `GET List Cavaletes`
+      - `GET List Cavaletes` (query: `?search=`, `?status=`)
       - `POST Create Cavalete`
+      - `GET Cavalete by ID`
       - `PATCH Update Cavalete`
+      - `POST Assign User` (`.../cavaletes/{id}/assign-user/`, body: `{"user_id": <id>}`)
+      - `DELETE Cavalete`
     - **Slots**
       - `GET List Slots`
       - `PATCH Update Slot (Product/Qty)`

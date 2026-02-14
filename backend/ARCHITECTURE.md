@@ -37,7 +37,8 @@ Este documento descreve a arquitetura e os componentes do backend do **MetaScan*
 
 **apps.cavaletes**
 - Gestão de cavaletes e slots de estoque.
-- Modelos: `Cavalete` (status: AVAILABLE, IN_PROGRESS, COMPLETED) e `Slot` (posições A/B).
+- Modelos: `Cavalete` (status: AVAILABLE, IN_PROGRESS, COMPLETED, BLOCKED) e `Slot` (posições A/B).
+- CavaleteViewSet: listagem com filtro `?status=` e busca `?search=` (código); action `assign-user` (POST com `user_id`) para atribuir conferente; registra ASSIGN em CavaleteHistory.
 - Workflow de conferência: Iniciar -> Editar -> Finalizar.
 - Permissões: Conferentes veem apenas cavaletes atribuídos e editam apenas slots em conferência.
 

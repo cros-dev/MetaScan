@@ -2,6 +2,12 @@
 
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
+## [1.8.0] - 2026-02-14
+
+### Adicionado
+- **CavaleteViewSet:** Action `assign_user` — `POST /api/inventory/cavaletes/{id}/assign-user/` com body `{"user_id": <id>}`; apenas gestores; registra ação ASSIGN em CavaleteHistory.
+- **CavaleteViewSet:** Filtro por status — parâmetro `?status=AVAILABLE|IN_PROGRESS|COMPLETED|BLOCKED` (DjangoFilterBackend).
+- **CavaleteViewSet:** Busca por código — parâmetro `?search=...` (SearchFilter no campo `code`).
 
 ## [1.7.0] - 2026-02-14
 
