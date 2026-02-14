@@ -18,7 +18,7 @@ import {
   Skeleton,
   type FlexProps,
 } from '@chakra-ui/react';
-import { FiMenu, FiLogOut, FiMoon, FiSun, FiUser } from 'react-icons/fi';
+import { FiMenu, FiLogOut, FiMoon, FiSun, FiUser, FiChevronRight } from 'react-icons/fi';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getProfile } from '@/features/users/api/getProfile';
@@ -105,8 +105,9 @@ export const Header = ({ onOpen, ...rest }: HeaderProps) => {
         </Text>
         <Breadcrumb
           display={{ base: 'none', md: 'block' }}
-          listProps={{ flexWrap: 'wrap', gap: 1 }}
-          separator=">"
+          listProps={{ flexWrap: 'wrap', gap: 1, alignItems: 'center' }}
+          separator={<FiChevronRight color="gray" style={{ opacity: 0.5 }} />}
+          spacing={2}
         >
           {breadcrumbItems.map((item, i) => {
             const isCurrent = i === breadcrumbItems.length - 1;
@@ -114,10 +115,11 @@ export const Header = ({ onOpen, ...rest }: HeaderProps) => {
               <BreadcrumbItem key={item.path} isCurrentPage={isCurrent}>
                 <BreadcrumbLink
                   {...(!isCurrent && { as: Link, to: item.path })}
-                  isCurrentPage={isCurrent}
                   fontSize="sm"
-                  color={isCurrent ? undefined : breadcrumbLinkColor}
-                  fontWeight={isCurrent ? 'semibold' : 'normal'}
+                  color={isCurrent ? undefined : 'gray.500'}
+                  _hover={!isCurrent ? { color: 'blue.500', textDecoration: 'none' } : undefined}
+                  fontWeight={isCurrent ? 'medium' : 'normal'}
+                  cursor={isCurrent ? 'default' : 'pointer'}
                 >
                   {item.label}
                 </BreadcrumbLink>
