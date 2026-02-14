@@ -26,6 +26,7 @@ Este documento descreve os endpoints da API do MetaScan (conferência de estoque
   - Gestor: Vê todos.
   - Conferente: Vê apenas os atribuídos a ele.
 - `POST /api/inventory/cavaletes/` - Criar cavalete (Gestor)
+  - Payload Opcional: `structure: { "slots_a": int, "slots_b": int }` para criação automática de slots.
 - `GET /api/inventory/cavaletes/{id}/` - Detalhes do cavalete
 - `PATCH /api/inventory/cavaletes/{id}/` - Atualizar cavalete (Gestor)
 - `DELETE /api/inventory/cavaletes/{id}/` - Excluir cavalete (Gestor)

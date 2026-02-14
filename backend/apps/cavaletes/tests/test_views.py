@@ -46,6 +46,26 @@ class TestCavaleteViewSet:
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_201_CREATED
 
+    def test_create_cavalete_with_structure(self, api_client, manager_user):
+        """Gestor pode criar cavalete com estrutura de slots."""
+        api_client.force_authenticate(user=manager_user)
+        url = reverse("cavaletes:cavalete-list")
+        data = {
+            "code": "C003",
+            "name": "Cavalete Estruturado",
+            "structure": {"slots_a": 2, "slots_b": 1},
+        }
+
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_201_CREATED
+        
+        cavalete_id = response.data["id"]
+        slots = Slot.objects.filter(cavalete_id=cavalete_id)
+        
+        assert slots.count() == 3
+        assert slots.filter(side="A").count() == 2
+        assert slots.filter(side="B").count() == 1
+
     def test_create_cavalete_auditor_forbidden(self, api_client, auditor_user):
         """Conferente NÃO pode criar cavalete."""
         api_client.force_authenticate(user=auditor_user)
