@@ -82,5 +82,8 @@ class CavaleteSerializer(serializers.ModelSerializer):
         
         if slots_a < 0 or slots_b < 0:
             raise serializers.ValidationError("Quantidade de slots não pode ser negativa.")
+        
+        if slots_a == 0 and slots_b == 0:
+            raise serializers.ValidationError("O cavalete deve ter pelo menos 1 slot (Lado A ou B).")
             
         return value

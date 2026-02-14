@@ -83,7 +83,7 @@ Implementar o domínio de cavaletes e slots: modelos, CRUD, exportação Excel, 
 ### Entregas principais
 
 - Seguir [ARCHITECTURE](../backend/ARCHITECTURE.md) (UniqueConstraint, related_name, Admin, validação no serializer).
-- App `cavaletes`: modelos Cavalete (name, code, type, user FK, status) e Slot (cavalete FK, side, number, product_code, product_description, quantity, status); UniqueConstraint (cavalete, side, number); code/name no save(); slots conforme quantidade informada na requisição; registrar no Admin.
+- App `cavaletes`: modelos Cavalete (code, type, user FK, status) e Slot (cavalete FK, side, number, product_code, product_description, quantity, status); UniqueConstraint (cavalete, side, number); slots conforme quantidade informada na requisição; registrar no Admin.
 - CavaleteViewSet: CRUD, filtros, search, ordering; get_queryset por role (conferente só vê atribuídos); actions export (Excel), assign_user, assign (bulk).
 - SlotViewSet: CRUD, filtros; regra “editar produto/quantidade só se status=auditing” no serializer; actions start_confirmation e finish_confirmation; opcional start_all/finish_all.
 - Rotas em config/urls.py (cavaletes, slots).
