@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { CavaletesPage } from '@/features/inventory/pages/CavaletesPage';
+import { HistoryPage } from '@/features/inventory/pages/HistoryPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { Layout } from '@/components/Layout/Layout';
 
@@ -26,11 +28,11 @@ export const router = createBrowserRouter([
           },
           {
             path: 'inventory/cavaletes',
-            element: <div>Gestão de Cavaletes (Em breve)</div>,
+            element: <CavaletesPage />,
           },
           {
             path: 'inventory/history',
-            element: <div>Histórico (Em breve)</div>,
+            element: <HistoryPage />,
           },
         ],
       },

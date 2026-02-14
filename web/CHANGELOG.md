@@ -2,6 +2,18 @@
 
 Este arquivo registra mudanças notáveis no frontend do MetaScan.
 
+## [0.5.0] - 2026-02-12
+
+### Adicionado
+- **Lista de Cavaletes:** Linha da tabela clicável para abrir detalhes do cavalete; botão "Atribuir" na coluna Ações (ação a implementar).
+- **Acessibilidade:** Linha clicável com `role="button"`, `tabIndex={0}` e `onKeyDown` (Enter/Space) para navegação por teclado.
+- **Rota Histórico:** Página placeholder `HistoryPage` (Chakra Box + Text) em `/inventory/history` em vez de `<div>`.
+
+### Melhorado
+- **Modal Novo Cavalete:** Overlay mais escuro; removido rótulo "Estrutura Inicial"; cursor `pointer` no Select "Tipo de Estrutura"; hover das linhas da tabela alinhado ao estilo do toggle do menu (`gray.200`/`gray.700`).
+- **CreateCavaleteModal:** Tipagem do erro da mutation com `unknown` e interface `ApiErrorResponse` (sem `any`), em conformidade com as regras do projeto.
+- **CavaleteList:** Removido `isPlaceholderData` não utilizado; consistência com .rules.
+
 ## [0.4.0] - 2026-02-13
 
 ### Adicionado

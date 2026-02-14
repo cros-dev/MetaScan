@@ -2,6 +2,8 @@
 
 Este arquivo contém o backlog do **backend** do MetaScan, organizado por épicos. Os cards de execução (tasks, bugs, code reviews) ficam no Planner ou nas Issues do repositório. Detalhes técnicos de implementação podem ser consultados em [../backend/ARCHITECTURE.md](../backend/ARCHITECTURE.md).
 
+**Checkpoint atual (2026-02-14):** Frontend 0.5.0 documentado; próximos passos (modal atribuir conferente, busca por code, filtro por status) alinhados entre este backlog e o [backlog-frontend.md](backlog-frontend.md).
+
 ---
 
 ## Épico 0: Setup e configuração
@@ -88,6 +90,16 @@ Implementar o domínio de cavaletes e slots: modelos, CRUD, exportação Excel, 
 - SlotViewSet: CRUD, filtros; regra “editar produto/quantidade só se status=auditing” no serializer; actions start_confirmation e finish_confirmation; opcional start_all/finish_all.
 - Rotas em config/urls.py (cavaletes, slots).
 
+### To-do / Pendências
+
+- **Localização por rua:** Alinhar uso de localização por rua do cavalete. Verificar se o cliente (Sankhya) possui ruas definidas; se sim, modelar e expor no backend (filtro/lista por rua).
+
+### Próximos passos (pós-checkpoint, alinhado ao frontend)
+
+- **Atribuir conferente:** Action `assign_user` (ou PATCH/PUT) no CavaleteViewSet para associar cavalete a um usuário (conferente); apenas gestores; registrar em CavaleteHistory; endpoint consumido pelo modal do frontend.
+- **Busca por código:** Suporte a parâmetro de busca (ex.: `?search=CAV-001` ou `?code=`) no CavaleteViewSet (SearchFilter ou filtro customizado por `code`).
+- **Filtro por status:** Suporte a filtro por status (ex.: `?status=AVAILABLE`) no CavaleteViewSet (DjangoFilterBackend ou filter_queryset por `status`).
+
 ### Dependências
 
 Épico 2.
@@ -170,4 +182,4 @@ Planejado
 
 ---
 
-**Última atualização:** 2026-02-09
+**Última atualização:** 2026-02-12
