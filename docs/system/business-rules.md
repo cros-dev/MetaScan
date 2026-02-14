@@ -18,7 +18,7 @@ Este documento descreve regras de negócio do MetaScan (conferência de estoque 
 ### Regras do MetaScan
 
 - **Cavaletes:** Código único. Tipo (Default/Pine). Status: `AVAILABLE`, `IN_PROGRESS`, `COMPLETED`, `BLOCKED`.
-  - **Criação:** Ao criar um cavalete, é possível definir uma estrutura inicial (quantidade de slots Lado A e Lado B) para geração automática dos slots.
+  - **Criação:** Ao criar um cavalete com estrutura inicial, é obrigatório definir pelo menos um slot (Lado A ou B).
 - **Slots:**
   - Posição definida por Lado (A/B) e Número.
   - Workflow de 3 estados: `AVAILABLE` → `AUDITING` → `COMPLETED`.

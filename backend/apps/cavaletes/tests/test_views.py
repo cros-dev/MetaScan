@@ -66,6 +66,20 @@ class TestCavaleteViewSet:
         assert slots.filter(side="A").count() == 2
         assert slots.filter(side="B").count() == 1
 
+    def test_create_cavalete_with_empty_structure_fails(self, api_client, manager_user):
+        """Não deve permitir criar cavalete com estrutura zerada se structure for enviado."""
+        api_client.force_authenticate(user=manager_user)
+        url = reverse("cavaletes:cavalete-list")
+        data = {
+            "code": "C004",
+            "type": "DEFAULT",
+            "structure": {"slots_a": 0, "slots_b": 0},
+        }
+
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "O cavalete deve ter pelo menos 1 slot" in str(response.data["structure"])
+
     def test_create_cavalete_auditor_forbidden(self, api_client, auditor_user):
         """Conferente NÃO pode criar cavalete."""
         api_client.force_authenticate(user=auditor_user)
