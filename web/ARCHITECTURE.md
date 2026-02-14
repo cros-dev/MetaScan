@@ -14,7 +14,8 @@ Adotamos uma arquitetura onde o código é organizado por **funcionalidade (feat
 
 ```
 src/
-├── components/      # Componentes "burros" e reutilizáveis (UI Kit interno)
+├── components/      # Componentes reutilizáveis (UI Kit interno)
+│   └── Layout/     # Layout logado: Layout, Sidebar, Header, constants
 ├── config/          # Singletons e configurações (Axios, Theme)
 ├── features/        # Módulos de negócio
 │   ├── auth/        # Login, Logout, Recuperação de Senha
@@ -24,8 +25,7 @@ src/
 │   │   └── types/   # Tipos locais (LoginCredentials)
 │   ├── inventory/   # Gestão de Cavaletes e Conferência
 │   └── ...
-├── hooks/           # Hooks genéricos (useDebounce, useLocalStorage)
-├── layouts/         # Estruturas de página (MainLayout, AuthLayout)
+├── hooks/           # Hooks genéricos (useDebounce, useNotify)
 ├── routes/          # Configuração de rotas e rotas protegidas
 └── App.tsx          # Ponto de entrada
 ```
@@ -62,10 +62,13 @@ Temos duas categorias de estado:
 
 ## Componentes e Hooks Globais
 
-### Layout
-- **DashboardLayout:** Wrapper para páginas logadas.
-  - **Sidebar:** Navegação lateral (fixa no desktop, drawer no mobile).
-  - **Header:** Barra superior com menu de usuário, avatar e toggle de tema.
+### Layout (`src/components/Layout/`)
+- **Layout:** Wrapper para páginas logadas. Controla estado da sidebar (recolhida/expandida) e repassa `ml` (margem do conteúdo) para Header e área principal.
+- **Sidebar:** Navegação lateral.
+  - **Desktop (md+):** Fixa à esquerda, recolhível (só ícones) ou expandida (ícone + texto). Toggle no rodapé para expandir/recolher. Item da rota atual em destaque (azul); hover neutro (cinza) nos demais. Proporção do hover idêntica nos dois estados (constante `SIDEBAR_HORIZONTAL_INSET`).
+  - **Mobile:** Drawer em tela cheia; botão hamburger no Header abre/fecha.
+- **Header:** Barra superior com mesma altura que a área da logo (`BAR_HEIGHT`). À esquerda (desktop): Breadcrumb gerado pela rota (separador `>`, links anteriores suaves, página atual em negrito; na raiz só "Dashboard", em Cavaletes/Histórico só "Inventário > …"). À direita: toggle de tema e menu de usuário (avatar, Perfil, Sair). No mobile: hamburger e título MetaScan à esquerda.
+- **Constantes (`constants.ts`):** Dimensões centralizadas: `BAR_HEIGHT`, `SIDEBAR_WIDTH_EXPANDED`, `SIDEBAR_WIDTH_COLLAPSED`, `SIDEBAR_ICON_SIZE`, `SIDEBAR_FONT_SIZE`, `SIDEBAR_NAV_ITEM_H`, `SIDEBAR_HORIZONTAL_INSET`. Alterações de largura, altura dos itens ou recuo do hover devem ser feitas ali.
 
 ### Hooks Customizados
 - **`useNotify`:** Wrapper sobre o `useToast` do Chakra. Garante consistência (posição `bottom-right`, duração 5s) e semântica (`notify.success`, `notify.error`).

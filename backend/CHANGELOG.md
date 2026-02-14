@@ -3,6 +3,17 @@
 Este arquivo registra mudanças notáveis no backend do MetaScan.
 
 
+## [1.7.0] - 2026-02-12
+
+### Adicionado
+- **Criação Dinâmica de Slots:** Funcionalidade que permite criar slots automaticamente ao cadastrar um Cavalete.
+- **API:** Campo `structure` (write-only) no endpoint de criação de cavalete (`POST /api/inventory/cavaletes/`).
+- **Service:** Função `create_cavalete_structure` para geração em massa de slots.
+- **Testes:** Validação da criação de cavalete com estrutura de slots.
+
+### Alterado
+- **Modelo Cavalete:** Substituído campo livre `name` por Enum `type` (`DEFAULT`, `PINE`) para melhor categorização.
+
 ## [1.6.0] - 2026-02-13
 
 ### Melhorado

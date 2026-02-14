@@ -23,7 +23,7 @@ Estrutura física que contém slots.
 | --- | --- | --- |
 | id | Int | PK |
 | code | String | Código único (ex: CAV-001) |
-| name | String | Descrição amigável |
+| type | Enum | DEFAULT (Padrão), PINE (Pinhal) |
 | user | FK(User) | Conferente responsável |
 | status | Enum | AVAILABLE, IN_PROGRESS, COMPLETED, BLOCKED |
 
