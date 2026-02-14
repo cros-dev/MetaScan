@@ -58,7 +58,7 @@ class CavaleteSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "code",
-            "name",
+            "type",
             "status",
             "user",
             "user_name",

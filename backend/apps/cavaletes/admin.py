@@ -20,14 +20,14 @@ class CavaleteAdmin(admin.ModelAdmin):
     Admin para gestão de Cavaletes.
     """
 
-    list_display = ["code", "name", "status", "user", "created_at"]
-    list_filter = ["status", "created_at"]
-    search_fields = ["code", "name", "user__username", "user__first_name"]
+    list_display = ["code", "type", "status", "user", "created_at"]
+    list_filter = ["type", "status", "created_at"]
+    search_fields = ["code", "user__username", "user__first_name"]
     autocomplete_fields = ["user"]
     inlines = [SlotInline]
 
     fieldsets = (
-        (None, {"fields": ("code", "name", "status")}),
+        (None, {"fields": ("code", "type", "status")}),
         ("Responsável", {"fields": ("user",)}),
     )
 

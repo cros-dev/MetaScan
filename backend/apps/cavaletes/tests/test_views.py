@@ -41,7 +41,7 @@ class TestCavaleteViewSet:
         """Gestor pode criar cavalete."""
         api_client.force_authenticate(user=manager_user)
         url = reverse("cavaletes:cavalete-list")
-        data = {"code": "C001", "name": "Cavalete Teste"}
+        data = {"code": "C001", "type": "DEFAULT"}
 
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_201_CREATED
@@ -52,7 +52,7 @@ class TestCavaleteViewSet:
         url = reverse("cavaletes:cavalete-list")
         data = {
             "code": "C003",
-            "name": "Cavalete Estruturado",
+            "type": "PINE",
             "structure": {"slots_a": 2, "slots_b": 1},
         }
 
@@ -70,7 +70,7 @@ class TestCavaleteViewSet:
         """Conferente NÃO pode criar cavalete."""
         api_client.force_authenticate(user=auditor_user)
         url = reverse("cavaletes:cavalete-list")
-        data = {"code": "C002", "name": "Cavalete Proibido"}
+        data = {"code": "C002", "type": "DEFAULT"}
 
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -11,6 +11,9 @@ Este arquivo registra mudanças notáveis no backend do MetaScan.
 - **Service:** Função `create_cavalete_structure` para geração em massa de slots.
 - **Testes:** Validação da criação de cavalete com estrutura de slots.
 
+### Alterado
+- **Modelo Cavalete:** Substituído campo livre `name` por Enum `type` (`DEFAULT`, `PINE`) para melhor categorização.
+
 ## [1.6.0] - 2026-02-13
 
 ### Melhorado
