@@ -17,8 +17,17 @@ class Cavalete(models.Model):
         COMPLETED = "COMPLETED", _("Concluído")
         BLOCKED = "BLOCKED", _("Bloqueado")
 
+    class Type(models.TextChoices):
+        DEFAULT = "DEFAULT", _("Padrão")
+        PINE = "PINE", _("Pinhal")
+
     code = models.CharField(_("código"), max_length=50, unique=True, db_index=True)
-    name = models.CharField(_("nome/descrição"), max_length=100, blank=True)
+    type = models.CharField(
+        _("tipo"),
+        max_length=20,
+        choices=Type.choices,
+        default=Type.DEFAULT,
+    )
 
     # Usuário responsável pela conferência atual
     user = models.ForeignKey(

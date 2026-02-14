@@ -34,7 +34,7 @@ def auditor_user():
 def cavalete(manager_user):
     return Cavalete.objects.create(
         code="CAV-001",
-        name="Cavalete 1",
+        type=Cavalete.Type.DEFAULT,
         user=manager_user,
         status=Cavalete.Status.AVAILABLE,
     )
@@ -44,7 +44,7 @@ def cavalete(manager_user):
 def another_cavalete(manager_user):
     return Cavalete.objects.create(
         code="CAV-002",
-        name="Cavalete 2",
+        type=Cavalete.Type.DEFAULT,
         user=manager_user,
         status=Cavalete.Status.AVAILABLE,
     )
